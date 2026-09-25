@@ -37,25 +37,29 @@ export function App() {
   }, []);
   const closePlans = useCallback(() => setIsSubscribeModalOpen(false), []);
 
-  // Theme Management (Light & Dark)
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem('apex_theme');
-    if (saved === 'light' || saved === 'dark') return saved;
-    return 'dark';
-  });
+  // Theme: index.html resolves it before first paint (saved choice, else OS
+  // preference); React adopts that value and owns it from here.
+  const [theme, setTheme] = useState<'dark' | 'light'>(() =>
+    document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  );
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('apex_theme', theme);
+    root.classList.toggle('dark', theme === 'dark');
+    root.style.colorScheme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0c0c0d' : '#fafafa');
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('apex_theme', next);
+      } catch {
+        /* private mode: theme still applies for this session */
+      }
+      return next;
+    });
   };
 
   const showToast = (msg: string) => {
@@ -177,8 +181,8 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
     <div className="min-h-screen bg-canvas text-fg flex flex-col font-sans">
       {/* Toast Notification */}
       {toastMessage && (
-        <div role="status" className="fixed bottom-6 left-6 z-50 bg-surface border border-line text-fg px-4 py-3 rounded shadow-overlay flex items-center gap-2 text-sm">
-          <Check className="w-4 h-4 text-accent-fg" />
+        <div role="status" className="fixed bottom-20 inset-x-4 sm:bottom-6 sm:left-6 sm:right-auto z-50 bg-surface border border-line text-fg px-4 py-3 rounded shadow-overlay flex items-center gap-2 text-sm">
+          <Check className="w-4 h-4 shrink-0 text-accent-fg" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -196,7 +200,7 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
       />
 
       {/* Main Content Area */}
-      <main id="main" className={`flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 ${hasAnalyzed ? 'pt-12' : ''}`}>
+      <main id="main" className={`flex-1 max-w-7xl w-full min-w-0 mx-auto px-4 lg:px-8 ${hasAnalyzed ? 'pt-6 sm:pt-12' : ''}`}>
         {!hasAnalyzed && <Hero />}
 
         {/* Domain Search & Scanner Bar */}
@@ -212,16 +216,22 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         />
 
         {/* Report navigation */}
-        <nav aria-label="Report sections" className="flex border-b border-line mb-8 overflow-x-auto no-scrollbar gap-6">
+        <nav
+          aria-label="Report sections"
+          className="flex -mx-4 px-4 sm:mx-0 sm:px-0 scroll-px-4 sm:scroll-px-0 border-b border-line mb-8 overflow-x-auto no-scrollbar snap-x snap-mandatory gap-6 overscroll-x-contain"
+        >
           {tabs.map((t) => {
             const active = activeTab === t.id;
             return (
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setActiveTab(t.id)}
+                onClick={(e) => {
+                  setActiveTab(t.id);
+                  e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                }}
                 aria-current={active ? 'page' : undefined}
-                className={`relative h-10 -mb-px flex items-center gap-2 text-sm whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
+                className={`relative h-11 sm:h-10 -mb-px shrink-0 snap-start flex items-center gap-2 text-sm whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
                   active ? 'border-accent text-fg font-medium' : 'border-transparent text-fg-muted hover:text-fg'
                 }`}
               >
@@ -233,7 +243,7 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         </nav>
 
         {/* Tab Content Display */}
-        <div className="pb-24">
+        <div className="pb-28 sm:pb-24">
           {activeTab === 'overview' && (
             <OverviewScorecard analysis={analysis} onNavigateTab={(tab) => setActiveTab(tab as any)} />
           )}
@@ -270,14 +280,15 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
       </main>
 
       {/* Strategist chat trigger */}
-      <div className="fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 pb-[env(safe-area-inset-bottom)]">
         <button
           type="button"
           onClick={() => setIsChatOpen(true)}
-          className="btn bg-surface text-fg border border-line hover:border-line-strong shadow-overlay"
+          aria-label="Ask the strategist"
+          className="btn h-12 w-12 px-0 sm:h-9 sm:w-auto sm:px-4 bg-surface text-fg border border-line hover:border-line-strong shadow-overlay"
         >
           <MessageSquare className="w-4 h-4 text-fg-muted" />
-          <span>Ask the strategist</span>
+          <span className="hidden sm:inline">Ask the strategist</span>
         </button>
       </div>
 

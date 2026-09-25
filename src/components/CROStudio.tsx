@@ -209,11 +209,11 @@ export const CROStudio: React.FC<CROStudioProps> = ({ analysis }) => {
 
       {/* Interactive Lead Flow Modal */}
       {isLeadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200">
-          <div className="card shadow-overlay p-6 max-w-md w-full relative">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 sm:p-4 anim-fade">
+          <div className="card rounded-t-[14px] rounded-b-none sm:rounded shadow-overlay p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6 max-w-md w-full max-h-[92dvh] overflow-y-auto relative anim-sheet">
             <button
               onClick={() => setIsLeadModalOpen(false)}
-              className="absolute top-4 right-4 text-fg-subtle hover:text-fg hover:bg-surface-2 p-1 rounded-sm transition-colors cursor-pointer"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 w-11 h-11 sm:w-auto sm:h-auto flex items-center justify-center text-fg-subtle hover:text-fg hover:bg-surface-2 p-1 rounded-sm transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -265,11 +265,11 @@ export const CROStudio: React.FC<CROStudioProps> = ({ analysis }) => {
 
       {/* Interactive Demo Video Walkthrough Modal */}
       {isDemoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200">
-          <div className="card shadow-overlay p-6 max-w-lg w-full relative space-y-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 sm:p-4 anim-fade">
+          <div className="card rounded-t-[14px] rounded-b-none sm:rounded shadow-overlay p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6 max-w-lg w-full max-h-[92dvh] overflow-y-auto relative space-y-4 anim-sheet">
             <button
               onClick={() => setIsDemoModalOpen(false)}
-              className="absolute top-4 right-4 text-fg-subtle hover:text-fg hover:bg-surface-2 p-1 rounded-sm transition-colors cursor-pointer"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 w-11 h-11 sm:w-auto sm:h-auto flex items-center justify-center text-fg-subtle hover:text-fg hover:bg-surface-2 p-1 rounded-sm transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

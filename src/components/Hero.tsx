@@ -16,15 +16,15 @@ const FEATURES = [
 ];
 
 export const Hero: React.FC = () => (
-  <section aria-labelledby="hero-title" className="pt-12 pb-12 md:pt-24 md:pb-16 grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-end">
+  <section aria-labelledby="hero-title" className="pt-8 pb-8 md:pt-24 md:pb-16 grid lg:grid-cols-[1.15fr_1fr] gap-8 md:gap-12 lg:gap-16 items-end">
     <div>
       <h1
         id="hero-title"
-        className="text-2xl md:text-4xl font-semibold text-fg [text-wrap:balance]"
+        className="text-[30px] leading-[36px] md:text-4xl font-semibold text-fg [text-wrap:balance]"
       >
         Type a domain. Get a full SEM strategy in 30 seconds.
       </h1>
-      <p className="mt-6 text-base text-fg-muted max-w-[34rem] [text-wrap:pretty]">
+      <p className="mt-4 md:mt-6 text-base text-fg-muted max-w-[34rem] [text-wrap:pretty]">
         Keywords, ad copy, landing-page fixes and a 90-day plan, built from what is actually on your homepage.
       </p>
       <p className="mt-4 text-sm text-fg-subtle">

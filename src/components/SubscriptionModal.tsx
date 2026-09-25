@@ -44,25 +44,25 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 sm:p-4 anim-fade"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="plans-title"
-        className="bg-surface border border-line rounded p-6 md:p-8 max-w-2xl w-full shadow-overlay relative"
+        className="bg-surface border border-line rounded-t-[14px] rounded-b-none sm:rounded p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6 md:p-8 max-w-2xl w-full max-h-[92dvh] overflow-y-auto overscroll-contain shadow-overlay relative anim-sheet"
       >
         <button
           ref={closeRef}
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-4 right-4 p-2 rounded text-fg-subtle hover:text-fg hover:bg-surface-2 transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 w-11 h-11 sm:w-auto sm:h-auto flex items-center justify-center p-2 rounded text-fg-subtle hover:text-fg hover:bg-surface-2 transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="max-w-md mb-8">
+        <div className="max-w-md mb-6 sm:mb-8 pr-10">
           <h3 id="plans-title" className="text-xl font-semibold text-fg [text-wrap:balance]">
             {reason === 'limit' ? 'You’ve used today’s free analyses' : 'Plans'}
           </h3>
@@ -106,7 +106,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
             </ul>
             <button
               onClick={onClose}
-              className="btn btn-secondary mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              className="btn btn-secondary h-11 sm:h-9 mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               {reason === 'limit' ? 'Come back tomorrow' : 'Keep using Free'}
             </button>
@@ -118,7 +118,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
             <p className="mt-2 text-2xl font-semibold text-fg num">
               ${PRO_PRICE}<span className="text-sm font-normal text-fg-subtle"> /month</span>
             </p>
-            <p className="mt-4 text-xs text-fg-subtle h-[26px] flex items-end">Cancel anytime. Billed monthly.</p>
+            <p className="mt-4 text-xs text-fg-subtle sm:h-[26px] flex items-end">Cancel anytime. Billed monthly.</p>
             <ul className="mt-6 space-y-2 text-sm text-fg-muted flex-1">
               {PRO_FEATURES.map((f) => (
                 <li key={f} className="flex gap-2">
@@ -129,7 +129,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
             </ul>
             <a
               href={mailto}
-              className="btn btn-primary mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="btn btn-primary h-11 sm:h-9 mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <Mail className="w-4 h-4" />
               Email us to start Pro

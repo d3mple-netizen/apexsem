@@ -103,10 +103,10 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           </p>
         </div>
 
-        <div className="flex rounded bg-surface-2 p-1 gap-1 text-xs shrink-0">
+        <div className="flex rounded bg-surface-2 p-1 gap-1 text-xs shrink-0 max-w-full overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('clusters')}
-            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-10 sm:h-8 px-3 shrink-0 whitespace-nowrap rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'clusters' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >
@@ -115,7 +115,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           </button>
           <button
             onClick={() => setActiveTab('geo')}
-            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-10 sm:h-8 px-3 shrink-0 whitespace-nowrap rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'geo' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >
@@ -124,7 +124,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           </button>
           <button
             onClick={() => setActiveTab('backlinks')}
-            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-10 sm:h-8 px-3 shrink-0 whitespace-nowrap rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'backlinks' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >
@@ -133,7 +133,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           </button>
           <button
             onClick={() => setActiveTab('schema')}
-            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`h-10 sm:h-8 px-3 shrink-0 whitespace-nowrap rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'schema' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >

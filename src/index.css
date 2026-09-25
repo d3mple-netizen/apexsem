@@ -7,6 +7,12 @@
 @layer base {
   html {
     color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html,
+  body {
+    overflow-x: clip;
   }
   html.dark {
     color-scheme: dark;
@@ -86,6 +92,20 @@
 .no-scrollbar {
   scrollbar-width: none;
 }
+/* Bottom sheets and modals rise from the edge they are attached to */
+@keyframes sheet-up {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fade {
+  from { opacity: 0; }
+}
+.anim-sheet {
+  animation: sheet-up 220ms var(--ease) both;
+}
+.anim-fade {
+  animation: fade 150ms var(--ease) both;
+}
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -103,5 +123,19 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Phones: 16px fields stop iOS focus-zoom; 44px keeps them thumb-sized */
+@media (max-width: 639px) {
+  input.field,
+  select.field,
+  textarea.field {
+    font-size: 16px;
+    min-height: 44px;
+  }
+  select.field {
+    min-height: 36px;
+    max-width: 60%;
   }
 }

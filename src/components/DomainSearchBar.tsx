@@ -85,7 +85,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
   const live = analysis.source === 'crawl' || analysis.source === 'crawl+ai';
 
   return (
-    <section className="card p-6 mb-12">
+    <section className="card p-4 sm:p-6 mb-8 sm:mb-12">
       {compact ? (
         <label htmlFor="domain-input" className="block text-sm font-medium text-fg mb-3">
           Your domain
@@ -100,7 +100,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
       )}
 
       {/* Input Bar */}
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
         <div className="relative flex-1 w-full">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Globe className="w-4 h-4 text-fg-subtle" />
@@ -118,14 +118,14 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="yourcompany.com"
             disabled={isLoading}
-            className="field h-11 pl-10 pr-4 font-mono text-sm"
+            className="field h-12 sm:h-11 pl-10 pr-4 font-mono text-base sm:text-sm"
           />
         </div>
 
         <button
           type="submit"
           disabled={isLoading || !inputVal.trim()}
-          className="btn btn-primary h-11 px-5 w-full sm:w-auto"
+          className="btn btn-primary h-12 sm:h-11 px-5 w-full sm:w-auto text-base sm:text-sm"
         >
           {isLoading ? (
             <>
@@ -165,7 +165,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
               <button
                 type="button"
                 onClick={onOpenPlans}
-                className="shrink-0 text-left sm:text-right num underline decoration-line-strong underline-offset-4 hover:text-fg transition-colors cursor-pointer"
+                className="shrink-0 py-2 -my-2 sm:py-0 sm:my-0 text-left sm:text-right num underline decoration-line-strong underline-offset-4 hover:text-fg transition-colors cursor-pointer"
               >
                 {remaining} of {FREE_DAILY_LIMIT} free analyses left today
               </button>
@@ -176,7 +176,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
 
       {/* Preset Domain Quick Chips */}
       <div className="mt-4 pt-4 border-t border-line flex flex-wrap items-center gap-2 text-xs">
-        <span className="text-fg-subtle mr-1">Try one</span>
+        <span className="w-full sm:w-auto text-fg-subtle mr-1">Try one</span>
         {PRESET_DOMAINS.map((item) => {
           const active = currentDomain === item.domain && analysis.source !== 'sample';
           return (
@@ -186,7 +186,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
               onClick={() => handleSelectPreset(item.domain)}
               disabled={isLoading}
               title={item.tag}
-              className={`h-7 px-3 rounded-sm border text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`h-11 sm:h-7 px-4 sm:px-3 rounded-sm border text-sm sm:text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                 active
                   ? 'border-line-strong bg-surface-2 text-fg'
                   : 'border-line text-fg-muted hover:text-fg hover:border-line-strong'

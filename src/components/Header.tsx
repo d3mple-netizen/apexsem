@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Download, MoreHorizontal, MessageSquare, Sun, Moon, ArrowUpRight } from 'lucide-react';
+import { Download, MoreHorizontal, Menu, MessageSquare, Sun, Moon, ArrowUpRight, Layers } from 'lucide-react';
 import { DomainAnalysis } from '../types';
 
 interface HeaderProps {
@@ -53,17 +53,17 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const menuItem =
-    'w-full flex items-center gap-3 px-3 h-9 text-sm text-fg-muted hover:text-fg hover:bg-surface-2 rounded-sm transition-colors cursor-pointer';
+    'w-full flex items-center gap-3 px-3 h-11 sm:h-9 text-sm text-fg-muted hover:text-fg hover:bg-surface-2 rounded-sm transition-colors cursor-pointer';
 
   return (
     <header className="sticky top-0 z-40 bg-canvas/85 backdrop-blur-md border-b border-line px-4 lg:px-8">
-      <div className="max-w-7xl mx-auto h-14 flex items-center justify-between gap-6">
+      <div className="max-w-7xl mx-auto h-14 flex items-center justify-between gap-3 sm:gap-6">
         <div className="flex items-center gap-6 min-w-0">
           <button
             type="button"
             onClick={() => onNavigateToTab('overview')}
             aria-label="ApexSEM, go to overview"
-            className="flex items-center gap-2 shrink-0 rounded-sm cursor-pointer"
+            className="flex items-center gap-2 shrink-0 h-11 rounded-sm cursor-pointer"
           >
             <Logo />
             <span className="text-base font-semibold tracking-[-0.02em] text-fg">ApexSEM</span>
@@ -93,16 +93,26 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button type="button" onClick={onExport} className="btn btn-ghost btn-sm hidden sm:inline-flex" title="Download the full playbook as Markdown">
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
 
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
+            className="btn btn-ghost w-11 h-11 sm:w-8 sm:h-8 px-0"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+
           {isSubscribed ? (
             <span className="text-xs text-fg-muted px-2">Pro plan</span>
           ) : (
-            <button type="button" onClick={onOpenSubscribeModal} className="btn btn-primary btn-sm">
+            <button type="button" onClick={onOpenSubscribeModal} className="btn btn-primary h-11 px-4 sm:h-8 sm:px-3 sm:text-xs">
               Upgrade
             </button>
           )}
@@ -114,12 +124,29 @@ export const Header: React.FC<HeaderProps> = ({
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               aria-label="More actions"
-              className="btn btn-ghost btn-sm w-8 px-0"
+              className="btn btn-ghost w-11 h-11 sm:w-8 sm:h-8 px-0"
             >
-              <MoreHorizontal className="w-4 h-4" />
+              <Menu className="w-5 h-5 sm:hidden" />
+              <MoreHorizontal className="w-4 h-4 hidden sm:block" />
             </button>
             {menuOpen && (
-              <div role="menu" className="absolute right-0 mt-2 w-56 p-1 bg-surface border border-line rounded shadow-overlay">
+              <div role="menu" className="absolute right-0 mt-2 w-[min(16rem,calc(100vw-2rem))] p-1 bg-surface border border-line rounded shadow-overlay anim-fade">
+                <div className="md:hidden px-3 pt-2 pb-3 mb-1 border-b border-line">
+                  <a
+                    href={analysis.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 font-mono text-sm text-fg truncate"
+                  >
+                    <span className="truncate">{analysis.domain}</span>
+                    <ArrowUpRight className="w-3.5 h-3.5 shrink-0 text-fg-subtle" />
+                  </a>
+                  <span className="text-xs text-fg-subtle">{analysis.score.tier}</span>
+                </div>
+                <button role="menuitem" type="button" onClick={runAndClose(() => onNavigateToTab('organic'))} className={`${menuItem} md:hidden`}>
+                  <Layers className="w-4 h-4" />
+                  Authority plan
+                </button>
                 <button role="menuitem" type="button" onClick={runAndClose(onOpenChat)} className={menuItem}>
                   <MessageSquare className="w-4 h-4" />
                   Ask the strategist
@@ -127,11 +154,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <button role="menuitem" type="button" onClick={runAndClose(onExport)} className={menuItem}>
                   <Download className="w-4 h-4" />
                   Export playbook
-                </button>
-                <div className="my-1 h-px bg-line" />
-                <button role="menuitem" type="button" onClick={runAndClose(onToggleTheme)} className={menuItem}>
-                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                  {theme === 'dark' ? 'Light theme' : 'Dark theme'}
                 </button>
               </div>
             )}

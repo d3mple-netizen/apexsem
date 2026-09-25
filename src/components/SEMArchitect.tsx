@@ -98,12 +98,12 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
 
         <div className="flex items-center gap-2">
           <span className="text-xs text-fg-subtle">Campaign Mode:</span>
-          <div className="inset flex p-1">
+          <div className="inset flex p-1 max-w-full overflow-x-auto no-scrollbar">
             {analysis.campaigns.map((camp, idx) => (
               <button
                 key={camp.id}
                 onClick={() => setSelectedCampaignIdx(idx)}
-                className={`px-3 py-1 text-xs rounded-sm font-medium transition-colors cursor-pointer ${
+                className={`px-3 h-9 sm:h-auto sm:py-1 shrink-0 whitespace-nowrap text-xs rounded-sm font-medium transition-colors cursor-pointer ${
                   selectedCampaignIdx === idx
                     ? 'bg-surface text-fg'
                     : 'text-fg-muted hover:text-fg'
@@ -273,14 +273,14 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
               placeholder="Filter keywords..."
               value={keywordSearch}
               onChange={(e) => setKeywordSearch(e.target.value)}
-              className="field h-8 w-48 px-3 text-xs"
+              className="field h-10 sm:h-8 w-full sm:w-48 px-3 text-base sm:text-xs"
             />
-            <div className="inset flex p-1 text-xs">
+            <div className="inset flex p-1 text-xs max-w-full overflow-x-auto no-scrollbar">
               {['all', 'transactional', 'conquest'].map((filterKey) => (
                 <button
                   key={filterKey}
                   onClick={() => setIntentFilter(filterKey)}
-                  className={`px-2 py-1 rounded-sm font-medium capitalize transition-colors cursor-pointer ${
+                  className={`px-3 sm:px-2 h-9 sm:h-auto sm:py-1 shrink-0 rounded-sm font-medium capitalize transition-colors cursor-pointer ${
                     intentFilter === filterKey ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
                   }`}
                 >
@@ -302,7 +302,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
 
         {/* Table View */}
         <div className="overflow-x-auto rounded border border-line">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full min-w-[960px] text-left border-collapse text-xs">
             <thead>
               <tr className="bg-surface-2 border-b border-line">
                 <th className="label py-3 px-4">Target Keyword</th>
@@ -318,7 +318,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
             <tbody className="divide-y divide-line">
               {filteredKeywords.map((kw) => (
                 <tr key={kw.id} className="hover:bg-surface-2 transition-colors">
-                  <td className="py-3 px-4 font-medium text-fg">
+                  <td className="py-3 px-4 font-medium text-fg whitespace-nowrap">
                     {kw.keyword}
                   </td>
                   <td className="py-3 px-3">

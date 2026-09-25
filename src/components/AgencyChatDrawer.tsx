@@ -168,10 +168,18 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-surface border-l border-line h-full flex flex-col shadow-overlay">
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-stretch sm:justify-end bg-black/50 anim-fade"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="ApexSEM strategist"
+        className="w-full sm:max-w-lg bg-surface border-t sm:border-t-0 sm:border-l border-line h-[calc(100dvh-8px)] sm:h-full rounded-t-[14px] sm:rounded-none flex flex-col shadow-overlay anim-sheet overflow-hidden"
+      >
         {/* Drawer Header */}
-        <div className="px-5 py-4 border-b border-line flex items-center justify-between">
+        <div className="pl-4 pr-2 sm:px-5 py-2 sm:py-4 border-b border-line flex items-center justify-between gap-2">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-surface-2 flex items-center justify-center shrink-0">
               <Bot className="w-4 h-4 text-fg-subtle" />
@@ -188,14 +196,14 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={handleClearChat}
-              className="btn btn-ghost btn-sm px-2"
+              className="btn btn-ghost btn-sm w-11 h-11 sm:w-auto sm:h-8 px-0 sm:px-2"
               title="Clear conversation"
             >
               <Trash2 className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="btn btn-ghost btn-sm px-2"
+              className="btn btn-ghost btn-sm w-11 h-11 sm:w-auto sm:h-8 px-0 sm:px-2"
               title="Close drawer"
             >
               <X className="w-4 h-4" />
@@ -204,7 +212,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
         </div>
 
         {/* Local LLM Engine Status Banner */}
-        <div className="px-5 py-2 bg-surface-2 border-b border-line flex items-center justify-between gap-4 text-xs">
+        <div className="px-4 sm:px-5 py-2 bg-surface-2 border-b border-line flex items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-2 min-w-0">
             <Cpu className="w-3.5 h-3.5 text-fg-subtle shrink-0" />
             <span className="text-fg-muted">Engine:</span>
@@ -234,7 +242,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-5 py-5 sm:py-6 space-y-6">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -302,14 +310,14 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
         </div>
 
         {/* Quick Suggestion Chips */}
-        <div className="px-5 py-3 border-t border-line">
+        <div className="px-4 sm:px-5 py-3 border-t border-line">
           <span className="text-xs text-fg-subtle block mb-2">Quick prompts</span>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex sm:flex-wrap gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
             {QUICK_PROMPTS.map((prompt, i) => (
               <button
                 key={i}
                 onClick={() => handleSend(prompt)}
-                className="btn btn-secondary btn-sm max-w-full justify-start"
+                className="btn btn-secondary btn-sm h-10 sm:h-8 shrink-0 sm:shrink max-w-[80vw] sm:max-w-full justify-start"
               >
                 <span className="truncate">{prompt}</span>
               </button>
@@ -318,7 +326,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
         </div>
 
         {/* Input Bar */}
-        <div className="px-5 py-4 border-t border-line">
+        <div className="px-4 sm:px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:py-4 border-t border-line">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -333,13 +341,13 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
               placeholder={`Ask about ${analysis.domain}…`}
               aria-label="Message the strategist"
               maxLength={2000}
-              className="field flex-1 h-9 px-3 text-sm"
+              className="field flex-1 min-w-0 h-11 sm:h-9 px-3 text-base sm:text-sm"
             />
             <button
               type="submit"
               disabled={!input.trim() || isTyping}
               aria-label="Send message"
-              className="btn btn-primary px-3"
+              className="btn btn-primary h-11 w-11 sm:h-9 sm:w-auto px-0 sm:px-3"
             >
               <Send className="w-4 h-4" />
             </button>

@@ -263,11 +263,11 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
 
       {/* Add Custom Milestone Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="bg-surface border border-line rounded p-6 max-w-md w-full shadow-overlay relative space-y-5">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 sm:p-4 anim-fade">
+          <div className="bg-surface border border-line rounded-t-[14px] sm:rounded p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6 max-w-md w-full max-h-[92dvh] overflow-y-auto shadow-overlay relative space-y-5 anim-sheet">
             <button
               onClick={() => setIsAddModalOpen(false)}
-              className="absolute top-4 right-4 text-fg-subtle hover:text-fg transition-colors p-1 rounded-sm cursor-pointer"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 w-11 h-11 sm:w-auto sm:h-auto flex items-center justify-center text-fg-subtle hover:text-fg transition-colors p-1 rounded-sm cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

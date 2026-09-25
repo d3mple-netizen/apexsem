@@ -5,15 +5,15 @@
  * text-fg-subtle, bg-accent, text-accent-fg, text-pos, text-neg.
  */
 :root {
-  /* Neutral ramp: light */
-  --canvas: 250 250 250;
-  --surface: 255 255 255;
-  --surface-2: 244 244 245;
-  --fg: 17 17 19;
-  --fg-muted: rgba(17, 17, 19, 0.62);
-  --fg-subtle: rgba(17, 17, 19, 0.45);
-  --line: rgba(17, 17, 19, 0.08);
-  --line-strong: rgba(17, 17, 19, 0.14);
+  /* Neutral ramp: light (paper twin of the dark ramp) */
+  --canvas: 250 250 250;        /* #FAFAFA */
+  --surface: 255 255 255;       /* cards */
+  --surface-2: 244 244 245;     /* insets, hovers */
+  --fg: 24 24 27;               /* #18181B */
+  --fg-muted: #52525b;          /* secondary text, 7.7:1 on canvas */
+  --fg-subtle: #71717a;         /* meta text, 4.6:1 on canvas */
+  --line: rgba(0, 0, 0, 0.08);
+  --line-strong: rgba(0, 0, 0, 0.14);
 
   /* Accent: the only brand color */
   --accent: 240 72 62;          /* #F0483E */

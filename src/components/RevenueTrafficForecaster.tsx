@@ -197,7 +197,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
               <button
                 key={scKey}
                 onClick={() => setScenario(scKey)}
-                className={`px-3 py-1 rounded-sm capitalize transition-colors cursor-pointer ${
+                className={`px-3 h-9 sm:h-auto sm:py-1 rounded-sm capitalize transition-colors cursor-pointer ${
                   scenario === scKey
                     ? 'bg-surface text-fg font-semibold border border-line'
                     : 'text-fg-muted hover:text-fg border border-transparent'
@@ -359,7 +359,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full min-w-[720px] text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-line">
                 <th className="label py-3 pr-4 font-medium">Growth channel</th>

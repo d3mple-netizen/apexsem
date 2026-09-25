@@ -22,7 +22,7 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
               </span>
               <span className="text-xs text-fg-subtle">Audience: {analysis.targetAudience}</span>
             </div>
-            <h2 className="text-2xl font-semibold text-fg">
+            <h2 className="text-xl sm:text-2xl font-semibold text-fg break-words">
               Agency Intelligence Dossier: <span className="font-mono text-fg-muted">{analysis.domain}</span>
             </h2>
             <p className="text-sm text-fg-muted max-w-3xl leading-relaxed">
@@ -30,17 +30,17 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3">
             <button
               onClick={() => onNavigateTab('sem')}
-              className="btn btn-primary"
+              className="btn btn-primary h-11 sm:h-9"
             >
               <span>Launch SEM Campaigns</span>
               <ArrowUpRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => onNavigateTab('organic')}
-              className="btn btn-secondary"
+              className="btn btn-secondary h-11 sm:h-9"
             >
               <span>View T1 Authority Plan</span>
               <Layers className="w-4 h-4 text-fg-subtle" />
