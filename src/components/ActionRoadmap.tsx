@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
 import { Clock, Download, Copy, Check, Plus, X } from 'lucide-react';
 import { DomainAnalysis, RoadmapItem } from '../types';
+import { useDict } from '../i18n';
+import { common } from '../i18n/common';
+import { useLabels } from '../i18n/labels';
+import { roadmapDict } from '../i18n/dict/roadmap';
+
+const PHASES: RoadmapItem['phase'][] = [
+  'Phase 1: 0-30 Days (Quick SEM Wins)',
+  'Phase 2: 30-60 Days (Authority Acceleration)',
+  'Phase 3: 60-90 Days (T1 Market Dominance)'
+];
+const CATEGORIES: RoadmapItem['category'][] = ['SEM', 'SEO/T1', 'CRO', 'GEO/AI'];
+
+/** "Phase 2: 30-60 Days (...)" -> "30-60" */
+const phaseRange = (phase: string) => phase.match(/\d+-\d+/)?.[0] ?? phase;
 
 interface ActionRoadmapProps {
   analysis: DomainAnalysis;
 }
 
 export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
+  const t = useDict(roadmapDict);
+  const c = useDict(common);
+  const L = useLabels();
   const [items, setItems] = useState<RoadmapItem[]>(analysis.roadmap);
   const [selectedPhase, setSelectedPhase] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -42,7 +59,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
       id: `task-${Date.now()}`,
       phase: newPhase,
       title: newTitle.trim(),
-      description: newDesc.trim() || 'Custom strategic growth task for domain.',
+      description: newDesc.trim() || t.defaultDesc,
       category: newCat,
       impact: newImpact,
       effort: 'Medium',
@@ -56,15 +73,16 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
   };
 
   const handleDownloadRoadmapCSV = () => {
-    const headers = ['Phase', 'Category', 'Title', 'Description', 'Impact', 'Effort', 'Status'];
-    const rows = items.map(i => [
-      `"${i.phase}"`,
-      `"${i.category}"`,
-      `"${i.title.replace(/"/g, '""')}"`,
-      `"${i.description.replace(/"/g, '""')}"`,
-      `"${i.impact}"`,
-      `"${i.effort}"`,
-      `"${i.status}"`
+    const q = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const headers = t.csvHeaders;
+    const rows = items.map((i) => [
+      q(L.phase(i.phase)),
+      q(L.category(i.category)),
+      q(i.title),
+      q(i.description),
+      q(L.level(i.impact)),
+      q(L.level(i.effort)),
+      q(L.status(i.status))
     ]);
 
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -92,7 +110,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
     const text = items
       .map(
         (i) =>
-          `[${i.status.toUpperCase()}] ${i.phase}\n• ${i.title} (${i.category} | ${i.impact} Impact | ${i.effort} Effort)\n  ${i.description}`
+          `[${L.status(i.status)}] ${L.phase(i.phase)}\n- ${i.title} (${L.category(i.category)} | ${t.impact}: ${L.level(i.impact)} | ${t.effort}: ${L.level(i.effort)})\n  ${i.description}`
       )
       .join('\n\n');
     navigator.clipboard.writeText(text);
@@ -104,20 +122,23 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
     <div className="space-y-6">
       {/* Title & Stats */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold tracking-[-0.02em] text-fg">
-            30-60-90 Day T1 Search Domination Roadmap
-          </h2>
-          <p className="text-sm text-fg-muted mt-1">
-            Prioritized agency execution playbook designed to unlock organic rank velocity and scale SEM revenue.
-          </p>
+        <div className="min-w-0">
+          <h2 className="text-xl font-semibold tracking-[-0.02em] text-fg">{t.title}</h2>
+          <p className="text-sm text-fg-muted mt-1">{t.subtitle}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Progress bar */}
           <div className="flex items-center gap-3 px-3 py-1">
-            <span className="text-xs text-fg-muted">Playbook</span>
-            <div className="w-20 bg-surface-2 h-1 rounded-full overflow-hidden">
+            <span className="text-xs text-fg-muted">{t.progress}</span>
+            <div
+              className="w-20 bg-surface-2 h-1 rounded-full overflow-hidden"
+              role="progressbar"
+              aria-valuenow={progressPercent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={t.progressAria(progressPercent)}
+            >
               <div
                 className="h-full bg-accent transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
@@ -131,13 +152,14 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
             className="btn btn-primary btn-sm"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Add Task</span>
+            <span>{t.addTask}</span>
           </button>
 
           <button
             onClick={handleDownloadRoadmapCSV}
             className="btn btn-secondary btn-sm"
-            title="Download CSV for project management tools"
+            title={t.csvTitle}
+            aria-label={t.csvTitle}
           >
             <Download className="w-3.5 h-3.5" />
             <span>CSV</span>
@@ -148,7 +170,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
             className="btn btn-secondary btn-sm"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-fg-subtle" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? 'Copied Tasks!' : 'Export Tasks'}</span>
+            <span>{copied ? t.copiedTasks : t.exportTasks}</span>
           </button>
         </div>
       </div>
@@ -157,7 +179,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
       <div className="card flex flex-wrap items-center justify-between gap-4 p-4 text-xs">
         {/* Phase Filter */}
         <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-fg-subtle mr-2">Timeline</span>
+          <span className="text-fg-subtle mr-2">{t.timeline}</span>
           {['all', '0-30', '30-60', '60-90'].map((phaseKey) => (
             <button
               key={phaseKey}
@@ -168,15 +190,15 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                   : 'text-fg-muted hover:text-fg hover:bg-surface-2'
               }`}
             >
-              {phaseKey === 'all' ? 'All Phases' : `Phase ${phaseKey} Days`}
+              {phaseKey === 'all' ? t.allPhases : t.days(phaseKey)}
             </button>
           ))}
         </div>
 
         {/* Category Filter */}
         <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-fg-subtle mr-2">Category</span>
-          {['all', 'SEM', 'SEO/T1', 'CRO', 'GEO/AI'].map((cat) => (
+          <span className="text-fg-subtle mr-2">{t.category}</span>
+          {['all', ...CATEGORIES].map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
@@ -186,7 +208,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                   : 'text-fg-muted hover:text-fg hover:bg-surface-2'
               }`}
             >
-              {cat === 'all' ? 'All Channels' : cat}
+              {cat === 'all' ? t.allChannels : L.category(cat)}
             </button>
           ))}
         </div>
@@ -222,19 +244,19 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
             </div>
 
             {/* Task Info */}
-            <div className="flex-1 space-y-2">
+            <div className="flex-1 min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="tag">
-                  {item.phase.split(':')[0]}
+                  {t.days(phaseRange(item.phase))}
                 </span>
                 <span className="tag">
-                  {item.category}
+                  {L.category(item.category)}
                 </span>
                 <span className="text-xs text-fg-subtle">
-                  Impact <span className={item.impact === 'Critical' ? 'text-fg font-medium' : 'text-fg-muted'}>{item.impact}</span>
+                  {t.impact} <span className={item.impact === 'Critical' ? 'text-fg font-medium' : 'text-fg-muted'}>{L.level(item.impact)}</span>
                 </span>
                 <span className="text-xs text-fg-subtle">
-                  Effort <span className="text-fg-muted">{item.effort}</span>
+                  {t.effort} <span className="text-fg-muted">{L.level(item.effort)}</span>
                 </span>
               </div>
 
@@ -249,12 +271,12 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
 
             {/* Status Pill */}
             <div className="shrink-0 hidden sm:block">
-              <span className={`text-xs capitalize ${
+              <span className={`text-xs ${
                 item.status === 'in_progress'
                   ? 'text-accent-fg font-medium'
                   : 'text-fg-subtle'
               }`}>
-                {item.status.replace('_', ' ')}
+                {L.status(item.status)}
               </span>
             </div>
           </div>
@@ -267,39 +289,40 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
           <div className="bg-surface border border-line rounded-t-[14px] sm:rounded p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:p-6 max-w-md w-full max-h-[92dvh] overflow-y-auto shadow-overlay relative space-y-5 anim-sheet">
             <button
               onClick={() => setIsAddModalOpen(false)}
+              aria-label={c.close}
               className="absolute top-2 right-2 sm:top-4 sm:right-4 w-11 h-11 sm:w-auto sm:h-auto flex items-center justify-center text-fg-subtle hover:text-fg transition-colors p-1 rounded-sm cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
 
             <h3 className="text-base font-semibold tracking-[-0.02em] text-fg">
-              Add New Domination Milestone
+              {t.modalTitle}
             </h3>
 
             <form onSubmit={handleAddTask} className="space-y-4 text-sm">
               <div>
                 <label className="text-xs font-medium text-fg-muted block mb-2">
-                  Task Title
+                  {t.fieldTitle}
                 </label>
                 <input
                   type="text"
                   required
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Set up dynamic remarketing audience..."
+                  placeholder={t.fieldTitlePh}
                   className="field w-full"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-medium text-fg-muted block mb-2">
-                  Description
+                  {t.fieldDesc}
                 </label>
                 <textarea
                   rows={2}
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Specific instructions or KPIs..."
+                  placeholder={t.fieldDescPh}
                   className="field w-full"
                 />
               </div>
@@ -307,32 +330,35 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-medium text-fg-muted block mb-2">
-                    Timeline Phase
+                    {t.fieldPhase}
                   </label>
                   <select
                     value={newPhase}
-                    onChange={(e) => setNewPhase(e.target.value as any)}
+                    onChange={(e) => setNewPhase(e.target.value as RoadmapItem['phase'])}
                     className="field w-full"
                   >
-                    <option value="Phase 1: 0-30 Days (Quick SEM Wins)">Phase 1: 0-30 Days</option>
-                    <option value="Phase 2: 30-60 Days (Authority Acceleration)">Phase 2: 30-60 Days</option>
-                    <option value="Phase 3: 60-90 Days (T1 Market Dominance)">Phase 3: 60-90 Days</option>
+                    {PHASES.map((p) => (
+                      <option key={p} value={p}>
+                        {t.days(phaseRange(p))}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div>
                   <label className="text-xs font-medium text-fg-muted block mb-2">
-                    Category Channel
+                    {t.fieldChannel}
                   </label>
                   <select
                     value={newCat}
-                    onChange={(e) => setNewCat(e.target.value as any)}
+                    onChange={(e) => setNewCat(e.target.value as RoadmapItem['category'])}
                     className="field w-full"
                   >
-                    <option value="SEM">SEM</option>
-                    <option value="SEO/T1">SEO / T1</option>
-                    <option value="CRO">CRO</option>
-                    <option value="GEO/AI">GEO / AI</option>
+                    {CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {L.category(cat)}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -343,13 +369,13 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                   onClick={() => setIsAddModalOpen(false)}
                   className="btn btn-ghost"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   className="btn btn-primary"
                 >
-                  Add Milestone
+                  {t.submit}
                 </button>
               </div>
             </form>

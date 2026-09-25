@@ -22,7 +22,8 @@ export default {
         neg: rgb('--neg'),
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        // Plus Jakarta Sans has no Cyrillic; Manrope fills those glyphs per character.
+        sans: ['"Plus Jakarta Sans"', 'Manrope', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       // Type scale: 11 (micro) / 12 / 14 / 16 / 20 / 28 / 44. Larger Tailwind

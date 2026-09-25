@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { X, Check, Mail } from 'lucide-react';
 import { DomainAnalysis } from '../types';
 import { FREE_DAILY_LIMIT, PRO_PRICE, PRO_MAILTO } from '../services/usage';
+import { useDict } from '../i18n';
+import { shell } from '../i18n/dict/shell';
+import { GoogleMark } from './AuthControls';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -10,23 +13,15 @@ interface SubscriptionModalProps {
   /** "limit" when opened because the free quota ran out. */
   reason: 'limit' | 'upgrade';
   usedToday: number;
+  /** Today's quota for the current identity (1 anonymous, 3 signed in). */
+  limit: number;
+  isSignedIn: boolean;
+  onSignIn: () => void;
 }
 
-const FREE_FEATURES = [
-  `${FREE_DAILY_LIMIT} domain analyses per day`,
-  'Live homepage crawl and SEO checks',
-  'Keywords, ad copy and 90-day roadmap',
-  'Strategist chat and Markdown/CSV export'
-];
-
-const PRO_FEATURES = [
-  'Unlimited domain analyses',
-  'Priority strategist chat on every report',
-  'Onboarding call to set up your first campaigns',
-  'Early access to Google Ads sync and re-crawl alerts'
-];
-
-export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, analysis, reason, usedToday }) => {
+export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, onClose, analysis, reason, usedToday, limit, isSignedIn, onSignIn }) => {
+  const t = useDict(shell).plans;
+  const signIn = useDict(shell).header.signIn;
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -39,8 +34,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
   if (!isOpen) return null;
 
-  const used = Math.min(usedToday, FREE_DAILY_LIMIT);
-  const mailto = `${PRO_MAILTO}&body=${encodeURIComponent(`Hi, I'd like ApexSEM Pro.\n\nMy domain: ${analysis.domain}\n`)}`;
+  const used = Math.min(usedToday, limit);
+  const mailto = `${PRO_MAILTO}&body=${encodeURIComponent(t.mailBody(analysis.domain))}`;
+  const anonLimit = reason === 'limit' && !isSignedIn;
 
   return (
     <div
@@ -56,7 +52,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
         <button
           ref={closeRef}
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t.close}
           className="absolute top-2 right-2 sm:top-4 sm:right-4 w-11 h-11 sm:w-auto sm:h-auto flex items-center justify-center p-2 rounded text-fg-subtle hover:text-fg hover:bg-surface-2 transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
           <X className="w-4 h-4" />
@@ -64,31 +60,29 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
         <div className="max-w-md mb-6 sm:mb-8 pr-10">
           <h3 id="plans-title" className="text-xl font-semibold text-fg [text-wrap:balance]">
-            {reason === 'limit' ? 'You’ve used today’s free analyses' : 'Plans'}
+            {anonLimit ? t.anonLimitTitle : reason === 'limit' ? t.limitTitle : t.title}
           </h3>
           <p className="text-sm text-fg-muted mt-2">
-            {reason === 'limit'
-              ? `Free covers ${FREE_DAILY_LIMIT} analyses a day and resets at midnight. Pro removes the limit.`
-              : 'Start free. Upgrade when you run more domains than the daily limit allows.'}
+            {anonLimit ? t.anonLimitLead(FREE_DAILY_LIMIT) : reason === 'limit' ? t.limitLead(FREE_DAILY_LIMIT) : t.lead}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           {/* Free */}
           <section className="rounded border border-line p-5 flex flex-col">
-            <h4 className="text-sm font-semibold text-fg">Free</h4>
+            <h4 className="text-sm font-semibold text-fg">{t.free}</h4>
             <p className="mt-2 text-2xl font-semibold text-fg num">
-              $0<span className="text-sm font-normal text-fg-subtle"> /month</span>
+              $0<span className="text-sm font-normal text-fg-subtle"> {t.perMonth}</span>
             </p>
-            <div className="mt-4" aria-label={`${used} of ${FREE_DAILY_LIMIT} analyses used today`}>
+            <div className="mt-4" aria-label={t.usedAria(used, limit)}>
               <div className="flex justify-between text-xs text-fg-subtle mb-2">
-                <span>Used today</span>
+                <span>{t.usedToday}</span>
                 <span className="num font-medium text-fg-muted">
-                  {used} of {FREE_DAILY_LIMIT}
+                  {t.usedOf(used, limit)}
                 </span>
               </div>
               <div className="flex gap-1">
-                {Array.from({ length: FREE_DAILY_LIMIT }).map((_, i) => (
+                {Array.from({ length: limit }).map((_, i) => (
                   <span
                     key={i}
                     className={`h-1 flex-1 rounded-full ${i < used ? 'bg-fg-muted' : 'bg-surface-2'}`}
@@ -97,30 +91,40 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
               </div>
             </div>
             <ul className="mt-6 space-y-2 text-sm text-fg-muted flex-1">
-              {FREE_FEATURES.map((f) => (
+              {t.freeFeatures(FREE_DAILY_LIMIT).map((f) => (
                 <li key={f} className="flex gap-2">
                   <Check className="w-4 h-4 mt-0.5 shrink-0 text-fg-subtle" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
-            <button
-              onClick={onClose}
-              className="btn btn-secondary h-11 sm:h-9 mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-            >
-              {reason === 'limit' ? 'Come back tomorrow' : 'Keep using Free'}
-            </button>
+            {isSignedIn ? (
+              <button
+                onClick={onClose}
+                className="btn btn-secondary h-11 sm:h-9 mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                {reason === 'limit' ? t.comeBack : t.keepFree}
+              </button>
+            ) : (
+              <button
+                onClick={onSignIn}
+                className="btn btn-secondary h-11 sm:h-9 mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                <GoogleMark />
+                {signIn}
+              </button>
+            )}
           </section>
 
           {/* Pro */}
           <section className="rounded border border-accent p-5 flex flex-col">
-            <h4 className="text-sm font-semibold text-fg">Pro</h4>
+            <h4 className="text-sm font-semibold text-fg">{t.pro}</h4>
             <p className="mt-2 text-2xl font-semibold text-fg num">
-              ${PRO_PRICE}<span className="text-sm font-normal text-fg-subtle"> /month</span>
+              ${PRO_PRICE}<span className="text-sm font-normal text-fg-subtle"> {t.perMonth}</span>
             </p>
-            <p className="mt-4 text-xs text-fg-subtle sm:h-[26px] flex items-end">Cancel anytime. Billed monthly.</p>
+            <p className="mt-4 text-xs text-fg-subtle sm:h-[26px] flex items-end">{t.cancelAnytime}</p>
             <ul className="mt-6 space-y-2 text-sm text-fg-muted flex-1">
-              {PRO_FEATURES.map((f) => (
+              {t.proFeatures.map((f) => (
                 <li key={f} className="flex gap-2">
                   <Check className="w-4 h-4 mt-0.5 shrink-0 text-fg-subtle" />
                   <span>{f}</span>
@@ -132,13 +136,13 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
               className="btn btn-primary h-11 sm:h-9 mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <Mail className="w-4 h-4" />
-              Email us to start Pro
+              {t.emailPro}
             </a>
           </section>
         </div>
 
         <p className="mt-6 text-xs text-fg-subtle">
-          Pro is activated by hand while we finish self-serve checkout. We reply within one business day.
+          {t.manual}
         </p>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { DomainAnalysis } from '../types';
+import { isMeasured, approx } from '../lib/honest';
 
 export interface ChatMessage {
   id: string;
@@ -11,37 +12,46 @@ export interface ChatMessage {
   };
 }
 
+/**
+ * Offline fallback when no LLM is reachable. Fixed English templates: they
+ * must not invent facts about the user's business, so anything that needs
+ * real proof is a [bracketed placeholder].
+ */
 export function generateAgencyResponse(userQuery: string, analysis: DomainAnalysis): ChatMessage {
   const query = userQuery.toLowerCase();
-  const has = (...words: string[]) => words.some((w) => new RegExp(`\\b${w}`).test(query));
+  // Letter-aware word start, so Russian stems match too.
+  const has = (...words: string[]) => words.some((w) => new RegExp(`(^|[^\\p{L}\\p{N}])${w}`, 'u').test(query));
   const brandName = analysis.domain.split('.')[0].toUpperCase();
   const niche = analysis.niche;
+  const headline = (h: string) => `• "${h}" (${h.length} chars)`;
 
-  let responseText = "";
+  let responseText = '';
   let actionSnippet: ChatMessage['actionSnippet'] = undefined;
 
-  if (has('cpc', 'cost', 'expensive', 'budget', 'bid')) {
-    responseText = `To immediately reduce your CPC on ${analysis.domain} by 30-45%:\n\n1. **Improve Quality Score to 9/10**: Google discounts ad auctions heavily when your Landing Page Experience + Ad Relevance are rated "Above Average". We observed your current landing page message match could be tightened.\n2. **Isolate Exact Match Ad Groups (SKAGs / STAGs)**: Do not lump generic terms with exact keywords. Put your high-intent keyword \`${analysis.keywords[0]?.keyword || 'core intent'}\` into its own ad group.\n3. **Deploy the Negative Keyword Shield**: Prevent low-intent queries like "free", "login", or "jobs" from triggering clicks. This preserves budget for buyers with \$10k+ purchase intent.`;
+  if (has('cpc', 'cost', 'expensive', 'budget', 'bid', 'цен', 'ставк', 'бюджет', 'дорог', 'клик')) {
+    responseText = `To bring CPC down on ${analysis.domain}:\n\n1. **Raise Quality Score**: Google charges less when Landing Page Experience and Ad Relevance are rated "Above average". Mirror your ad headline on the landing page.\n2. **Give exact match its own ad group**: Do not lump generic terms with exact keywords. Put your high-intent keyword \`${analysis.keywords[0]?.keyword || 'core intent'}\` into its own ad group.\n3. **Add a shared negative list**: Block low-intent queries like "free", "login" or "jobs" so budget goes to buyers.`;
     actionSnippet = {
       type: 'code',
-      content: `Target CPA Strategy Formula:\nTarget CPA = (Average Contract Value * Target Close Rate) * 0.15\nFor ${analysis.domain} (~$12,000 ACV @ 4% close rate): Recommended Target CPA is $72.00`
+      content: `Target CPA = Average contract value x Close rate x 0.15\n\nExample with assumed numbers, not your data:\nACV $12,000 x 4% close rate x 0.15 = Target CPA $72\n\nReplace ACV and close rate with your own figures.`
     };
-  } else if (has('copy', 'headline', 'ads?\\b', 'text', 'rsa')) {
-    responseText = `Here are 3 high-converting Responsive Search Ad (RSA) headline sets customized for ${brandName} against legacy competitors:\n\nSet 1 (Pain-Agitation-Solution):\n• "Tired of Bloated Legacy Tools?" (29 chars)\n• "Switch to ${brandName} in Minutes" (26 chars)\n• "10x Faster Team Velocity" (24 chars)\n\nSet 2 (Social Proof & Risk Reversal):\n• "Rated 4.9/5 by 2,000+ Teams" (27 chars)\n• "No Credit Card Required" (23 chars)\n• "SOC-2 Enterprise Security" (25 chars)\n\nSet 3 (Economic Buyer / CFO Angle):\n• "Cut Software Spend by 40%" (25 chars)\n• "Automate Manual Workflows" (25 chars)\n• "Calculate Your ROI Instantly" (28 chars)`;
+  } else if (has('copy', 'headline', 'ads?\\b', 'text', 'rsa', 'заголов', 'объявлен', 'текст', 'креатив')) {
+    responseText = `Three Responsive Search Ad headline sets for ${brandName}. Brackets are placeholders: fill them only with facts you can prove, or drop the line.\n\nSet 1 (Pain and switch):\n${headline('Tired of Bloated Legacy Tools?')}\n${headline(`Switch to ${brandName}`)}\n${headline('Less Busywork for Your Team')}\n\nSet 2 (Proof and risk reversal):\n${headline('Rated [Your G2 Rating] on G2')}\n${headline('[Your Free Trial Offer]')}\n${headline('[Your Security Certification]')}\n\nSet 3 (Economic buyer):\n${headline('Cut Software Spend by [X]%')}\n${headline('Automate Manual Workflows')}\n${headline('See Pricing and ROI')}`;
     actionSnippet = {
       type: 'copy',
-      content: `Headline: Why Teams Are Leaving Legacy Tools For ${brandName}\nDescription: Experience the modern speed standard in ${niche}. Zero lag, seamless API integrations, and instant 1-click team setup. Get demo access today.`
+      content: `Headline: Switch to ${brandName}\nDescription: [One concrete outcome] for ${niche} teams. [A proof point you can back up]. Book a demo.`
     };
-  } else if (has('t1', 'tier 1', 'rank', 'seo', 'schema', 'json-ld')) {
-    responseText = `To establish **Tier 1 (T1) Domain Authority** in Google search for ${analysis.domain}:\n\n1. **Topical Completeness (Entities over Keywords)**: Search engines no longer rank standalone blog posts. You need a semantic cluster with 1 master Pillar Page and 4-6 specialized sub-topic pages interlinked with contextual anchor text.\n2. **Entity Knowledge Graph Registration**: Implement structured schema markup (\`SoftwareApplication\`, \`Organization\`, \`Speakable\`, \`FAQPage\`) so Google identifies ${brandName} as a named brand entity rather than an arbitrary website.\n3. **High-DR Linkable Utility Asset**: Launch a free tool (such as an interactive ROI calculator or config generator) to passively acquire dofollow backlinks from DR 75+ tech portals.`;
+  } else if (has('t1', 'tier 1', 'rank', 'seo', 'schema', 'json-ld', 'разметк', 'позиц', 'органик')) {
+    responseText = `To build topical authority for ${analysis.domain} in Google:\n\n1. **Cover the topic, not single keywords**: One pillar page and 4-6 supporting pages, linked to each other with descriptive anchor text.\n2. **Mark up the brand entity**: Add \`SoftwareApplication\`, \`Organization\` and \`FAQPage\` schema so Google reads ${brandName} as a named brand, not just a website.\n3. **Ship a linkable free tool**: An ROI calculator or config generator earns links from high-authority sites without outreach.`;
     actionSnippet = {
       type: 'code',
-      content: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "SoftwareApplication",\n  "name": "${brandName}",\n  "operatingSystem": "Web-based SaaS",\n  "applicationCategory": "BusinessApplication",\n  "aggregateRating": {\n    "@type": "AggregateRating",\n    "ratingValue": "4.9",\n    "reviewCount": "1240"\n  }\n}\n</script>`
+      content: `<!-- Replace YOUR_... values. Add aggregateRating only if real reviews are visible on the page. -->\n<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "SoftwareApplication",\n  "name": "${brandName}",\n  "url": "https://${analysis.domain}",\n  "operatingSystem": "Web",\n  "applicationCategory": "BusinessApplication",\n  "offers": { "@type": "Offer", "price": "YOUR_PRICE", "priceCurrency": "USD" }\n}\n</script>`
     };
-  } else if (has('chatgpt', 'perplexity', 'ai\\b', 'geo', 'llm')) {
-    responseText = `**Generative Engine Optimization (GEO)** is the frontier of T1 Search. When users ask Perplexity AI or ChatGPT "What is the best ${niche}?", here is how to guarantee ${analysis.domain} is recommended:\n\n1. **Direct Answer Formatting**: LLMs crawl and extract definitions. Your pages should have direct H2 headers: *"What makes ${brandName} the leading ${niche}?"* followed by a concise 45-word definition.\n2. **Third-Party Consensus Seeding**: Perplexity heavily weights Reddit, GitHub discussions, and independent comparison articles. We recommend publishing verified reviews and engaging in relevant community threads.\n3. **Clear Machine-Readable Comparison Tables**: LLMs love clean Markdown or HTML tables with clear checkmarks comparing features, pricing, and integrations.`;
+  } else if (has('chatgpt', 'perplexity', 'ai\\b', 'geo', 'llm', 'нейросет', 'ии(?!\\p{L})')) {
+    responseText = `**Generative Engine Optimization (GEO)** means being the source AI assistants quote. When someone asks Perplexity or ChatGPT "What is the best ${niche}?", these moves raise the odds that ${analysis.domain} comes up:\n\n1. **Answer directly**: Use question-style H2s such as *"What is ${brandName}?"* followed by a plain 40-60 word answer.\n2. **Earn third-party mentions**: Perplexity leans on Reddit, GitHub and independent comparison articles. Real reviews and useful community answers count.\n3. **Publish clean comparison tables**: Features, pricing and integrations in a simple HTML table are easy for a model to lift.`;
   } else {
-    responseText = `I've analyzed ${analysis.domain}'s current SEM and search posture. With an overall T1 Authority Index of **${analysis.score.overall}/100**, the fastest lever for immediate ARR growth is deploying our Bottom-of-Funnel (BOFU) Google Ads campaigns while simultaneously activating the Negative Keyword Shield to eliminate \$${analysis.metrics.wastedSpendPrevented.toLocaleString()} in wasted spend.\n\nWhat would you like to drill into next? I can generate customized ad copy, reveal competitor keyword conquest vulnerabilities, or produce a JSON-LD schema snippet for your engineering team.`;
+    const measured = isMeasured(analysis);
+    const score = measured ? `an authority score of **${analysis.score.overall}/100**` : `a modeled authority score of about **${Math.round(analysis.score.overall / 5) * 5}/100** (estimate, not measured)`;
+    responseText = `${analysis.domain} has ${score}. The fastest lever is usually bottom-of-funnel Google Ads campaigns plus a shared negative keyword list, which could save roughly ${approx(analysis.metrics.wastedSpendPrevented, { money: true })}/mo in irrelevant clicks (modeled, check it against your account).\n\nWhat next? I can draft ad copy, look at competitor keywords, or write a JSON-LD snippet for your developers.`;
   }
 
   return {

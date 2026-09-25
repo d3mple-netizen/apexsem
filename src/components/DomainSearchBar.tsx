@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Loader2, Globe, ArrowRight, AlertCircle } from 'lucide-react';
 import { DomainAnalysis } from '../types';
-import { FREE_DAILY_LIMIT } from '../services/usage';
+import { useDict } from '../i18n';
+import { shell } from '../i18n/dict/shell';
+import { SampleBadge } from '../lib/honest';
+import { GoogleMark } from './AuthControls';
 
 interface DomainSearchBarProps {
   currentDomain: string;
@@ -11,6 +14,10 @@ interface DomainSearchBarProps {
   error: string | null;
   /** Free analyses left today; Infinity for Pro. */
   remaining: number;
+  /** Today's quota for the current identity (1 anonymous, 3 signed in). */
+  limit: number;
+  isSignedIn: boolean;
+  onSignIn: () => void;
   onOpenPlans: () => void;
   /** Hide the heading when the landing hero already explains the product. */
   compact?: boolean;
@@ -24,28 +31,21 @@ const PRESET_DOMAINS = [
   { domain: 'brex.com', label: 'Brex', tag: 'Corporate Spend' }
 ];
 
-const SCAN_STEPS = [
-  'Fetching the homepage…',
-  'Reading title, meta tags, headings and schema…',
-  'Checking CTAs, pricing links and social proof…',
-  'Extracting the phrases your page is built around…',
-  'Drafting keywords, ad copy and the 90-day plan…',
-  'Still working. Slow sites can take up to 30 seconds…'
-];
+type SourceCopy = (typeof shell.en)['search']['source'];
 
-function sourceLine(a: DomainAnalysis): string {
+function sourceLine(a: DomainAnalysis, c: SourceCopy): string {
   const reason = a.fetchError ? ` (${a.fetchError.replace(/\.$/, '')})` : '';
   switch (a.source) {
     case 'sample':
-      return `Sample report for ${a.domain}. Run your own domain to get a live one.`;
+      return c.sample(a.domain);
     case 'crawl+ai':
-      return `Live crawl of ${a.domain}, strategy written by Claude.`;
+      return c.crawlAi(a.domain);
     case 'crawl':
-      return `Live crawl of ${a.domain}. Keywords and copy built from the page’s own wording.`;
+      return c.crawl(a.domain);
     case 'ai':
-      return `Couldn’t crawl ${a.domain}${reason}. Strategy inferred by Claude from the domain.`;
+      return c.ai(a.domain, reason);
     default:
-      return `Couldn’t crawl ${a.domain}${reason}. Showing a model based on the domain name only.`;
+      return c.estimate(a.domain, reason);
   }
 }
 
@@ -56,9 +56,14 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
   analysis,
   error,
   remaining,
+  limit,
+  isSignedIn,
+  onSignIn,
   onOpenPlans,
   compact = false
 }) => {
+  const t = useDict(shell).search;
+  const SCAN_STEPS = t.steps;
   const [inputVal, setInputVal] = useState(analysis.source === 'sample' ? '' : currentDomain);
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -88,13 +93,13 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
     <section className="card p-4 sm:p-6 mb-8 sm:mb-12">
       {compact ? (
         <label htmlFor="domain-input" className="block text-sm font-medium text-fg mb-3">
-          Your domain
+          {t.yourDomain}
         </label>
       ) : (
         <div className="mb-4">
-          <h2 className="text-base font-semibold text-fg">Analyze another domain</h2>
+          <h2 className="text-base font-semibold text-fg">{t.anotherTitle}</h2>
           <p className="text-sm text-fg-muted mt-1">
-            Find high-intent keywords, cut wasted ad spend and fix what blocks conversions.
+            {t.anotherLead}
           </p>
         </div>
       )}
@@ -111,7 +116,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
             inputMode="url"
             autoComplete="url"
             spellCheck={false}
-            aria-label="Domain to analyze"
+            aria-label={t.inputAria}
             aria-invalid={!!error}
             aria-describedby="domain-status"
             value={inputVal}
@@ -130,11 +135,11 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Analyzing…</span>
+              <span>{t.analyzing}</span>
             </>
           ) : (
             <>
-              <span>Analyze domain</span>
+              <span>{t.analyze}</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
@@ -159,15 +164,30 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
               <span
                 className={`mt-[6px] w-1.5 h-1.5 rounded-full shrink-0 ${live ? 'bg-accent' : 'bg-fg-subtle'}`}
               />
-              <span>{sourceLine(analysis)} Traffic and CPC figures are modeled estimates.</span>
+              <span>
+                {analysis.source === 'sample' && <SampleBadge className="mr-2" />}
+                {sourceLine(analysis, t.source)} {t.modeledNote}
+              </span>
             </span>
-            {Number.isFinite(remaining) && (
+            {Number.isFinite(remaining) && !isSignedIn ? (
+              <span className="shrink-0 flex flex-wrap items-center gap-x-2 gap-y-1 sm:justify-end">
+                <span>{t.anonLeft(remaining)}</span>
+                <button
+                  type="button"
+                  onClick={onSignIn}
+                  className="inline-flex items-center gap-1.5 py-2 -my-2 sm:py-0 sm:my-0 text-fg-muted underline decoration-line-strong underline-offset-4 hover:text-fg transition-colors cursor-pointer"
+                >
+                  <GoogleMark className="w-3.5 h-3.5" />
+                  {t.anonCta}
+                </button>
+              </span>
+            ) : Number.isFinite(remaining) && (
               <button
                 type="button"
                 onClick={onOpenPlans}
                 className="shrink-0 py-2 -my-2 sm:py-0 sm:my-0 text-left sm:text-right num underline decoration-line-strong underline-offset-4 hover:text-fg transition-colors cursor-pointer"
               >
-                {remaining} of {FREE_DAILY_LIMIT} free analyses left today
+                {t.left(remaining, limit)}
               </button>
             )}
           </div>
@@ -176,7 +196,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
 
       {/* Preset Domain Quick Chips */}
       <div className="mt-4 pt-4 border-t border-line flex flex-wrap items-center gap-2 text-xs">
-        <span className="w-full sm:w-auto text-fg-subtle mr-1">Try one</span>
+        <span className="w-full sm:w-auto text-fg-subtle mr-1">{t.tryOne}</span>
         {PRESET_DOMAINS.map((item) => {
           const active = currentDomain === item.domain && analysis.source !== 'sample';
           return (
@@ -185,7 +205,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
               type="button"
               onClick={() => handleSelectPreset(item.domain)}
               disabled={isLoading}
-              title={item.tag}
+              title={t.tags[item.tag] ?? item.tag}
               className={`h-11 sm:h-7 px-4 sm:px-3 rounded-sm border text-sm sm:text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                 active
                   ? 'border-line-strong bg-surface-2 text-fg'

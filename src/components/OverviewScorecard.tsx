@@ -1,29 +1,43 @@
 import React from 'react';
 import { DollarSign, TrendingUp, ShieldAlert, Target, Award, ArrowUpRight, Cpu, Layers } from 'lucide-react';
-import { DomainAnalysis } from '../types';
+import { DomainAnalysis, ScoreBreakdown } from '../types';
+import { useDict } from '../i18n';
+import { common } from '../i18n/common';
+import { useLabels } from '../i18n/labels';
+import { overview } from '../i18n/dict/overview';
+import { isMeasured, approxRange, EstimateBadge } from '../lib/honest';
 
 interface OverviewScorecardProps {
   analysis: DomainAnalysis;
   onNavigateTab: (tab: string) => void;
 }
 
+const VECTORS = ['technicalHealth', 'semReadiness', 'topicalAuthority', 'aiSearchVisibility', 'highIntentCoverage'] as const satisfies readonly (keyof ScoreBreakdown)[];
+
+/** Modeled shares are rounded to the nearest 5 so they don't read as measured. */
+const round5 = (n: number) => Math.max(5, Math.round(n / 5) * 5);
+
 export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, onNavigateTab }) => {
   const { score, metrics } = analysis;
+  const t = useDict(overview);
+  const c = useDict(common);
+  const L = useLabels();
+  const measured = isMeasured(analysis);
 
   return (
     <div className="space-y-6">
       {/* Top Banner: Executive Summary */}
       <div className="card p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="tag">
                 {analysis.niche}
               </span>
-              <span className="text-xs text-fg-subtle">Audience: {analysis.targetAudience}</span>
+              <span className="text-xs text-fg-subtle">{t.audience} {analysis.targetAudience}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-semibold text-fg break-words">
-              Agency Intelligence Dossier: <span className="font-mono text-fg-muted">{analysis.domain}</span>
+              {t.reportFor} <span className="font-mono text-fg-muted">{analysis.domain}</span>
             </h2>
             <p className="text-sm text-fg-muted max-w-3xl leading-relaxed">
               {analysis.tagline}
@@ -35,14 +49,14 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
               onClick={() => onNavigateTab('sem')}
               className="btn btn-primary h-11 sm:h-9"
             >
-              <span>Launch SEM Campaigns</span>
+              <span>{t.launchSem}</span>
               <ArrowUpRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => onNavigateTab('organic')}
               className="btn btn-secondary h-11 sm:h-9"
             >
-              <span>View T1 Authority Plan</span>
+              <span>{t.viewT1Plan}</span>
               <Layers className="w-4 h-4 text-fg-subtle" />
             </button>
           </div>
@@ -53,11 +67,15 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Master Score Dial (4 cols) */}
         <div className="lg:col-span-4 card p-6 flex flex-col justify-between items-center text-center">
-          <div className="w-full flex items-center justify-between text-xs text-fg-muted mb-2">
-            <span className="flex items-center gap-1.5 font-medium text-fg">
-              <Award className="w-4 h-4 text-fg-subtle" /> T1 Authority Index
+          <div className="w-full flex items-center justify-between gap-2 text-xs text-fg-muted mb-2">
+            <span className="flex items-center gap-1.5 font-medium text-fg min-w-0">
+              <Award className="w-4 h-4 text-fg-subtle shrink-0" /> <span className="truncate">{t.authorityIndex}</span>
             </span>
-            <span className="text-fg-subtle">Calculated today</span>
+            {measured ? (
+              <span className="text-fg-subtle cursor-help" title={c.measuredHint}>{c.measured}</span>
+            ) : (
+              <EstimateBadge />
+            )}
           </div>
 
           {/* Radial / Circle Score Indicator */}
@@ -88,176 +106,134 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
                 <span className="text-4xl font-semibold num text-fg">
                   {score.overall}
                 </span>
-                <span className="text-xs text-fg-subtle">out of 100</span>
+                <span className="text-xs text-fg-subtle">{t.outOf100}</span>
               </div>
             </div>
           </div>
 
           <div className="w-full space-y-2">
-            <div className="inset px-3 py-2 flex items-center justify-between">
-              <span className="text-xs text-fg-muted">Current status</span>
-              <span className="text-xs font-semibold text-fg">{score.tier}</span>
+            <div className="inset px-3 py-2 flex items-center justify-between gap-3">
+              <span className="text-xs text-fg-muted">{t.currentStatus}</span>
+              <span className="text-xs font-semibold text-fg text-right">{L.tier(score.tier)}</span>
             </div>
             <p className="text-xs text-fg-muted text-center leading-relaxed pt-2">
-              {score.overall >= 80
-                ? 'High authority presence. Ready for aggressive competitor conquest & automated bidding scale.'
-                : score.overall >= 65
-                ? 'Strong challenger domain. Needs negative keyword shielding and topical cluster completion to capture Tier-1 rank.'
-                : 'Emerging domain. Prioritize BOFU high-intent search ads while seeding technical schema and foundational backlinks.'}
+              {score.overall >= 80 ? t.verdict.high : score.overall >= 65 ? t.verdict.mid : t.verdict.low}
             </p>
           </div>
         </div>
 
         {/* 5 Pillar Breakdown (8 cols) */}
         <div className="lg:col-span-8 card p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-fg flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-fg-subtle" />
-              <span>Core SEM & Search Authority Vectors</span>
+          <div className="flex items-center justify-between gap-3 mb-6">
+            <h3 className="text-base font-semibold text-fg flex items-center gap-2 min-w-0">
+              <Cpu className="w-4 h-4 text-fg-subtle shrink-0" />
+              <span>{t.vectorsTitle}</span>
             </h3>
-            <span className="text-xs text-fg-subtle">Weighted algorithm</span>
+            {measured ? (
+              <span className="text-xs text-fg-subtle whitespace-nowrap cursor-help" title={c.measuredHint}>{t.fromCrawl}</span>
+            ) : (
+              <EstimateBadge />
+            )}
           </div>
 
           <div className="space-y-5">
-            {/* Vector 1 */}
-            <div>
-              <div className="flex justify-between gap-4 text-xs mb-2">
-                <span className="text-fg-muted">Technical Crawlability & Indexing Infrastructure</span>
-                <span className="font-semibold num text-fg">{score.technicalHealth}%</span>
+            {VECTORS.map((key) => (
+              <div key={key}>
+                <div className="flex justify-between gap-4 text-xs mb-2">
+                  <span className="text-fg-muted min-w-0">{t.vectors[key]}</span>
+                  <span className="font-semibold num text-fg">{score[key]}%</span>
+                </div>
+                <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-fg-muted transition-all duration-700"
+                    style={{ width: `${score[key]}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-fg-muted transition-all duration-700"
-                  style={{ width: `${score.technicalHealth}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Vector 2 */}
-            <div>
-              <div className="flex justify-between gap-4 text-xs mb-2">
-                <span className="text-fg-muted">SEM Architecture & High-Intent Conversion Readiness</span>
-                <span className="font-semibold num text-fg">{score.semReadiness}%</span>
-              </div>
-              <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-fg-muted transition-all duration-700"
-                  style={{ width: `${score.semReadiness}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Vector 3 */}
-            <div>
-              <div className="flex justify-between gap-4 text-xs mb-2">
-                <span className="text-fg-muted">Topical Authority & Semantic Knowledge Graph</span>
-                <span className="font-semibold num text-fg">{score.topicalAuthority}%</span>
-              </div>
-              <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-fg-muted transition-all duration-700"
-                  style={{ width: `${score.topicalAuthority}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Vector 4 */}
-            <div>
-              <div className="flex justify-between gap-4 text-xs mb-2">
-                <span className="text-fg-muted">Generative Engine Optimization (GEO: Perplexity, ChatGPT, SGE)</span>
-                <span className="font-semibold num text-fg">{score.aiSearchVisibility}%</span>
-              </div>
-              <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-fg-muted transition-all duration-700"
-                  style={{ width: `${score.aiSearchVisibility}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Vector 5 */}
-            <div>
-              <div className="flex justify-between gap-4 text-xs mb-2">
-                <span className="text-fg-muted">Transactional & Competitor Conquest Keyword Capture</span>
-                <span className="font-semibold num text-fg">{score.highIntentCoverage}%</span>
-              </div>
-              <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-fg-muted transition-all duration-700"
-                  style={{ width: `${score.highIntentCoverage}%` }}
-                />
-              </div>
-            </div>
+            ))}
           </div>
 
-          <div className="mt-6 pt-4 border-t border-line flex items-center justify-between text-xs text-fg-muted">
-            <span>Next Target: <strong className="font-semibold text-fg">Tier 1 Authority (90+ Score)</strong></span>
+          <div className="mt-6 pt-4 border-t border-line flex flex-wrap items-center justify-between gap-2 text-xs text-fg-muted">
+            <span>{t.nextTarget} <strong className="font-semibold text-fg">{t.nextTargetValue}</strong></span>
             <button
               onClick={() => onNavigateTab('roadmap')}
               className="text-accent-fg hover:underline font-medium flex items-center gap-1 cursor-pointer"
             >
-              View 30-60-90 Day Roadmap &rarr;
+              {t.viewRoadmap} &rarr;
             </button>
           </div>
         </div>
       </div>
 
-      {/* 4 Financial & Traffic Impact Metrics */}
+      {/* 4 Financial & Traffic Impact Metrics (all modeled) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Metric 1 */}
         <div className="card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-fg-muted">Monthly Traffic Value</span>
-            <DollarSign className="w-4 h-4 text-fg-subtle" />
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <span className="text-xs text-fg-muted min-w-0">{t.paidValue}</span>
+            <span className="flex items-center gap-2 shrink-0">
+              <EstimateBadge />
+              <DollarSign className="w-4 h-4 text-fg-subtle" />
+            </span>
           </div>
           <div className="text-2xl font-semibold num text-fg">
-            ${metrics.monthlyPaidValue.toLocaleString()}
+            {approxRange(metrics.monthlyPaidValue, { money: true })}
           </div>
-          <p className="text-xs text-fg-subtle mt-1 flex items-center gap-1">
-            <span className="text-pos font-medium num">+$24.5k</span> in organic search value
+          <p className="text-xs text-fg-subtle mt-1">
+            {t.paidValueHint}
           </p>
         </div>
 
         {/* Metric 2 */}
         <div className="card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-fg-muted">Potential Monthly Pipeline</span>
-            <TrendingUp className="w-4 h-4 text-fg-subtle" />
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <span className="text-xs text-fg-muted min-w-0">{t.pipeline}</span>
+            <span className="flex items-center gap-2 shrink-0">
+              <EstimateBadge />
+              <TrendingUp className="w-4 h-4 text-fg-subtle" />
+            </span>
           </div>
           <div className="text-2xl font-semibold num text-fg">
-            ${metrics.potentialMonthlyRevenue.toLocaleString()}
+            {approxRange(metrics.potentialMonthlyRevenue, { money: true })}
           </div>
-          <p className="text-xs text-fg-subtle mt-1 flex items-center gap-1">
-            With 3.8x B2B funnel expansion
+          <p className="text-xs text-fg-subtle mt-1">
+            {t.pipelineHint}
           </p>
         </div>
 
         {/* Metric 3 */}
         <div className="card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-fg-muted">T1 Target Traffic Ceiling</span>
-            <Target className="w-4 h-4 text-fg-subtle" />
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <span className="text-xs text-fg-muted min-w-0">{t.targetTraffic}</span>
+            <span className="flex items-center gap-2 shrink-0">
+              <EstimateBadge />
+              <Target className="w-4 h-4 text-fg-subtle" />
+            </span>
           </div>
           <div className="text-2xl font-semibold num text-fg">
-            {metrics.targetT1TrafficEst.toLocaleString()}{' '}
-            <span className="text-xs font-normal text-fg-subtle">visits/mo</span>
+            {approxRange(metrics.targetT1TrafficEst)}{' '}
+            <span className="text-xs font-normal text-fg-subtle">{c.visitsMo}</span>
           </div>
-          <p className="text-xs text-fg-subtle mt-1 flex items-center gap-1">
-            Current: <span className="num text-fg-muted">{metrics.currentTrafficEst.toLocaleString()}</span> (3.4x upside)
+          <p className="text-xs text-fg-subtle mt-1">
+            {t.current} <span className="num text-fg-muted">{approxRange(metrics.currentTrafficEst)}</span> {c.visitsMo}
           </p>
         </div>
 
         {/* Metric 4 */}
         <div className="card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs text-fg-muted">Shielded Wasted Ad Spend</span>
-            <ShieldAlert className="w-4 h-4 text-fg-subtle" />
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <span className="text-xs text-fg-muted min-w-0">{t.wasted}</span>
+            <span className="flex items-center gap-2 shrink-0">
+              <EstimateBadge />
+              <ShieldAlert className="w-4 h-4 text-fg-subtle" />
+            </span>
           </div>
           <div className="text-2xl font-semibold num text-fg">
-            ${metrics.wastedSpendPrevented.toLocaleString()}
+            {approxRange(metrics.wastedSpendPrevented, { money: true })}
+            <span className="text-xs font-normal text-fg-subtle">{c.perMonth}</span>
           </div>
-          <p className="text-xs text-fg-subtle mt-1 flex items-center gap-1">
-            Saved via Negative Keyword Shield
+          <p className="text-xs text-fg-subtle mt-1">
+            {t.wastedHint}
           </p>
         </div>
       </div>
@@ -266,12 +242,12 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
       <div className="card p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
           <div>
-            <h3 className="text-base font-semibold text-fg flex items-baseline gap-2 flex-wrap">
-              <span>Competitor Paid & Organic Search Landscape</span>
-              <span className="text-xs font-normal text-fg-subtle">Market share distribution</span>
+            <h3 className="text-base font-semibold text-fg flex items-center gap-2 flex-wrap">
+              <span>{t.competitorsTitle}</span>
+              <EstimateBadge />
             </h3>
             <p className="text-xs text-fg-muted mt-1">
-              Identify where legacy competitors are spending budget and where conquest opportunities exist.
+              {t.competitorsSub}
             </p>
           </div>
         </div>
@@ -289,25 +265,25 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
                     : 'bg-surface-2 border-transparent hover:border-line-strong'
                 }`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`text-sm font-semibold ${isUserDomain ? 'text-accent-fg' : 'text-fg'}`}>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className={`text-sm font-semibold min-w-0 truncate ${isUserDomain ? 'text-accent-fg' : 'text-fg'}`}>
                     {comp.name}
                   </span>
-                  <span className="text-xs num text-fg-muted">
-                    {comp.marketSharePercentage}% Share
+                  <span className="text-xs num text-fg-muted whitespace-nowrap">
+                    ~{round5(comp.marketSharePercentage)}% {t.share}
                   </span>
                 </div>
 
                 <div className="space-y-3 text-xs">
-                  <div className="flex justify-between text-fg-muted">
-                    <span>Est. Monthly Paid Spend:</span>
-                    <span className="num font-semibold text-fg">
-                      ${comp.monthlyPaidSpend.toLocaleString()}
+                  <div className="flex justify-between gap-2 text-fg-muted">
+                    <span>{t.paidSpend}</span>
+                    <span className="num font-semibold text-fg whitespace-nowrap">
+                      {approxRange(comp.monthlyPaidSpend, { money: true })}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-fg-muted block mb-1">Top Paid Keywords:</span>
+                    <span className="text-fg-muted block mb-1">{t.topKeywords}</span>
                     <div className="flex flex-wrap gap-1">
                       {comp.topPaidKeywords.map((kw, i) => (
                         <span key={i} className="tag bg-surface">
@@ -318,7 +294,7 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
                   </div>
 
                   <div className="pt-3 border-t border-line">
-                    <span className="text-fg-muted block mb-1">Exploitable Vulnerabilities:</span>
+                    <span className="text-fg-muted block mb-1">{t.weakSpots}</span>
                     <ul className="list-disc list-inside text-xs text-fg-muted space-y-1">
                       {comp.vulnerabilities.map((vuln, vIdx) => (
                         <li key={vIdx}>{vuln}</li>

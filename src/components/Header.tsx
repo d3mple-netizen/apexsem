@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Download, MoreHorizontal, Menu, MessageSquare, Sun, Moon, ArrowUpRight, Layers } from 'lucide-react';
+import { Download, MoreHorizontal, Menu, MessageSquare, Sun, Moon, ArrowUpRight, Layers, Sparkles } from 'lucide-react';
 import { DomainAnalysis } from '../types';
+import { useDict } from '../i18n';
+import { shell } from '../i18n/dict/shell';
+import { useLabels } from '../i18n/labels';
+import { SampleBadge } from '../lib/honest';
+import { AuthControls, LangSwitch } from './AuthControls';
 
 interface HeaderProps {
   analysis: DomainAnalysis;
@@ -11,6 +16,8 @@ interface HeaderProps {
   onNavigateToTab: (tab: string) => void;
   isSubscribed: boolean;
   onOpenSubscribeModal: () => void;
+  onSignIn: () => void;
+  onSignOut: () => void;
 }
 
 export const Logo: React.FC<{ className?: string }> = ({ className = 'w-6 h-6' }) => (
@@ -28,8 +35,12 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleTheme,
   onNavigateToTab,
   isSubscribed,
-  onOpenSubscribeModal
+  onOpenSubscribeModal,
+  onSignIn,
+  onSignOut
 }) => {
+  const t = useDict(shell).header;
+  const L = useLabels();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => onNavigateToTab('overview')}
-            aria-label="ApexSEM, go to overview"
+            aria-label={t.home}
             className="flex items-center gap-2 shrink-0 h-11 rounded-sm cursor-pointer"
           >
             <Logo />
@@ -76,7 +87,7 @@ export const Header: React.FC<HeaderProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               className="group ml-2 inline-flex items-center gap-1 font-mono text-fg-muted hover:text-fg transition-colors truncate"
-              title="Open domain in new tab"
+              title={t.openDomain}
             >
               {analysis.domain}
               <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -86,34 +97,39 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={() => onNavigateToTab('organic')}
               className="hover:text-fg transition-colors cursor-pointer whitespace-nowrap"
-              title="View authority plan"
+              title={t.viewAuthority}
             >
-              {analysis.score.tier}
+              {L.tier(analysis.score.tier)}
             </button>
+            {analysis.source === 'sample' && <SampleBadge className="ml-1" />}
           </div>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2">
-          <button type="button" onClick={onExport} className="btn btn-ghost btn-sm hidden sm:inline-flex" title="Download the full playbook as Markdown">
+        <div className="flex items-center gap-0.5 sm:gap-2">
+          <button type="button" onClick={onExport} className="btn btn-ghost btn-sm hidden sm:inline-flex" title={t.exportTitle}>
             <Download className="w-4 h-4" />
-            <span>Export</span>
+            <span>{t.export}</span>
           </button>
+
+          <LangSwitch />
 
           <button
             type="button"
             onClick={onToggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
+            aria-label={theme === 'dark' ? t.toLight : t.toDark}
+            title={theme === 'dark' ? t.lightTheme : t.darkTheme}
             className="btn btn-ghost w-11 h-11 sm:w-8 sm:h-8 px-0"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
+          <AuthControls onSignIn={onSignIn} onSignOut={onSignOut} />
+
           {isSubscribed ? (
-            <span className="text-xs text-fg-muted px-2">Pro plan</span>
+            <span className="hidden sm:inline text-xs text-fg-muted px-2">{t.proPlan}</span>
           ) : (
-            <button type="button" onClick={onOpenSubscribeModal} className="btn btn-primary h-11 px-4 sm:h-8 sm:px-3 sm:text-xs">
-              Upgrade
+            <button type="button" onClick={onOpenSubscribeModal} className="btn btn-primary hidden sm:inline-flex h-8 px-3 text-xs">
+              {t.upgrade}
             </button>
           )}
 
@@ -123,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => setMenuOpen((v) => !v)}
               aria-haspopup="menu"
               aria-expanded={menuOpen}
-              aria-label="More actions"
+              aria-label={t.moreActions}
               className="btn btn-ghost w-11 h-11 sm:w-8 sm:h-8 px-0"
             >
               <Menu className="w-5 h-5 sm:hidden" />
@@ -141,20 +157,29 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="truncate">{analysis.domain}</span>
                     <ArrowUpRight className="w-3.5 h-3.5 shrink-0 text-fg-subtle" />
                   </a>
-                  <span className="text-xs text-fg-subtle">{analysis.score.tier}</span>
+                  <span className="flex items-center gap-2 text-xs text-fg-subtle">
+                    {L.tier(analysis.score.tier)}
+                    {analysis.source === 'sample' && <SampleBadge />}
+                  </span>
                 </div>
                 <button role="menuitem" type="button" onClick={runAndClose(() => onNavigateToTab('organic'))} className={`${menuItem} md:hidden`}>
                   <Layers className="w-4 h-4" />
-                  Authority plan
+                  {t.authorityPlan}
                 </button>
                 <button role="menuitem" type="button" onClick={runAndClose(onOpenChat)} className={menuItem}>
                   <MessageSquare className="w-4 h-4" />
-                  Ask the strategist
+                  {t.askStrategist}
                 </button>
                 <button role="menuitem" type="button" onClick={runAndClose(onExport)} className={menuItem}>
                   <Download className="w-4 h-4" />
-                  Export playbook
+                  {t.exportPlaybook}
                 </button>
+                {!isSubscribed && (
+                  <button role="menuitem" type="button" onClick={runAndClose(onOpenSubscribeModal)} className={`${menuItem} sm:hidden`}>
+                    <Sparkles className="w-4 h-4" />
+                    {t.upgrade}
+                  </button>
+                )}
               </div>
             )}
           </div>

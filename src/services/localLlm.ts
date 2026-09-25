@@ -1,5 +1,6 @@
 import { DomainAnalysis } from '../types';
 import { generateAgencyResponse, ChatMessage } from './aiAgency';
+import { isMeasured } from '../lib/honest';
 
 export type LlmProvider = 'claude' | 'ollama' | 'builtin';
 
@@ -56,7 +57,7 @@ export function analysisContext(a: DomainAnalysis): string {
     `Niche: ${a.niche}`,
     `Tagline: ${a.tagline}`,
     `Audience: ${a.targetAudience}`,
-    `Authority score: ${a.score.overall}/100 (${a.score.tier}); technical ${a.score.technicalHealth}, SEM readiness ${a.score.semReadiness}, topical ${a.score.topicalAuthority}, AI-search ${a.score.aiSearchVisibility}, high-intent coverage ${a.score.highIntentCoverage}`,
+    `Authority score${isMeasured(a) ? '' : ' (modeled from the domain name, not measured)'}: ${a.score.overall}/100 (${a.score.tier}); technical ${a.score.technicalHealth}, SEM readiness ${a.score.semReadiness}, topical ${a.score.topicalAuthority}, AI-search ${a.score.aiSearchVisibility}, high-intent coverage ${a.score.highIntentCoverage}`,
     `Avg niche CPC: $${a.metrics.averageCpcInNiche}; modeled monthly paid-traffic value $${a.metrics.monthlyPaidValue.toLocaleString()}; modeled wasted spend $${a.metrics.wastedSpendPrevented.toLocaleString()}/mo`,
     `Keywords: ${a.keywords.map((k) => `"${k.keyword}" [${k.intent}, ${k.matchType}, ~${k.monthlyVolume}/mo, $${k.cpc}]`).join('; ')}`,
     `Competitors: ${a.competitors.map((c) => `${c.name} (${c.domain}) weak spots: ${c.vulnerabilities.join(', ')}`).join('; ')}`,
@@ -98,7 +99,7 @@ export async function queryLocalLlmStream(
   provider: LlmProvider,
   modelName: string,
   onToken: (token: string) => void
-): Promise<{ fullText: string; actionSnippet?: ChatMessage['actionSnippet']; provider: LlmProvider }> {
+): Promise<{ fullText: string; actionSnippet?: ChatMessage['actionSnippet']; provider: LlmProvider; rateLimited?: boolean }> {
   const prompt = history[history.length - 1]?.content ?? '';
 
   if (provider === 'claude') {
@@ -109,10 +110,8 @@ export async function queryLocalLlmStream(
         body: JSON.stringify({ messages: history, context: analysisContext(analysis) })
       });
       if (res.status === 429) {
-        const body = await res.json().catch(() => ({}));
-        const msg = body.error ?? 'Too many messages. Wait a few minutes and try again.';
-        onToken(msg);
-        return { fullText: msg, provider };
+        // The drawer shows a translated message for this case.
+        return { fullText: '', provider, rateLimited: true };
       }
       if (!res.ok || !(res.headers.get('content-type') ?? '').startsWith('text/plain')) {
         throw new Error(`chat API returned ${res.status}`);
@@ -133,7 +132,7 @@ export async function queryLocalLlmStream(
           model: modelName,
           stream: true,
           messages: [
-            { role: 'system', content: `You are ApexSEM, an expert SEM/SEO strategist. Give concrete, numbered, number-backed advice. Analysis:\n${analysisContext(analysis)}` },
+            { role: 'system', content: `You are ApexSEM, an expert SEM/SEO strategist. Give concrete, numbered advice. Traffic and volume figures below are modeled estimates, not account data. Reply in the language the user writes in. Analysis:\n${analysisContext(analysis)}` },
             ...history
           ],
           options: { temperature: 0.7, top_p: 0.9 }

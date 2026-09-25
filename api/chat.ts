@@ -12,6 +12,7 @@ How you answer:
 - Google Ads limits: headlines max 30 characters, descriptions max 90. Count carefully.
 - Plain text with **bold** only; no markdown headings or tables. Keep it under 250 words unless asked for more.
 - Traffic and volume numbers in <analysis> are modeled estimates, not Google Ads account data; say so if the user relies on them for a budget decision.
+- Reply in the language the user writes in (a question in Russian gets an answer in Russian). Keep keyword strings and ad copy in the language of the target market unless asked otherwise.
 - If a question is outside search marketing, CRO or analytics, answer briefly and steer back.`;
 
 const MAX_TURNS = 12;

@@ -13,15 +13,22 @@ import { AgencyChatDrawer } from './components/AgencyChatDrawer';
 import { SubscriptionModal } from './components/SubscriptionModal';
 import { Hero } from './components/Hero';
 import { generateDomainAnalysis, analyzeDomain, cleanDomain, AnalyzeError } from './services/analyzer';
-import { canAnalyze, isPro, recordAnalysis, remainingToday, usedToday, PRO_PRICE } from './services/usage';
+import { canAnalyze, dailyLimit, isPro, recordAnalysis, remainingToday, usedToday, PRO_PRICE } from './services/usage';
 import { DomainAnalysis } from './types';
+import { useDict } from './i18n';
+import { shell } from './i18n/dict/shell';
+import { useAuth } from './auth/AuthProvider';
+import { approxRange } from './lib/honest';
 
 export function App() {
+  const t = useDict(shell);
+  const auth = useAuth();
+  const uid = auth.user?.id ?? null;
   const [currentDomain, setCurrentDomain] = useState<string>('linear.app');
   const [analysis, setAnalysis] = useState<DomainAnalysis>(() => generateDomainAnalysis('linear.app', 'sample'));
   const [hasAnalyzed, setHasAnalyzed] = useState<boolean>(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
-  const [remaining, setRemaining] = useState<number>(() => remainingToday());
+  const [remaining, setRemaining] = useState<number>(() => remainingToday(null));
   const [activeTab, setActiveTab] = useState<'overview' | 'revenue' | 'traffic' | 'sem' | 'organic' | 'cro' | 'roadmap'>('overview');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
@@ -62,6 +69,33 @@ export function App() {
     });
   };
 
+  // Quota follows the identity: recount when the user signs in or out.
+  useEffect(() => {
+    if (!auth.loading) setRemaining(remainingToday(uid));
+  }, [uid, auth.loading]);
+
+  useEffect(() => {
+    if (auth.redirectError) {
+      showToast(t.toast.authFailed(auth.redirectError));
+      auth.clearRedirectError();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth.redirectError]);
+
+  const handleSignIn = async () => {
+    if (!auth.available) {
+      showToast(t.toast.authUnavailable);
+      return;
+    }
+    const { error } = await auth.signInWithGoogle();
+    if (error) showToast(t.toast.authFailed(error));
+  };
+
+  const handleSignOut = async () => {
+    await auth.signOut();
+    showToast(t.toast.signedOut);
+  };
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
@@ -69,7 +103,7 @@ export function App() {
 
   const handleAnalyze = async (domain: string) => {
     if (isLoading) return;
-    if (!canAnalyze()) {
+    if (!canAnalyze(uid)) {
       setRemaining(0);
       openPlans('limit');
       return;
@@ -84,15 +118,13 @@ export function App() {
       setAnalysis(result);
       setActiveTab('overview');
       setHasAnalyzed(true);
-      recordAnalysis();
-      setRemaining(remainingToday());
+      recordAnalysis(uid);
+      setRemaining(remainingToday(uid));
       showToast(
-        result.source === 'crawl' || result.source === 'crawl+ai'
-          ? `Analyzed ${result.domain} from a live crawl`
-          : `Couldn't crawl ${result.domain}; showing an estimate`
+        result.source === 'crawl' || result.source === 'crawl+ai' ? t.toast.live(result.domain) : t.toast.estimate(result.domain)
       );
     } catch (err) {
-      setAnalyzeError(err instanceof AnalyzeError ? err.message : 'Analysis failed. Check the domain and try again.');
+      setAnalyzeError(err instanceof AnalyzeError ? err.message : t.search.failed);
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +139,7 @@ export function App() {
         leakedQueries: prev.trafficDistribution.leakedQueries.map((q) => ({ ...q, status: 'fixed' }))
       }
     }));
-    showToast('AI Auto-Fixer: All 5 competitor traffic leaks resolved & rerouted!');
+    showToast(t.toast.planned);
   };
 
   const handleExportPlaybook = () => {
@@ -116,23 +148,23 @@ Domain: ${analysis.domain}
 URL: ${analysis.url}
 Niche: ${analysis.niche}
 Analyzed At: ${analysis.analyzedAt}
-T1 Authority Score: ${analysis.score.overall}/100 (${analysis.score.tier})
+Authority score: ${analysis.score.overall}/100 (${analysis.score.tier})${analysis.source === 'crawl' || analysis.source === 'crawl+ai' ? '' : ' (estimate)'}
 
-## Core Financial & Traffic Metrics
-- Monthly Paid Traffic Value: $${analysis.metrics.monthlyPaidValue.toLocaleString()}
-- Potential Monthly Pipeline: $${analysis.metrics.potentialMonthlyRevenue.toLocaleString()}
-- Current Traffic Estimate: ${analysis.metrics.currentTrafficEst.toLocaleString()} visits/mo
-- Target T1 Traffic: ${analysis.metrics.targetT1TrafficEst.toLocaleString()} visits/mo
-- Shielded Wasted Spend: $${analysis.metrics.wastedSpendPrevented.toLocaleString()}
+Source: ${analysis.source === 'sample' ? 'sample data' : analysis.source === 'crawl' || analysis.source === 'crawl+ai' ? 'live homepage crawl' : 'estimate from the domain name (crawl failed)'}
 
-## Competitor Traffic Leak Analysis
-- Total Monthly Searches: ${analysis.trafficDistribution.totalMarketSearches.toLocaleString()}
-- Client Domain Visits: ${analysis.trafficDistribution.clientVisits.toLocaleString()} (${analysis.trafficDistribution.clientSharePercent}%)
-- Competitor Stolen Visits: ${analysis.trafficDistribution.totalLostVisits.toLocaleString()}
-- Competitor Stolen Value: $${analysis.trafficDistribution.totalLostRevenue.toLocaleString()}
+> Figures marked (estimate) are modeled from the domain and niche, not measured. Treat them as an order of magnitude.
 
-## High Intent Target Keywords
-${analysis.keywords.map(k => `- ${k.keyword} | Match: [${k.matchType}] | Vol: ${k.monthlyVolume} | CPC: $${k.cpc} | Opp Score: ${k.opportunityScore}/100`).join('\n')}
+## Traffic and value (estimate)
+- Paid-search value of current traffic: ${approxRange(analysis.metrics.monthlyPaidValue, { money: true })}/mo (estimate)
+- Current traffic: ${approxRange(analysis.metrics.currentTrafficEst)} visits/mo (estimate)
+- Spend a negative keyword list could save: ${approxRange(analysis.metrics.wastedSpendPrevented, { money: true })}/mo (estimate)
+
+## Competitor overlap (estimate)
+- Market searches: ${approxRange(analysis.trafficDistribution.totalMarketSearches)}/mo (estimate)
+- Visits going to competitors: ${approxRange(analysis.trafficDistribution.totalLostVisits)}/mo (estimate)
+
+## High Intent Target Keywords (volume and CPC are estimates)
+${analysis.keywords.map(k => `- ${k.keyword} | Match: [${k.matchType}] | Vol: ${approxRange(k.monthlyVolume)} | CPC: ~$${Math.round(k.cpc)} | Opp Score: ${k.opportunityScore}/100`).join('\n')}
 
 ## Google Ads Responsive Search Ads
 ${analysis.campaigns.map(c => `### ${c.campaignType}
@@ -142,7 +174,7 @@ Descriptions:
 ${c.descriptions.map(d => `  • ${d}`).join('\n')}
 `).join('\n')}
 
-## Negative Keyword Shield (Prevented Waste)
+## Negative keywords
 ${analysis.negativeKeywords.join(', ')}
 
 ## T1 Topical Authority Clusters
@@ -150,7 +182,7 @@ ${analysis.topicalClusters.map(cl => `### Pillar: ${cl.pillarTitle} (Keyword: ${
 Subtopics:
 ${cl.clusterSubtopics.map(sub => `  - [${sub.format}] ${sub.title} (${sub.targetKeyword})`).join('\n')}`).join('\n\n')}
 
-## 30-60-90 Day Domination Roadmap
+## 90-day roadmap
 ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} (${r.category} | ${r.impact} Impact)`).join('\n')}
 `;
 
@@ -164,17 +196,17 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    showToast(`Downloaded ApexSEM-Playbook-${analysis.domain}.md`);
+    showToast(t.toast.downloaded(`ApexSEM-Playbook-${analysis.domain}.md`));
   };
 
   const tabs: { id: typeof activeTab; label: string; count?: number }[] = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'revenue', label: 'Revenue potential' },
-    { id: 'traffic', label: 'Traffic radar', count: analysis.trafficDistribution.leakedQueries.length },
-    { id: 'sem', label: 'Paid search', count: analysis.keywords.length },
-    { id: 'organic', label: 'Organic & AI search' },
-    { id: 'cro', label: 'Landing page' },
-    { id: 'roadmap', label: '90-day roadmap', count: analysis.roadmap.length }
+    { id: 'overview', label: t.tabs.overview },
+    { id: 'revenue', label: t.tabs.revenue },
+    { id: 'traffic', label: t.tabs.traffic, count: analysis.trafficDistribution.leakedQueries.length },
+    { id: 'sem', label: t.tabs.sem, count: analysis.keywords.length },
+    { id: 'organic', label: t.tabs.organic },
+    { id: 'cro', label: t.tabs.cro },
+    { id: 'roadmap', label: t.tabs.roadmap, count: analysis.roadmap.length }
   ];
 
   return (
@@ -197,6 +229,8 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         onNavigateToTab={(tab) => setActiveTab(tab as any)}
         isSubscribed={isSubscribed}
         onOpenSubscribeModal={() => openPlans('upgrade')}
+        onSignIn={handleSignIn}
+        onSignOut={handleSignOut}
       />
 
       {/* Main Content Area */}
@@ -211,13 +245,16 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
           analysis={analysis}
           error={analyzeError}
           remaining={remaining}
+          limit={dailyLimit(uid)}
+          isSignedIn={!!auth.user}
+          onSignIn={handleSignIn}
           onOpenPlans={() => openPlans(remaining === 0 ? 'limit' : 'upgrade')}
           compact={!hasAnalyzed}
         />
 
         {/* Report navigation */}
         <nav
-          aria-label="Report sections"
+          aria-label={t.tabs.aria}
           className="flex -mx-4 px-4 sm:mx-0 sm:px-0 scroll-px-4 sm:scroll-px-0 border-b border-line mb-8 overflow-x-auto no-scrollbar snap-x snap-mandatory gap-6 overscroll-x-contain"
         >
           {tabs.map((t) => {
@@ -284,11 +321,11 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         <button
           type="button"
           onClick={() => setIsChatOpen(true)}
-          aria-label="Ask the strategist"
+          aria-label={t.header.askStrategist}
           className="btn h-12 w-12 px-0 sm:h-9 sm:w-auto sm:px-4 bg-surface text-fg border border-line hover:border-line-strong shadow-overlay"
         >
           <MessageSquare className="w-4 h-4 text-fg-muted" />
-          <span className="hidden sm:inline">Ask the strategist</span>
+          <span className="hidden sm:inline">{t.header.askStrategist}</span>
         </button>
       </div>
 
@@ -306,18 +343,21 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         onClose={closePlans}
         analysis={analysis}
         reason={planModalReason}
-        usedToday={isSubscribeModalOpen ? usedToday() : 0}
+        usedToday={isSubscribeModalOpen ? usedToday(uid) : 0}
+        limit={dailyLimit(uid)}
+        isSignedIn={!!auth.user}
+        onSignIn={handleSignIn}
       />
 
       <footer className="border-t border-line py-8 px-4 lg:px-8 text-xs text-fg-subtle">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <span>ApexSEM. SEM and SEO strategy from your homepage.</span>
+          <span>{t.footer.about}</span>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <button type="button" onClick={() => openPlans('upgrade')} className="hover:text-fg transition-colors cursor-pointer">
-              Free or Pro ${PRO_PRICE}/mo
+              {t.footer.plans(PRO_PRICE)}
             </button>
             <a href="mailto:hello@stallbay.com" className="hover:text-fg transition-colors">hello@stallbay.com</a>
-            <span>Traffic, volume and CPC figures are modeled estimates, not Google Ads data.</span>
+            <span>{t.footer.disclaimer}</span>
           </div>
         </div>
       </footer>
