@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Check, MessageSquare } from 'lucide-react';
+import { Check, Download, MessageSquare } from 'lucide-react';
 import { Header } from './components/Header';
+import { LangSwitch } from './components/AuthControls';
 import { DomainSearchBar } from './components/DomainSearchBar';
 import { OverviewScorecard } from './components/OverviewScorecard';
 import { RevenueTrafficForecaster } from './components/RevenueTrafficForecaster';
@@ -270,14 +271,12 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
 
       {/* Global Header */}
       <Header
-        analysis={analysis}
-        onExport={handleExportPlaybook}
-        onOpenChat={() => setIsChatOpen(true)}
         theme={theme}
         onToggleTheme={toggleTheme}
-        onNavigateToTab={(tab) => setActiveTab(tab as any)}
+        onHome={() => setActiveTab('overview')}
+        onExport={handleExportPlaybook}
         isSubscribed={isSubscribed}
-        onOpenSubscribeModal={() => openPlans('upgrade')}
+        onOpenPlans={() => openPlans('upgrade')}
         onSignIn={handleSignIn}
         onSignOut={handleSignOut}
       />
@@ -302,9 +301,10 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         />
 
         {/* Report navigation */}
+        <div className="flex items-end gap-6 border-b border-line mb-8">
         <nav
           aria-label={t.tabs.aria}
-          className="flex -mx-4 px-4 sm:mx-0 sm:px-0 scroll-px-4 sm:scroll-px-0 border-b border-line mb-8 overflow-x-auto no-scrollbar snap-x snap-mandatory gap-6 overscroll-x-contain"
+          className="flex flex-1 min-w-0 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-px-4 sm:scroll-px-0 overflow-x-auto no-scrollbar snap-x snap-mandatory gap-6 overscroll-x-contain"
         >
           {tabs.map((t) => {
             const active = activeTab === t.id;
@@ -327,6 +327,16 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
             );
           })}
         </nav>
+        <button
+          type="button"
+          onClick={handleExportPlaybook}
+          title={t.header.exportTitle}
+          className="hidden sm:inline-flex items-center gap-2 h-10 shrink-0 text-sm text-fg-muted hover:text-fg transition-colors cursor-pointer"
+        >
+          <Download className="w-4 h-4" />
+          {t.header.export}
+        </button>
+        </div>
 
         {/* Tab Content Display */}
         <div className="pb-28 sm:pb-24">
@@ -401,8 +411,8 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         onSignIn={handleSignIn}
       />
 
-      <footer className="border-t border-line py-8 px-4 lg:px-8 text-xs text-fg-subtle">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <footer className="border-t border-line py-8 text-xs text-fg-subtle">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <span>{t.footer.about}</span>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <button type="button" onClick={() => openPlans('upgrade')} className="hover:text-fg transition-colors cursor-pointer">
@@ -410,6 +420,7 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
             </button>
             <a href="mailto:hello@stallbay.com" className="hover:text-fg transition-colors">hello@stallbay.com</a>
             <span>{t.footer.disclaimer}</span>
+            <LangSwitch />
           </div>
         </div>
       </footer>

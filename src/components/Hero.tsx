@@ -9,7 +9,7 @@ export const Hero: React.FC = () => {
       <div>
         <h1
           id="hero-title"
-          className="text-[30px] leading-[36px] md:text-4xl font-semibold text-fg [text-wrap:balance]"
+          className="text-2xl md:text-4xl font-semibold text-fg [text-wrap:balance]"
         >
           {t.title}
         </h1>

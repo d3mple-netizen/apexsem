@@ -12,7 +12,7 @@ import { isMeasured } from '../lib/honest';
 function renderInline(text: string): React.ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|`[^`\n]+`)/g).map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-      return <strong key={i} className="font-semibold text-fg">{part.slice(2, -2)}</strong>;
+      return <strong key={i} className="font-medium text-fg">{part.slice(2, -2)}</strong>;
     }
     if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return <code key={i} className="font-mono text-xs px-1 rounded-sm bg-surface-2">{part.slice(1, -1)}</code>;
@@ -197,7 +197,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-fg truncate">{t.title}</span>
+                <span className="text-sm font-medium text-fg truncate">{t.title}</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-accent" />
               </div>
               <p className="text-xs text-fg-subtle font-mono truncate">{t.domain(analysis.domain)}</p>

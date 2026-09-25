@@ -146,7 +146,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
             <div className="flex items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-accent" />
-                <span className="text-sm font-semibold text-fg">
+                <span className="text-sm font-medium text-fg">
                   {t.previewTitle}
                 </span>
               </div>
@@ -159,7 +159,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
             <div className="inset p-5 space-y-3">
               {/* URL & Sponsored Label */}
               <div className="flex items-center gap-2 text-xs">
-                <span className="tag font-semibold text-fg">
+                <span className="tag font-medium text-fg">
                   {t.sponsored}
                 </span>
                 <span className="text-fg-subtle flex items-center gap-1 font-mono text-xs">
@@ -182,7 +182,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3 border-t border-line">
                 {activeCampaign.sitelinks.map((sitelink, sIdx) => (
                   <div key={sIdx} className="p-2 rounded-sm hover:bg-surface transition-colors">
-                    <span className="text-xs font-semibold text-fg hover:underline cursor-pointer block">
+                    <span className="text-xs font-medium text-fg hover:underline cursor-pointer block">
                       {sitelink.title}
                     </span>
                     <span className="text-xs text-fg-subtle line-clamp-1">
@@ -222,7 +222,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
         {/* Character Count & Quality Score Guard (5 cols) */}
         <div className="lg:col-span-5 card p-6 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-fg flex items-center gap-2 mb-4">
+            <h3 className="text-sm font-medium text-fg flex items-center gap-2 mb-4">
               <Sparkles className="w-4 h-4 text-fg-subtle" />
               <span>{t.limitsTitle}</span>
             </h3>
@@ -269,7 +269,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
           </div>
 
           <div className="mt-6 pt-4 border-t border-line text-xs">
-            <span className="font-semibold text-fg block mb-1">{t.mixTitle}</span>
+            <span className="font-medium text-fg block mb-1">{t.mixTitle}</span>
             <p className="text-fg-muted text-xs leading-relaxed">
               {t.mixBody}
             </p>
@@ -402,7 +402,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
             </div>
             <p className="text-xs text-fg-muted mb-4">
               {t.negBody}{' '}
-              <strong className="text-fg num font-semibold whitespace-nowrap">{approxRange(analysis.metrics.wastedSpendPrevented, { money: true })}{c.perMonth}</strong>{' '}
+              <strong className="text-fg num font-medium whitespace-nowrap">{approxRange(analysis.metrics.wastedSpendPrevented, { money: true })}{c.perMonth}</strong>{' '}
               {t.negBodyEnd} <EstimateBadge />
             </p>
 

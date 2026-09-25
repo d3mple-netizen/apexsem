@@ -153,7 +153,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
       {/* Scenario Selector & Core Controls */}
       <div className="card p-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <span className="text-sm font-semibold text-fg flex items-center gap-2">
+          <span className="text-sm font-medium text-fg flex items-center gap-2">
             <Sliders className="w-4 h-4 text-fg-subtle" />
             <span>{t.scenarioTitle}</span>
           </span>
@@ -165,7 +165,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
                 onClick={() => setScenario(scKey)}
                 className={`flex-1 px-3 h-9 sm:h-auto sm:py-1 rounded-sm transition-colors cursor-pointer whitespace-nowrap ${
                   scenario === scKey
-                    ? 'bg-surface text-fg font-semibold border border-line'
+                    ? 'bg-surface text-fg font-medium border border-line'
                     : 'text-fg-muted hover:text-fg border border-transparent'
                 }`}
               >
@@ -176,7 +176,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
         </div>
 
         <p className="inset p-4 text-sm text-fg-muted leading-relaxed">
-          <strong className="text-fg font-semibold">{currentConfig.name}:</strong>{' '}
+          <strong className="text-fg font-medium">{currentConfig.name}:</strong>{' '}
           {currentConfig.desc} {t.captureAssumption(currentConfig.trafficCapturePercent, demandRange)}{' '}
           <EstimateBadge />
         </p>
@@ -187,7 +187,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
           <div className="space-y-3">
             <div className="flex justify-between items-baseline gap-2 text-xs">
               <span className="text-fg-muted">{t.acv}</span>
-              <span className="num font-semibold text-fg text-sm whitespace-nowrap">${fmt(acv)}{t.perYear}</span>
+              <span className="num font-medium text-fg text-sm whitespace-nowrap">${fmt(acv)}{t.perYear}</span>
             </div>
             <input
               type="range"
@@ -208,7 +208,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
           <div className="space-y-3">
             <div className="flex justify-between items-baseline gap-2 text-xs">
               <span className="text-fg-muted">{t.cvr}</span>
-              <span className="num font-semibold text-fg text-sm">{dec(demoCvr.toFixed(1))}%</span>
+              <span className="num font-medium text-fg text-sm">{dec(demoCvr.toFixed(1))}%</span>
             </div>
             <input
               type="range"
@@ -229,7 +229,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
           <div className="space-y-3">
             <div className="flex justify-between items-baseline gap-2 text-xs">
               <span className="text-fg-muted">{t.close}</span>
-              <span className="num font-semibold text-fg text-sm">{closeRate}%</span>
+              <span className="num font-medium text-fg text-sm">{closeRate}%</span>
             </div>
             <input
               type="range"
@@ -267,7 +267,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
             {approxRange(annualPipelineArr, { money: true })}
           </div>
           <p className="text-xs text-fg-muted mt-2">
-            <span className="text-pos font-semibold num">+{approx(monthlyNewArr, { money: true })}</span> {t.arrSub}
+            <span className="text-pos font-medium num">+{approx(monthlyNewArr, { money: true })}</span> {t.arrSub}
           </p>
         </div>
 
@@ -284,7 +284,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
             {approxRange(targetMonthlyVisitors)}
           </div>
           <p className="text-xs text-fg-muted mt-2">
-            <span className="text-pos font-semibold num">+{approx(netNewVisitors)}</span> {t.trafficSub}
+            <span className="text-pos font-medium num">+{approx(netNewVisitors)}</span> {t.trafficSub}
           </p>
         </div>
 
@@ -302,7 +302,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
             <span className="text-xs font-normal text-fg-muted">{t.customersMo}</span>
           </div>
           <p className="text-xs text-fg-muted mt-2">
-            {t.dealsFrom} <span className="font-semibold text-fg num">{approx(monthlySqls)}</span> {t.dealsFromTail}
+            {t.dealsFrom} <span className="font-medium text-fg num">{approx(monthlySqls)}</span> {t.dealsFromTail}
           </p>
         </div>
 
@@ -319,7 +319,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
             {ratioLabel}
           </div>
           <p className="text-xs text-fg-muted mt-2">
-            {t.payback} <strong className="text-fg font-semibold num">{paybackLabel}</strong> ({t.ltv}: <span className="num">{approx(ltv, { money: true })}</span>)
+            {t.payback} <strong className="text-fg font-medium num">{paybackLabel}</strong> ({t.ltv}: <span className="num">{approx(ltv, { money: true })}</span>)
           </p>
         </div>
       </div>
@@ -363,7 +363,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
 
                 return (
                   <tr key={chan.key} className="hover:bg-surface-2 transition-colors">
-                    <td className="py-3 pr-4 font-semibold text-fg">
+                    <td className="py-3 pr-4 font-medium text-fg">
                       <span className="flex items-center gap-2">
                         <IconComponent className="w-3.5 h-3.5 text-fg-subtle shrink-0" />
                         <span>{copy.name}</span>
@@ -384,7 +384,7 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
                     <td className="py-3 px-3 num text-fg text-right">
                       ~{dealsLabel(chanDeals)}
                     </td>
-                    <td className="py-3 pl-3 num font-semibold text-fg text-right">
+                    <td className="py-3 pl-3 num font-medium text-fg text-right">
                       {approx(chanArr, { money: true })}
                     </td>
                   </tr>
@@ -397,13 +397,13 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
 
       {/* Strategic Takeaway */}
       <div className="card p-6 space-y-2">
-        <h3 className="text-sm font-semibold text-fg">
+        <h3 className="text-sm font-medium text-fg">
           {t.summaryTitle} <span className="font-mono">{analysis.domain}</span>
         </h3>
         <p className="text-sm text-fg-muted leading-relaxed max-w-prose">
           {summaryParts.map((part, i) =>
             i % 2 === 1 ? (
-              <strong key={i} className="text-fg font-semibold num">{part}</strong>
+              <strong key={i} className="text-fg font-medium num">{part}</strong>
             ) : (
               <React.Fragment key={i}>{part}</React.Fragment>
             )

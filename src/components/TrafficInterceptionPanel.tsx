@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, TrendingDown, AlertTriangle, ArrowRight, DollarSign, ListChecks, Lock, Check, Zap } from 'lucide-react';
+import { Users, AlertTriangle, ArrowRight, ListChecks, Lock, Check, Zap } from 'lucide-react';
 import { DomainAnalysis, TrafficLeakQuery } from '../types';
 import { useDict } from '../i18n';
 import { common } from '../i18n/common';
@@ -81,7 +81,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
         <div className="card p-4 text-xs flex items-start gap-3">
           <Check className="w-4 h-4 text-fg-subtle shrink-0" />
           <div className="min-w-0">
-            <span className="text-sm font-semibold text-fg block">{t.plannedTitle(plannedCount)}</span>
+            <span className="text-sm font-medium text-fg block">{t.plannedTitle(plannedCount)}</span>
             <span className="text-xs text-fg-muted">{t.plannedBody}</span>
           </div>
         </div>
@@ -131,7 +131,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               <span className="w-2 h-2 rounded-full bg-accent shrink-0" />
               <span className="text-fg">
                 {analysis.domain} ({t.you}):{' '}
-                <strong className="font-semibold num">
+                <strong className="font-medium num">
                   {approxRange(trafficDistribution.clientVisits)} {c.visitsMo}
                 </strong>
               </span>
@@ -142,7 +142,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
                 <span className={`w-2 h-2 rounded-full shrink-0 ${idx === 0 ? 'bg-fg-muted' : 'bg-fg-subtle'}`} />
                 <span className="text-fg-muted">
                   {comp.name}:{' '}
-                  <strong className="font-semibold num text-fg">
+                  <strong className="font-medium num text-fg">
                     {approxRange(comp.visits)} {c.visitsMo}
                   </strong>
                 </span>
@@ -151,42 +151,29 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="inset p-4">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="label">{t.lostTraffic}</span>
-              <TrendingDown className="w-4 h-4 text-fg-subtle shrink-0" />
-            </div>
-            <div className="text-2xl font-semibold num text-neg">
-              {approxRange(trafficDistribution.totalLostVisits)}
-            </div>
-            <p className="text-xs text-fg-subtle mt-1">{t.lostTrafficHint}</p>
+        <dl className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr_1fr] border-y border-line divide-y sm:divide-y-0 sm:divide-x divide-line">
+          <div className="py-4 sm:pr-6">
+            <dt className="label">{t.lostTraffic}</dt>
+            <dd className="mt-2 text-2xl font-semibold num text-neg">{approxRange(trafficDistribution.totalLostVisits)}</dd>
+            <dd className="text-xs text-fg-subtle mt-1">{t.lostTrafficHint}</dd>
           </div>
-
-          <div className="inset p-4">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="label">{t.lostValue}</span>
-              <DollarSign className="w-4 h-4 text-fg-subtle shrink-0" />
-            </div>
-            <div className="text-2xl font-semibold num text-fg">
+          <div className="py-4 sm:px-6">
+            <dt className="label">{t.lostValue}</dt>
+            <dd className="mt-2 text-2xl font-semibold num text-fg">
               {approxRange(trafficDistribution.totalLostRevenue, { money: true })}
               <span className="text-sm font-normal text-fg-subtle">{c.perMonth}</span>
-            </div>
-            <p className="text-xs text-fg-subtle mt-1">{t.lostValueHint}</p>
+            </dd>
+            <dd className="text-xs text-fg-subtle mt-1">{t.lostValueHint}</dd>
           </div>
-
-          <div className="inset p-4">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="label">{t.fixPlan}</span>
-              <ListChecks className="w-4 h-4 text-fg-subtle shrink-0" />
-            </div>
-            <div className="text-2xl font-semibold num text-fg">
+          <div className="py-4 sm:pl-6">
+            <dt className="label">{t.fixPlan}</dt>
+            <dd className="mt-2 text-2xl font-semibold num text-fg">
               {plannedCount}
               <span className="text-sm font-normal text-fg-subtle"> / {leakedQueries.length}</span>
-            </div>
-            <p className="text-xs text-fg-subtle mt-1">{t.fixPlanHint}</p>
+            </dd>
+            <dd className="text-xs text-fg-subtle mt-1">{t.fixPlanHint}</dd>
           </div>
-        </div>
+        </dl>
       </div>
 
       {/* Query-by-query leaks */}
@@ -215,7 +202,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
                 <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-sm text-fg break-words">"{item.query}"</span>
+                    <span className="font-medium text-sm text-fg break-words">"{item.query}"</span>
                     <span className="text-xs text-fg-subtle num">
                       ({approx(item.monthlyVolume)} {c.searchesMo})
                     </span>

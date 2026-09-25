@@ -114,7 +114,7 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
           <div className="w-full space-y-2">
             <div className="inset px-3 py-2 flex items-center justify-between gap-3">
               <span className="text-xs text-fg-muted">{t.currentStatus}</span>
-              <span className="text-xs font-semibold text-fg text-right">{L.tier(score.tier)}</span>
+              <span className="text-xs font-medium text-fg text-right">{L.tier(score.tier)}</span>
             </div>
             <p className="text-xs text-fg-muted text-center leading-relaxed pt-2">
               {score.overall >= 80 ? t.verdict.high : score.overall >= 65 ? t.verdict.mid : t.verdict.low}
@@ -141,7 +141,7 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
               <div key={key}>
                 <div className="flex justify-between gap-4 text-xs mb-2">
                   <span className="text-fg-muted min-w-0">{t.vectors[key]}</span>
-                  <span className="font-semibold num text-fg">{score[key]}%</span>
+                  <span className="font-medium num text-fg">{score[key]}%</span>
                 </div>
                 <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
                   <div
@@ -154,7 +154,7 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
           </div>
 
           <div className="mt-6 pt-4 border-t border-line flex flex-wrap items-center justify-between gap-2 text-xs text-fg-muted">
-            <span>{t.nextTarget} <strong className="font-semibold text-fg">{t.nextTargetValue}</strong></span>
+            <span>{t.nextTarget} <strong className="font-medium text-fg">{t.nextTargetValue}</strong></span>
             <button
               onClick={() => onNavigateTab('roadmap')}
               className="text-accent-fg hover:underline font-medium flex items-center gap-1 cursor-pointer"
@@ -266,7 +266,7 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
                 }`}
               >
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className={`text-sm font-semibold min-w-0 truncate ${isUserDomain ? 'text-accent-fg' : 'text-fg'}`}>
+                  <span className={`text-sm font-medium min-w-0 truncate ${isUserDomain ? 'text-accent-fg' : 'text-fg'}`}>
                     {comp.name}
                   </span>
                   <span className="text-xs num text-fg-muted whitespace-nowrap">
@@ -277,7 +277,7 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between gap-2 text-fg-muted">
                     <span>{t.paidSpend}</span>
-                    <span className="num font-semibold text-fg whitespace-nowrap">
+                    <span className="num font-medium text-fg whitespace-nowrap">
                       {approxRange(comp.monthlyPaidSpend, { money: true })}
                     </span>
                   </div>

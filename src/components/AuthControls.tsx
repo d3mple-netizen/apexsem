@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LogOut } from 'lucide-react';
+import { CreditCard, Download, Languages, LogOut } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { useDict, useI18n, Lang } from '../i18n';
 import { shell } from '../i18n/dict/shell';
@@ -14,8 +14,8 @@ export const GoogleMark: React.FC<{ className?: string }> = ({ className = 'w-4 
   </svg>
 );
 
-/** Text switch "EN | RU". Both options stay visible so the current one is obvious. */
-export const LangSwitch: React.FC = () => {
+/** Quiet "EN / RU" text control for the footer and the account menu. */
+export const LangSwitch: React.FC<{ className?: string }> = ({ className = '' }) => {
   const { lang, setLang } = useI18n();
   const t = useDict(shell).header;
   const opt = (code: Lang, label: string) => (
@@ -24,17 +24,15 @@ export const LangSwitch: React.FC = () => {
       onClick={() => setLang(code)}
       aria-pressed={lang === code}
       lang={code}
-      className={`h-11 sm:h-8 px-1.5 text-xs font-medium rounded-sm transition-colors cursor-pointer ${
-        lang === code ? 'text-fg' : 'text-fg-subtle hover:text-fg'
-      }`}
+      className={`px-1 transition-colors cursor-pointer ${lang === code ? 'text-fg' : 'text-fg-subtle hover:text-fg'}`}
     >
       {label}
     </button>
   );
   return (
-    <div role="group" aria-label={t.language} className="flex items-center">
+    <div role="group" aria-label={t.language} className={`inline-flex items-center ${className}`}>
       {opt('en', 'EN')}
-      <span className="text-fg-subtle/60 text-xs select-none" aria-hidden="true">|</span>
+      <span className="text-fg-subtle select-none" aria-hidden="true">/</span>
       {opt('ru', 'RU')}
     </div>
   );
@@ -43,9 +41,12 @@ export const LangSwitch: React.FC = () => {
 interface AuthControlsProps {
   onSignIn: () => void;
   onSignOut: () => void;
+  onExport: () => void;
+  isSubscribed: boolean;
+  onOpenPlans: () => void;
 }
 
-export const AuthControls: React.FC<AuthControlsProps> = ({ onSignIn, onSignOut }) => {
+export const AuthControls: React.FC<AuthControlsProps> = ({ onSignIn, onSignOut, onExport, isSubscribed, onOpenPlans }) => {
   const { user, loading } = useAuth();
   const t = useDict(shell).header;
   const [open, setOpen] = useState(false);
@@ -70,13 +71,18 @@ export const AuthControls: React.FC<AuthControlsProps> = ({ onSignIn, onSignOut 
 
   if (!user) {
     return (
-      <button type="button" onClick={onSignIn} aria-label={t.signInAria} className="btn btn-secondary h-11 w-11 px-0 sm:w-auto sm:h-8 sm:px-3 sm:text-xs">
-        <GoogleMark />
-        <span className="hidden lg:inline">{t.signIn}</span>
-        <span className="hidden sm:inline lg:hidden">{t.signInShort}</span>
+      <button type="button" onClick={onSignIn} aria-label={t.signInAria} className="btn btn-secondary h-9 sm:h-8 px-3 text-sm sm:text-xs">
+        {t.signInShort}
       </button>
     );
   }
+
+  const item =
+    'w-full flex items-center gap-3 px-3 h-11 sm:h-9 text-sm text-fg-muted hover:text-fg hover:bg-surface-2 rounded-sm transition-colors cursor-pointer';
+  const run = (fn: () => void) => () => {
+    setOpen(false);
+    fn();
+  };
 
   const initial = (user.name || user.email || '?').charAt(0).toUpperCase();
 
@@ -104,15 +110,21 @@ export const AuthControls: React.FC<AuthControlsProps> = ({ onSignIn, onSignOut 
             {user.name && user.name !== user.email && <span className="block text-sm text-fg truncate">{user.name}</span>}
             <span className="block text-xs text-fg-muted truncate">{user.email}</span>
           </div>
-          <button
-            role="menuitem"
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              onSignOut();
-            }}
-            className="w-full flex items-center gap-3 px-3 h-11 sm:h-9 text-sm text-fg-muted hover:text-fg hover:bg-surface-2 rounded-sm transition-colors cursor-pointer"
-          >
+          <button role="menuitem" type="button" onClick={run(onExport)} className={item}>
+            <Download className="w-4 h-4" />
+            {t.exportPlaybook}
+          </button>
+          <button role="menuitem" type="button" onClick={run(onOpenPlans)} className={item}>
+            <CreditCard className="w-4 h-4" />
+            <span className="flex-1 text-left">{isSubscribed ? t.proPlan : t.upgrade}</span>
+          </button>
+          <div className={`${item} hover:bg-transparent hover:text-fg-muted cursor-default`}>
+            <Languages className="w-4 h-4" />
+            <span className="flex-1">{t.language}</span>
+            <LangSwitch className="text-xs" />
+          </div>
+          <div className="my-1 border-t border-line" />
+          <button role="menuitem" type="button" onClick={run(onSignOut)} className={item}>
             <LogOut className="w-4 h-4" />
             {t.signOut}
           </button>

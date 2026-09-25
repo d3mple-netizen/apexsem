@@ -19,7 +19,6 @@
   }
   body {
     @apply bg-canvas text-fg font-sans antialiased;
-    font-feature-settings: "cv11", "ss01";
   }
   ::selection {
     background: rgb(var(--accent) / 0.35);

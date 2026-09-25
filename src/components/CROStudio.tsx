@@ -61,32 +61,30 @@ export const CROStudio: React.FC<CROStudioProps> = ({ analysis }) => {
       </div>
 
       {/* CRO Scorecard Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <ul className="card divide-y divide-line">
         {scoreCards.map((card) => (
-          <div key={card.label} className="card p-5">
-            <div className="flex justify-between items-center gap-2 mb-3">
-              <span className="text-xs text-fg-muted min-w-0">{card.label}</span>
-              <span className="flex items-center gap-1.5 shrink-0">
-                {!measured && <EstimateBadge />}
-                <span className="text-sm font-semibold num text-fg">{card.value}/100</span>
-              </span>
+          <li key={card.label} className="px-4 py-4 sm:px-6 grid grid-cols-[1fr_auto] sm:grid-cols-[12rem_1fr_auto] items-center gap-x-6 gap-y-2">
+            <span className="text-sm text-fg min-w-0">{card.label}</span>
+            <div className="min-w-0 order-last sm:order-none col-span-2 sm:col-span-1">
+              <div className="w-full bg-surface-2 h-1 rounded-full overflow-hidden">
+                <div className="bg-fg-muted h-full rounded-full" style={{ width: `${card.value}%` }} />
+              </div>
+              <p className="text-xs text-fg-subtle mt-2">{card.hint}</p>
             </div>
-            <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden">
-              <div className="bg-fg-muted h-full rounded-full" style={{ width: `${card.value}%` }} />
-            </div>
-            <p className="text-xs text-fg-subtle mt-3 leading-relaxed">
-              {card.hint}
-            </p>
-          </div>
+            <span className="flex items-center justify-end gap-2">
+              {!measured && <EstimateBadge />}
+              <span className="text-sm font-medium num text-fg">{card.value}/100</span>
+            </span>
+          </li>
         ))}
-      </div>
+      </ul>
 
       {/* Recommended hero vs findings */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Recommended Hero (7 cols) */}
         <div className="lg:col-span-7 card p-6 space-y-4">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-semibold text-fg flex items-center gap-2 min-w-0">
+            <span className="text-sm font-medium text-fg flex items-center gap-2 min-w-0">
               <Sparkles className="w-4 h-4 text-fg-subtle shrink-0" /> {t.heroTitle}
             </span>
             <button
@@ -125,7 +123,7 @@ export const CROStudio: React.FC<CROStudioProps> = ({ analysis }) => {
 
         {/* Actionable CRO Findings (5 cols) */}
         <div className="lg:col-span-5 card p-6 space-y-4">
-          <h3 className="text-sm font-semibold text-fg">{t.findingsTitle}</h3>
+          <h3 className="text-sm font-medium text-fg">{t.findingsTitle}</h3>
           {croAudit.findings.length === 0 ? (
             <p className="text-xs text-fg-subtle">{t.noFindings}</p>
           ) : (

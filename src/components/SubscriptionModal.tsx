@@ -70,7 +70,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
         <div className="grid sm:grid-cols-2 gap-4">
           {/* Free */}
           <section className="rounded border border-line p-5 flex flex-col">
-            <h4 className="text-sm font-semibold text-fg">{t.free}</h4>
+            <h4 className="text-sm font-medium text-fg">{t.free}</h4>
             <p className="mt-2 text-2xl font-semibold text-fg num">
               $0<span className="text-sm font-normal text-fg-subtle"> {t.perMonth}</span>
             </p>
@@ -118,7 +118,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
           {/* Pro */}
           <section className="rounded border border-accent p-5 flex flex-col">
-            <h4 className="text-sm font-semibold text-fg">{t.pro}</h4>
+            <h4 className="text-sm font-medium text-fg">{t.pro}</h4>
             <p className="mt-2 text-2xl font-semibold text-fg num">
               ${PRO_PRICE}<span className="text-sm font-normal text-fg-subtle"> {t.perMonth}</span>
             </p>

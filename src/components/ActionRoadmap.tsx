@@ -144,7 +144,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-xs num font-semibold text-fg">{progressPercent}%</span>
+            <span className="text-xs num font-medium text-fg">{progressPercent}%</span>
           </div>
 
           <button
@@ -186,7 +186,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
               onClick={() => setSelectedPhase(phaseKey)}
               className={`px-3 py-1 rounded-sm transition-colors cursor-pointer ${
                 selectedPhase === phaseKey
-                  ? 'bg-surface-2 text-fg font-semibold'
+                  ? 'bg-surface-2 text-fg font-medium'
                   : 'text-fg-muted hover:text-fg hover:bg-surface-2'
               }`}
             >
@@ -204,7 +204,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-3 py-1 rounded-sm transition-colors cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-surface-2 text-fg font-semibold'
+                  ? 'bg-surface-2 text-fg font-medium'
                   : 'text-fg-muted hover:text-fg hover:bg-surface-2'
               }`}
             >
@@ -260,7 +260,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                 </span>
               </div>
 
-              <h4 className={`text-sm font-semibold ${item.status === 'completed' ? 'line-through text-fg-subtle' : 'text-fg'}`}>
+              <h4 className={`text-sm font-medium ${item.status === 'completed' ? 'line-through text-fg-subtle' : 'text-fg'}`}>
                 {item.title}
               </h4>
 

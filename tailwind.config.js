@@ -22,9 +22,9 @@ export default {
         neg: rgb('--neg'),
       },
       fontFamily: {
-        // Plus Jakarta Sans has no Cyrillic; Manrope fills those glyphs per character.
-        sans: ['"Plus Jakarta Sans"', 'Manrope', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        // One family: Geist covers Latin and Cyrillic; Geist Mono for domains and figures.
+        sans: ['Geist', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        mono: ['"Geist Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       // Type scale: 11 (micro) / 12 / 14 / 16 / 20 / 28 / 44. Larger Tailwind
       // steps collapse onto the scale so nothing drifts off it.
@@ -42,8 +42,8 @@ export default {
       },
       fontWeight: {
         bold: '600',
-        extrabold: '650',
-        black: '650',
+        extrabold: '600',
+        black: '600',
       },
       borderRadius: {
         sm: '6px',

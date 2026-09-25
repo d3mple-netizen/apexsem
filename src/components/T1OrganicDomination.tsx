@@ -140,7 +140,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           <div className="inset p-4 text-xs text-fg-muted leading-relaxed flex items-start gap-3">
             <Compass className="w-4 h-4 text-fg-subtle shrink-0" />
             <div>
-              <strong className="text-fg font-semibold block mb-1">{t.clustersIntroTitle}</strong>
+              <strong className="text-fg font-medium block mb-1">{t.clustersIntroTitle}</strong>
               {t.clustersIntro}
             </div>
           </div>
@@ -214,7 +214,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           <div className="inset p-4 text-xs text-fg-muted leading-relaxed flex items-start gap-3">
             <Sparkles className="w-4 h-4 text-fg-subtle shrink-0" />
             <div>
-              <strong className="text-fg font-semibold block mb-1">{t.geoIntroTitle}</strong>
+              <strong className="text-fg font-medium block mb-1">{t.geoIntroTitle}</strong>
               {t.geoIntro(analysis.niche)}
             </div>
           </div>
@@ -222,7 +222,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           {/* Readiness checks computed from the crawl */}
           <div className="card p-6 space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-              <span className="text-sm font-semibold text-fg flex items-center gap-2">
+              <span className="text-sm font-medium text-fg flex items-center gap-2">
                 <Bot className="w-4 h-4 text-fg-subtle shrink-0" />
                 <span>{t.readinessTitle}</span>
               </span>
@@ -260,7 +260,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
               {analysis.geoSignals.map((signal, idx) => (
                 <div key={idx} className="card p-5 space-y-4 min-w-0">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-sm font-semibold text-fg flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-medium text-fg flex items-center gap-2 min-w-0">
                       <Bot className="w-4 h-4 text-fg-subtle shrink-0" />
                       <span className="truncate">{signal.platform}</span>
                     </span>
@@ -280,7 +280,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between gap-4 text-fg-muted">
                       <span>{t.likelihood}</span>
-                      <span className="font-semibold text-fg num">~{Math.round(signal.entityScore / 5) * 5}/100</span>
+                      <span className="font-medium text-fg num">~{Math.round(signal.entityScore / 5) * 5}/100</span>
                     </div>
                     <div className="w-full bg-surface-2 h-1.5 rounded-full overflow-hidden">
                       <div className="bg-fg-muted h-full rounded-full" style={{ width: `${signal.entityScore}%` }} />
@@ -304,7 +304,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           <div className="inset p-4 text-xs text-fg-muted leading-relaxed flex items-start gap-3">
             <ShieldCheck className="w-4 h-4 text-fg-subtle shrink-0" />
             <div>
-              <strong className="text-fg font-semibold flex flex-wrap items-center gap-2 mb-1">
+              <strong className="text-fg font-medium flex flex-wrap items-center gap-2 mb-1">
                 <span>{t.backlinksIntroTitle}</span>
                 <EstimateBadge />
               </strong>
@@ -317,7 +317,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
               <div key={idx} className="card p-5 flex flex-col justify-between min-w-0">
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-4">
-                    <span className="text-xs font-semibold text-fg num">
+                    <span className="text-xs font-medium text-fg num">
                       {t.typicalDr} {Math.floor(play.estimatedDR / 10) * 10}+
                     </span>
                     <span className="tag">
@@ -325,7 +325,7 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-semibold text-fg mb-1">{play.strategy}</h3>
+                  <h3 className="text-sm font-medium text-fg mb-1">{play.strategy}</h3>
                   <span className="text-xs text-fg-subtle block mb-4">{play.targetDomainType}</span>
 
                   <p className="inset p-3 text-xs text-fg-muted leading-relaxed">{play.playbookAngle}</p>
