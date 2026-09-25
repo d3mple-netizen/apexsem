@@ -2,7 +2,20 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Sparkles, Bot, User, Copy, Check, Trash2, Cpu, CheckCircle2, AlertCircle } from 'lucide-react';
 import { DomainAnalysis } from '../types';
 import { ChatMessage } from '../services/aiAgency';
-import { checkLocalLlm, queryLocalLlmStream, LocalLlmStatus } from '../services/localLlm';
+import { checkLocalLlm, queryLocalLlmStream, LocalLlmStatus, LlmProvider } from '../services/localLlm';
+
+/** Renders **bold** and `code` spans; everything else stays plain text. */
+function renderInline(text: string): React.ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*|`[^`\n]+`)/g).map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      return <strong key={i} className="font-semibold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+      return <code key={i} className="font-mono text-[11px] px-1 rounded bg-slate-200/70 dark:bg-slate-800">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+}
 
 interface AgencyChatDrawerProps {
   isOpen: boolean;
@@ -19,7 +32,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
     {
       id: 'init-1',
       sender: 'ai',
-      text: `Hello! I'm your autonomous AI SEM Agency Partner for **${analysis.domain}**.\n\nI've analyzed your high-intent keyword gaps, competitor conquest vulnerabilities, and T1 authority index (${analysis.score.overall}/100).\n\nWhat would you like to strategize? You can ask me to write bespoke ad copy, design a GEO schema, calculate Target CPA bidding, or diagnose your competitors.`,
+      text: `I have the analysis for **${analysis.domain}** loaded: authority score ${analysis.score.overall}/100, ${analysis.keywords.length} keyword opportunities, ${analysis.croAudit.findings.length} landing-page findings.\n\nAsk me for ad copy, a bidding plan, negative keywords, schema markup, or how to beat a specific competitor.`,
       timestamp: 'Just now'
     }
   ]);
@@ -30,11 +43,11 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
   // Local LLM State
   const [llmStatus, setLlmStatus] = useState<LocalLlmStatus>({
     isAvailable: false,
-    models: ['apex-sem-agent-v1 (Built-in)'],
-    activeModel: 'apex-sem-agent-v1 (Built-in)',
+    models: ['Built-in SEM playbooks'],
+    activeModel: 'Built-in SEM playbooks',
     provider: 'builtin'
   });
-  const [selectedProvider, setSelectedProvider] = useState<'ollama' | 'builtin'>('ollama');
+  const [selectedProvider, setSelectedProvider] = useState<LlmProvider>('builtin');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -42,11 +55,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
   useEffect(() => {
     checkLocalLlm().then((status) => {
       setLlmStatus(status);
-      if (status.isAvailable) {
-        setSelectedProvider('ollama');
-      } else {
-        setSelectedProvider('builtin');
-      }
+      setSelectedProvider(status.provider);
     });
   }, []);
 
@@ -73,6 +82,14 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
+    // Conversation so far (minus the canned greeting) plus the new question.
+    const history = [...messages, userMsg]
+      .filter((m) => m.text.trim() && !m.id.startsWith('init-'))
+      .map((m) => ({
+        role: m.sender === 'user' ? ('user' as const) : ('assistant' as const),
+        content: m.actionSnippet ? `${m.text}\n\n\`\`\`\n${m.actionSnippet.content}\n\`\`\`` : m.text
+      }));
+
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
@@ -92,7 +109,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
     try {
       let accumulatedText = '';
       const result = await queryLocalLlmStream(
-        query,
+        history,
         analysis,
         selectedProvider,
         llmStatus.activeModel,
@@ -117,7 +134,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === aiMsgId
-            ? { ...msg, text: 'Encountered an issue processing query. Please check your local LLM status.' }
+            ? { ...msg, text: 'The strategist could not answer. Check your connection and send the question again.' }
             : msg
         )
       );
@@ -161,7 +178,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-slate-900 dark:text-white">Apex Strategist AI</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">ApexSEM strategist</span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Domain: {analysis.domain}</p>
@@ -194,11 +211,11 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
             {llmStatus.isAvailable ? (
               <span className="flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Local Ollama ({llmStatus.activeModel})
+                {llmStatus.provider === 'claude' ? `Claude (${llmStatus.activeModel})` : `Local Ollama (${llmStatus.activeModel})`}
               </span>
             ) : (
               <span className="flex items-center gap-1 text-[11px] font-mono font-semibold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10 px-2 py-0.5 rounded border border-brand-200 dark:border-brand-500/20">
-                Built-in SEM Intelligence
+                Built-in playbooks (no LLM connected)
               </span>
             )}
           </div>
@@ -206,11 +223,12 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
           {llmStatus.isAvailable && (
             <select
               value={selectedProvider}
-              onChange={(e) => setSelectedProvider(e.target.value as any)}
+              onChange={(e) => setSelectedProvider(e.target.value as LlmProvider)}
+              aria-label="Answer engine"
               className="text-[11px] font-mono bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded px-1.5 py-0.5 text-slate-700 dark:text-slate-300 cursor-pointer"
             >
-              <option value="ollama">Ollama ({llmStatus.activeModel})</option>
-              <option value="builtin">Built-in Agency</option>
+              <option value={llmStatus.provider}>{llmStatus.provider === 'claude' ? 'Claude' : 'Ollama'} ({llmStatus.activeModel})</option>
+              <option value="builtin">Built-in playbooks</option>
             </select>
           )}
         </div>
@@ -238,8 +256,8 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
                 }`}
               >
                 <div className="whitespace-pre-line">
-                  {msg.text || (
-                    <span className="italic text-slate-400">Synthesizing answer from local model...</span>
+                  {msg.text ? (msg.sender === 'ai' ? renderInline(msg.text) : msg.text) : (
+                    <span className="italic text-slate-400">Thinking…</span>
                   )}
                 </div>
 
@@ -282,7 +300,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
           {isTyping && (
             <div className="flex gap-2 items-center text-xs text-brand-600 dark:text-brand-400 font-mono animate-pulse">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Local LLM is streaming token response...</span>
+              <span>Writing answer…</span>
             </div>
           )}
 
@@ -318,7 +336,9 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={`Ask local AI about ${analysis.domain}...`}
+              placeholder={`Ask about ${analysis.domain}…`}
+              aria-label="Message the strategist"
+              maxLength={2000}
               className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 font-sans"
             />
             <button

@@ -117,6 +117,38 @@ export interface TrafficDistribution {
   isAutoFixed: boolean;
 }
 
+/**
+ * Where an analysis came from:
+ * - sample: bundled demo report shown before the first run
+ * - crawl: live homepage crawl + heuristics
+ * - crawl+ai: live crawl enriched by Claude
+ * - ai: site could not be crawled, Claude inferred from the domain
+ * - estimate: nothing could be fetched; modeled from the domain name only
+ */
+export type AnalysisSource = 'sample' | 'crawl' | 'crawl+ai' | 'ai' | 'estimate';
+
+/** Facts observed on the live homepage. */
+export interface SiteSnapshot {
+  domain: string;
+  status: number;
+  responseMs: number;
+  https: boolean;
+  title: string;
+  description: string;
+  ogTitle: string;
+  siteName: string;
+  h1: string[];
+  h2: string[];
+  lang?: string;
+  canonical: boolean;
+  viewport: boolean;
+  robotsNoindex: boolean;
+  jsonLdTypes: string[];
+  wordCount: number;
+  imgCount: number;
+  imgMissingAlt: number;
+}
+
 export interface DomainAnalysis {
   domain: string;
   url: string;
@@ -151,4 +183,7 @@ export interface DomainAnalysis {
   };
   roadmap: RoadmapItem[];
   trafficDistribution: TrafficDistribution;
+  source?: AnalysisSource;
+  fetchError?: string;
+  site?: SiteSnapshot;
 }

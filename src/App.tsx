@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BarChart3, 
   Target, 
@@ -6,7 +6,6 @@ import {
   Eye, 
   CheckSquare, 
   Sparkles, 
-  Download, 
   Zap, 
   CheckCircle2,
   Users,
@@ -24,22 +23,31 @@ import { CROStudio } from './components/CROStudio';
 import { ActionRoadmap } from './components/ActionRoadmap';
 import { AgencyChatDrawer } from './components/AgencyChatDrawer';
 import { SubscriptionModal } from './components/SubscriptionModal';
-import { generateDomainAnalysis, cleanDomain } from './services/analyzer';
+import { Hero } from './components/Hero';
+import { generateDomainAnalysis, analyzeDomain, cleanDomain, AnalyzeError } from './services/analyzer';
+import { canAnalyze, isPro, recordAnalysis, remainingToday, usedToday, PRO_PRICE } from './services/usage';
 import { DomainAnalysis } from './types';
 
 export function App() {
   const [currentDomain, setCurrentDomain] = useState<string>('linear.app');
-  const [analysis, setAnalysis] = useState<DomainAnalysis>(() => generateDomainAnalysis('linear.app'));
+  const [analysis, setAnalysis] = useState<DomainAnalysis>(() => generateDomainAnalysis('linear.app', 'sample'));
+  const [hasAnalyzed, setHasAnalyzed] = useState<boolean>(false);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  const [remaining, setRemaining] = useState<number>(() => remainingToday());
   const [activeTab, setActiveTab] = useState<'overview' | 'revenue' | 'traffic' | 'sem' | 'organic' | 'cro' | 'roadmap'>('overview');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // $10/mo Subscription & Autonomous Fix State
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
-    return localStorage.getItem('apex_subscribed') === 'true';
-  });
+  // Plans: Free (daily quota) and Pro (activated manually for now)
+  const [isSubscribed] = useState<boolean>(() => isPro());
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState<boolean>(false);
+  const [planModalReason, setPlanModalReason] = useState<'limit' | 'upgrade'>('upgrade');
+  const openPlans = useCallback((reason: 'limit' | 'upgrade' = 'upgrade') => {
+    setPlanModalReason(reason);
+    setIsSubscribeModalOpen(true);
+  }, []);
+  const closePlans = useCallback(() => setIsSubscribeModalOpen(false), []);
 
   // Theme Management (Light & Dark)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -67,24 +75,35 @@ export function App() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleAnalyze = (domain: string) => {
-    setIsLoading(true);
+  const handleAnalyze = async (domain: string) => {
+    if (isLoading) return;
+    if (!canAnalyze()) {
+      setRemaining(0);
+      openPlans('limit');
+      return;
+    }
     const cleaned = cleanDomain(domain);
+    setAnalyzeError(null);
+    setIsLoading(true);
     setCurrentDomain(cleaned);
 
-    setTimeout(() => {
-      const result = generateDomainAnalysis(cleaned);
+    try {
+      const result = await analyzeDomain(cleaned);
       setAnalysis(result);
+      setActiveTab('overview');
+      setHasAnalyzed(true);
+      recordAnalysis();
+      setRemaining(remainingToday());
+      showToast(
+        result.source === 'crawl' || result.source === 'crawl+ai'
+          ? `Analyzed ${result.domain} from a live crawl`
+          : `Couldn't crawl ${result.domain}; showing an estimate`
+      );
+    } catch (err) {
+      setAnalyzeError(err instanceof AnalyzeError ? err.message : 'Analysis failed. Check the domain and try again.');
+    } finally {
       setIsLoading(false);
-      showToast(`Analyzed ${cleaned} — Generated custom SEM & T1 Domination Playbook`);
-    }, 1200);
-  };
-
-  const handleSubscriptionSuccess = () => {
-    setIsSubscribed(true);
-    localStorage.setItem('apex_subscribed', 'true');
-    setIsSubscribeModalOpen(false);
-    showToast('Apex Autopilot Pro Active ($10/mo)! Autonomous AI Fixer Engaged.');
+    }
   };
 
   const handleAutoFixCompleted = () => {
@@ -100,7 +119,7 @@ export function App() {
   };
 
   const handleExportPlaybook = () => {
-    const reportData = `# ApexSEM AI Intelligence Dossier & T1 Playbook
+    const reportData = `# ApexSEM Playbook
 Domain: ${analysis.domain}
 URL: ${analysis.url}
 Niche: ${analysis.niche}
@@ -175,16 +194,23 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         onToggleTheme={toggleTheme}
         onNavigateToTab={(tab) => setActiveTab(tab as any)}
         isSubscribed={isSubscribed}
-        onOpenSubscribeModal={() => setIsSubscribeModalOpen(true)}
+        onOpenSubscribeModal={() => openPlans('upgrade')}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6">
+      <main id="main" className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6">
+        {!hasAnalyzed && <Hero />}
+
         {/* Domain Search & Scanner Bar */}
         <DomainSearchBar
           currentDomain={currentDomain}
           onAnalyze={handleAnalyze}
           isLoading={isLoading}
+          analysis={analysis}
+          error={analyzeError}
+          remaining={remaining}
+          onOpenPlans={() => openPlans(remaining === 0 ? 'limit' : 'upgrade')}
+          compact={!hasAnalyzed}
         />
 
         {/* Primary SaaS Navigation Tabs */}
@@ -306,7 +332,7 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
             <TrafficInterceptionPanel
               analysis={analysis}
               isSubscribed={isSubscribed}
-              onOpenSubscribeModal={() => setIsSubscribeModalOpen(true)}
+              onOpenSubscribeModal={() => openPlans('upgrade')}
               onAutoFixCompleted={handleAutoFixCompleted}
             />
           )}
@@ -339,23 +365,25 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
             <Sparkles className="w-4 h-4 text-white" />
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
           </div>
-          <span>Ask Local AI Strategist</span>
+          <span>Ask the strategist</span>
         </button>
       </div>
 
       {/* AI Agency Chat Drawer */}
       <AgencyChatDrawer
+        key={`${analysis.domain}-${analysis.source}`}
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         analysis={analysis}
       />
 
-      {/* $10/mo Autonomous AI Fixer Subscription Modal */}
+      {/* Free / Pro plans */}
       <SubscriptionModal
         isOpen={isSubscribeModalOpen}
-        onClose={() => setIsSubscribeModalOpen(false)}
-        onSuccess={handleSubscriptionSuccess}
+        onClose={closePlans}
         analysis={analysis}
+        reason={planModalReason}
+        usedToday={isSubscribeModalOpen ? usedToday() : 0}
       />
 
       {/* Modern B2B SaaS Footer */}
@@ -363,16 +391,14 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Zap className="w-3.5 h-3.5 text-brand-500" />
-            <span>ApexSEM AI — Autonomous B2B SEM Agency SaaS</span>
+            <span>ApexSEM — SEM and SEO strategy from your homepage</span>
           </div>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>Google Ads API Ready</span>
-            <span>•</span>
-            <span>$10/mo Autopilot Pro</span>
-            <span>•</span>
-            <span>Local Ollama Powered</span>
-            <span>•</span>
-            <span>T1 Knowledge Graph Certified</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[11px]">
+            <button onClick={() => openPlans('upgrade')} className="hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">
+              Free or Pro ${PRO_PRICE}/mo
+            </button>
+            <a href="mailto:hello@stallbay.com" className="hover:text-slate-800 dark:hover:text-slate-200">hello@stallbay.com</a>
+            <span>Traffic, volume and CPC figures are modeled estimates, not Google Ads data.</span>
           </div>
         </div>
       </footer>

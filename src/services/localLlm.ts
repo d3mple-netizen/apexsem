@@ -1,145 +1,186 @@
 import { DomainAnalysis } from '../types';
 import { generateAgencyResponse, ChatMessage } from './aiAgency';
 
+export type LlmProvider = 'claude' | 'ollama' | 'builtin';
+
 export interface LocalLlmStatus {
   isAvailable: boolean;
   models: string[];
   activeModel: string;
-  provider: 'ollama' | 'builtin';
+  provider: LlmProvider;
 }
 
+const BUILTIN: LocalLlmStatus = {
+  isAvailable: false,
+  models: ['Built-in SEM playbooks'],
+  activeModel: 'Built-in SEM playbooks',
+  provider: 'builtin'
+};
+
+/** Prefers Claude via /api/chat, then a local Ollama (dev proxy), then built-in rules. */
 export async function checkLocalLlm(): Promise<LocalLlmStatus> {
   try {
-    const res = await fetch('/api/ollama/api/tags', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (res.ok) {
+    const res = await fetch('/api/chat', { method: 'GET' });
+    if (res.ok && (res.headers.get('content-type') ?? '').includes('application/json')) {
       const data = await res.json();
-      const models = (data.models || []).map((m: any) => m.name || m.model);
-      const activeModel = models.includes('qwen3:14b')
-        ? 'qwen3:14b'
-        : models[0] || 'qwen3:14b';
-
-      return {
-        isAvailable: true,
-        models: models.length > 0 ? models : ['qwen3:14b'],
-        activeModel,
-        provider: 'ollama'
-      };
+      if (data.available) {
+        return { isAvailable: true, models: [data.model], activeModel: data.model, provider: 'claude' };
+      }
     }
-  } catch (err) {
-    console.warn('Local Ollama endpoint not reachable through proxy, using built-in model:', err);
+  } catch {
+    // Not deployed / vercel dev not running; try Ollama next.
   }
 
-  return {
-    isAvailable: false,
-    models: ['apex-sem-agent-v1 (Built-in)'],
-    activeModel: 'apex-sem-agent-v1 (Built-in)',
-    provider: 'builtin'
-  };
+  try {
+    const res = await fetch('/api/ollama/api/tags', { method: 'GET' });
+    if (res.ok && (res.headers.get('content-type') ?? '').includes('application/json')) {
+      const data = await res.json();
+      const models: string[] = (data.models || []).map((m: { name?: string; model?: string }) => m.name || m.model);
+      if (models.length) {
+        const activeModel = models.includes('qwen3:14b') ? 'qwen3:14b' : models[0];
+        return { isAvailable: true, models, activeModel, provider: 'ollama' };
+      }
+    }
+  } catch {
+    // Ollama not running.
+  }
+
+  return BUILTIN;
+}
+
+/** Compact, model-readable summary of the current analysis. */
+export function analysisContext(a: DomainAnalysis): string {
+  const lines = [
+    `Domain: ${a.domain} (${a.url})`,
+    `Data source: ${a.source ?? 'sample'}${a.fetchError ? ` (crawl issue: ${a.fetchError})` : ''}`,
+    `Niche: ${a.niche}`,
+    `Tagline: ${a.tagline}`,
+    `Audience: ${a.targetAudience}`,
+    `Authority score: ${a.score.overall}/100 (${a.score.tier}); technical ${a.score.technicalHealth}, SEM readiness ${a.score.semReadiness}, topical ${a.score.topicalAuthority}, AI-search ${a.score.aiSearchVisibility}, high-intent coverage ${a.score.highIntentCoverage}`,
+    `Avg niche CPC: $${a.metrics.averageCpcInNiche}; modeled monthly paid-traffic value $${a.metrics.monthlyPaidValue.toLocaleString()}; modeled wasted spend $${a.metrics.wastedSpendPrevented.toLocaleString()}/mo`,
+    `Keywords: ${a.keywords.map((k) => `"${k.keyword}" [${k.intent}, ${k.matchType}, ~${k.monthlyVolume}/mo, $${k.cpc}]`).join('; ')}`,
+    `Competitors: ${a.competitors.map((c) => `${c.name} (${c.domain}) weak spots: ${c.vulnerabilities.join(', ')}`).join('; ')}`,
+    `CRO findings: ${a.croAudit.findings.map((f) => `[${f.severity}] ${f.issue}`).join(' ')}`
+  ];
+  if (a.site) {
+    lines.push(`Homepage title: ${a.site.title || '(empty)'}; meta description: ${a.site.description || '(none)'}; H1: ${a.site.h1.join(' | ') || '(none)'}; JSON-LD: ${a.site.jsonLdTypes.join(', ') || 'none'}; response ${a.site.responseMs} ms`);
+  }
+  return lines.join('\n');
+}
+
+/** Moves the last fenced code block out of the text into a copyable snippet. */
+function extractSnippet(fullText: string): { text: string; actionSnippet?: ChatMessage['actionSnippet'] } {
+  const blocks = [...fullText.matchAll(/```[a-zA-Z-]*\n([\s\S]*?)```/g)];
+  const last = blocks[blocks.length - 1];
+  if (!last || !last[1].trim()) return { text: fullText };
+  const text = (fullText.slice(0, last.index) + fullText.slice((last.index ?? 0) + last[0].length)).trim();
+  return { text, actionSnippet: { type: 'code', content: last[1].trim() } };
+}
+
+async function readTextStream(res: Response, onToken: (t: string) => void): Promise<string> {
+  const reader = res.body?.getReader();
+  if (!reader) throw new Error('No readable stream');
+  const decoder = new TextDecoder();
+  let full = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    full += chunk;
+    onToken(chunk);
+  }
+  return full;
 }
 
 export async function queryLocalLlmStream(
-  prompt: string,
+  history: { role: 'user' | 'assistant'; content: string }[],
   analysis: DomainAnalysis,
-  provider: 'ollama' | 'builtin',
+  provider: LlmProvider,
   modelName: string,
   onToken: (token: string) => void
-): Promise<{ fullText: string; actionSnippet?: ChatMessage['actionSnippet'] }> {
-  // If provider is Ollama and accessible:
-  if (provider === 'ollama') {
-    const systemPrompt = `You are ApexSEM AI, an elite autonomous B2B SaaS SEM & SEO Agency Consultant.
-Current Domain Being Analyzed:
-- Domain: ${analysis.domain} (${analysis.url})
-- Niche: ${analysis.niche}
-- Audience: ${analysis.targetAudience}
-- T1 Authority Score: ${analysis.score.overall}/100 (${analysis.score.tier})
-- Monthly Paid Traffic Value: $${analysis.metrics.monthlyPaidValue.toLocaleString()}
-- Average CPC in Niche: $${analysis.metrics.averageCpcInNiche}
-- Shielded Wasted Ad Spend: $${analysis.metrics.wastedSpendPrevented.toLocaleString()}
-- Top Keywords: ${analysis.keywords.slice(0, 3).map(k => `"${k.keyword}" ($${k.cpc})`).join(', ')}
+): Promise<{ fullText: string; actionSnippet?: ChatMessage['actionSnippet']; provider: LlmProvider }> {
+  const prompt = history[history.length - 1]?.content ?? '';
 
-Provide concise, hyper-actionable, expert advice. When relevant, give concrete Google Ads copy, negative keywords, JSON-LD schema, or bidding math. Keep answers structured with clear headings or bullet points.`;
-
+  if (provider === 'claude') {
     try {
-      const res = await fetch('/api/ollama/api/generate', {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history, context: analysisContext(analysis) })
+      });
+      if (res.status === 429) {
+        const body = await res.json().catch(() => ({}));
+        const msg = body.error ?? 'Too many messages. Wait a few minutes and try again.';
+        onToken(msg);
+        return { fullText: msg, provider };
+      }
+      if (!res.ok || !(res.headers.get('content-type') ?? '').startsWith('text/plain')) {
+        throw new Error(`chat API returned ${res.status}`);
+      }
+      const fullText = await readTextStream(res, onToken);
+      return { ...toResult(fullText), provider };
+    } catch (err) {
+      console.warn('Claude chat unavailable, falling back to built-in playbooks:', err);
+    }
+  }
+
+  if (provider === 'ollama') {
+    try {
+      const res = await fetch('/api/ollama/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: modelName,
-          system: systemPrompt,
-          prompt: prompt,
           stream: true,
-          options: {
-            temperature: 0.7,
-            top_p: 0.9
-          }
+          messages: [
+            { role: 'system', content: `You are ApexSEM, an expert SEM/SEO strategist. Give concrete, numbered, number-backed advice. Analysis:\n${analysisContext(analysis)}` },
+            ...history
+          ],
+          options: { temperature: 0.7, top_p: 0.9 }
         })
       });
-
-      if (!res.ok) {
-        throw new Error(`Ollama returned status ${res.status}`);
-      }
-
+      if (!res.ok) throw new Error(`Ollama returned status ${res.status}`);
       const reader = res.body?.getReader();
       if (!reader) throw new Error('No readable stream from Ollama');
-
       const decoder = new TextDecoder();
       let fullText = '';
-
+      let buffered = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n').filter(Boolean);
-
+        buffered += decoder.decode(value, { stream: true });
+        const lines = buffered.split('\n');
+        buffered = lines.pop() ?? '';
         for (const line of lines) {
+          if (!line.trim()) continue;
           try {
-            const parsed = JSON.parse(line);
-            if (parsed.response) {
-              fullText += parsed.response;
-              onToken(parsed.response);
+            const token = JSON.parse(line).message?.content;
+            if (token) {
+              fullText += token;
+              onToken(token);
             }
-          } catch (e) {
-            // Partial JSON line, continue
+          } catch {
+            // Ignore malformed line.
           }
         }
       }
-
-      // Check for code blocks in response to provide as snippet
-      let actionSnippet: ChatMessage['actionSnippet'] = undefined;
-      const codeBlockMatch = fullText.match(/```(?:json|html|javascript|markdown)?\n([\s\S]*?)```/);
-      if (codeBlockMatch && codeBlockMatch[1]) {
-        actionSnippet = {
-          type: 'code',
-          content: codeBlockMatch[1].trim()
-        };
-      }
-
-      return { fullText, actionSnippet };
+      return { ...toResult(fullText), provider };
     } catch (err) {
-      console.warn('Ollama streaming error, falling back to built-in agency response:', err);
+      console.warn('Ollama streaming error, falling back to built-in playbooks:', err);
     }
   }
 
-  // Built-in specialized engine fallback with typewriter streaming
+  // Built-in rule-based playbooks with a typewriter effect.
   const fallback = generateAgencyResponse(prompt, analysis);
   const words = fallback.text.split(' ');
-  let accumulated = '';
-
   for (let i = 0; i < words.length; i++) {
-    const wordWithSpace = (i === 0 ? '' : ' ') + words[i];
-    accumulated += wordWithSpace;
-    onToken(wordWithSpace);
-    // Slight delay to mimic streaming
-    await new Promise((r) => setTimeout(r, 20));
+    onToken((i === 0 ? '' : ' ') + words[i]);
+    await new Promise((r) => setTimeout(r, 18));
   }
+  return { fullText: fallback.text, actionSnippet: fallback.actionSnippet, provider: 'builtin' };
+}
 
-  return {
-    fullText: fallback.text,
-    actionSnippet: fallback.actionSnippet
-  };
+function toResult(fullText: string): { fullText: string; actionSnippet?: ChatMessage['actionSnippet'] } {
+  const { text, actionSnippet } = extractSnippet(fullText);
+  return { fullText: text, actionSnippet };
 }

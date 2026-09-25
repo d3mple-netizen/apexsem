@@ -31,3 +31,21 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.8);
 }
+
+/* Keyboard focus: visible ring on every interactive element */
+:where(a, button, select, [role="button"]):focus-visible {
+  outline: 2px solid #0c87eb;
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion: stop pulses, pings, spins and transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

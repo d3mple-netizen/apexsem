@@ -100,7 +100,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Autopilot Pro Active ($10/mo)
+                Autopilot Pro Active ($49/mo)
               </span>
 
               <button
@@ -118,7 +118,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               className="px-4 py-2 bg-gradient-to-r from-accent-600 via-indigo-600 to-brand-600 hover:from-accent-500 hover:to-brand-500 text-white rounded-xl text-xs font-bold shadow-glow flex items-center gap-2 transition-all cursor-pointer active:scale-95 animate-pulse"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Enable AI Auto-Fixer ($10/mo)</span>
+              <span>Enable AI Auto-Fixer ($49/mo)</span>
             </button>
           )}
         </div>
@@ -261,7 +261,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               {isFixedSuccess ? `+${Math.round(trafficDistribution.totalLostVisits * 0.72).toLocaleString()}` : 'Ready for AI Fix'}
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-              {isFixedSuccess ? 'Active pipeline rerouted' : 'Reclaimable with $10/mo Autopilot'}
+              {isFixedSuccess ? 'Active pipeline rerouted' : 'Reclaimable with $49/mo Autopilot'}
             </p>
           </div>
         </div>
@@ -286,7 +286,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               className="px-3.5 py-1.5 bg-brand-50 dark:bg-brand-500/10 hover:bg-brand-100 dark:hover:bg-brand-500/20 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 text-accent-500" />
-              <span>Subscribe for $10/mo to Fix All</span>
+              <span>Subscribe for $49/mo to Fix All</span>
             </button>
           )}
         </div>
@@ -373,7 +373,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
             Never lose another customer to competitors on search.
           </h3>
           <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-            For just <strong>$10/month</strong>, our autonomous AI SEM agent continuously scans competitor search auctions, deploys conquest ad copy, injects entity schema, and intercepts buyers before they convert on rival domains.
+            For just <strong>$49/month</strong>, our autonomous AI SEM agent continuously scans competitor search auctions, deploys conquest ad copy, injects entity schema, and intercepts buyers before they convert on rival domains.
           </p>
         </div>
 
@@ -391,7 +391,7 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               onClick={onOpenSubscribeModal}
               className="px-6 py-3 bg-gradient-to-r from-brand-600 via-indigo-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 text-white font-bold text-xs rounded-xl shadow-glow transition-all active:scale-95 cursor-pointer flex items-center gap-2"
             >
-              <span>Subscribe for $10/mo & Auto-Fix</span>
+              <span>Subscribe for $49/mo & Auto-Fix</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           )}

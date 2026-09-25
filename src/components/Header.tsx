@@ -33,7 +33,11 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
           <div 
             onClick={() => onNavigateToTab('overview')}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onNavigateToTab('overview')}
+            role="button"
+            tabIndex={0}
+            aria-label="ApexSEM, go to overview"
+            className="flex items-center gap-2.5 cursor-pointer group rounded-xl"
           >
             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-accent-500 p-0.5 shadow-glow flex items-center justify-center transition-transform group-hover:scale-105">
               <div className="w-full h-full bg-white dark:bg-slate-950 rounded-[10px] flex items-center justify-center">
@@ -98,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({
           {isSubscribed ? (
             <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-xl shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Autopilot Active ($10/mo)</span>
+              <span>Autopilot Active ($49/mo)</span>
             </span>
           ) : (
             <button
@@ -106,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-accent-700 dark:text-accent-300 bg-accent-50 dark:bg-accent-500/10 hover:bg-accent-100 dark:hover:bg-accent-500/20 border border-accent-200 dark:border-accent-500/30 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95"
             >
               <Sparkles className="w-3.5 h-3.5 text-accent-500" />
-              <span>Upgrade ($10/mo)</span>
+              <span>Upgrade ($49/mo)</span>
             </button>
           )}
 
