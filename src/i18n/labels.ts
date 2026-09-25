@@ -45,26 +45,26 @@ const en = {
 
 export const labels = defineDict(en, {
   tier: {
-    'Tier 3 (Emerging)': 'Уровень 3 (новичок)',
-    'Tier 2 (Contender)': 'Уровень 2 (претендент)',
-    'Tier 1 (Market Leader)': 'Уровень 1 (лидер рынка)'
+    'Tier 3 (Emerging)': 'Уровень 3: новичок',
+    'Tier 2 (Contender)': 'Уровень 2: претендент',
+    'Tier 1 (Market Leader)': 'Уровень 1: лидер рынка'
   },
   intent: {
-    Transactional: 'Покупка',
-    Commercial: 'Выбор',
-    Informational: 'Информация',
-    'Competitor Conquest': 'Перехват у конкурента'
+    Transactional: 'Транзакционный',
+    Commercial: 'Коммерческий',
+    Informational: 'Информационный',
+    'Competitor Conquest': 'Перехват у конкурентов'
   },
-  level: { Low: 'Низкая', Medium: 'Средняя', High: 'Высокая', Critical: 'Критично', Transformational: 'Переломная', Easy: 'Легко' },
+  level: { Low: 'Низкая', Medium: 'Средняя', High: 'Высокая', Critical: 'Критично', Transformational: 'Прорывная', Easy: 'Легко' },
   match: { Exact: 'Точное', Phrase: 'Фразовое', Broad: 'Широкое' },
   severity: { high: 'Высокий', medium: 'Средний', low: 'Низкий' },
   phase: {
-    'Phase 1: 0-30 Days (Quick SEM Wins)': 'Дни 0-30: быстрые победы в рекламе',
-    'Phase 2: 30-60 Days (Authority Acceleration)': 'Дни 30-60: набираем авторитет',
+    'Phase 1: 0-30 Days (Quick SEM Wins)': 'Дни 0-30: быстрый результат в рекламе',
+    'Phase 2: 30-60 Days (Authority Acceleration)': 'Дни 30-60: наращиваем авторитет',
     'Phase 3: 60-90 Days (T1 Market Dominance)': 'Дни 60-90: выходим в лидеры'
   },
   category: { SEM: 'Реклама', 'SEO/T1': 'SEO', CRO: 'Конверсия', 'GEO/AI': 'AI-поиск' },
-  status: { pending: 'Сделать', in_progress: 'В работе', completed: 'Готово' },
+  status: { pending: 'В планах', in_progress: 'В работе', completed: 'Готово' },
   campaign: {
     'Bottom-of-Funnel (BOFU)': 'Низ воронки',
     'Competitor Conquest': 'Перехват у конкурентов',
@@ -77,7 +77,7 @@ export const labels = defineDict(en, {
     'How-to Guide': 'Инструкция',
     Template: 'Шаблон',
     'ROI Calculator': 'ROI-калькулятор',
-    'Alternative Page': 'Страница альтернатив'
+    'Alternative Page': 'Подборка альтернатив'
   }
 });
 

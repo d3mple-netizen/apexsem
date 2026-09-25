@@ -31,7 +31,7 @@ export const roadmapDict = defineDict(
   },
   {
     title: 'План на 30-60-90 дней',
-    subtitle: 'Задачи по приоритету: реклама, SEO, конверсия и AI-поиск. Нажми на задачу, чтобы сменить статус.',
+    subtitle: 'Задачи по приоритету: реклама, SEO, конверсия и AI-поиск. Кликни по задаче, чтобы сменить статус.',
     progress: 'Прогресс',
     progressAria: (pct: number) => `Выполнено ${pct}% задач`,
     addTask: 'Добавить',
@@ -43,18 +43,18 @@ export const roadmapDict = defineDict(
     allPhases: 'Все',
     days: (range: string) => `${range} дн.`,
     allChannels: 'Все',
-    impact: 'Важность',
+    impact: 'Эффект',
     effort: 'Сложность',
     modalTitle: 'Новая задача',
     fieldTitle: 'Задача',
     fieldTitlePh: 'Например, настроить аудиторию ремаркетинга',
     fieldDesc: 'Описание',
-    fieldDescPh: 'Шаги или метрика, за которой следим',
+    fieldDescPh: 'Шаги или метрика, за которой следить',
     fieldPhase: 'Этап',
     fieldChannel: 'Канал',
     cancel: 'Отмена',
     submit: 'Добавить',
     defaultDesc: 'Своя задача.',
-    csvHeaders: ['Этап', 'Канал', 'Задача', 'Описание', 'Важность', 'Сложность', 'Статус']
+    csvHeaders: ['Этап', 'Канал', 'Задача', 'Описание', 'Эффект', 'Сложность', 'Статус']
   }
 );
