@@ -44,29 +44,29 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="plans-title"
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 max-w-2xl w-full shadow-2xl relative transition-colors duration-200"
+        className="bg-surface border border-line rounded p-6 md:p-8 max-w-2xl w-full shadow-overlay relative"
       >
         <button
           ref={closeRef}
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+          className="absolute top-4 right-4 p-2 rounded text-fg-subtle hover:text-fg hover:bg-surface-2 transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="max-w-md mb-6">
-          <h3 id="plans-title" className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight [text-wrap:balance]">
+        <div className="max-w-md mb-8">
+          <h3 id="plans-title" className="text-xl font-semibold text-fg [text-wrap:balance]">
             {reason === 'limit' ? 'You’ve used today’s free analyses' : 'Plans'}
           </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1.5">
+          <p className="text-sm text-fg-muted mt-2">
             {reason === 'limit'
               ? `Free covers ${FREE_DAILY_LIMIT} analyses a day and resets at midnight. Pro removes the limit.`
               : 'Start free. Upgrade when you run more domains than the daily limit allows.'}
@@ -75,15 +75,15 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
         <div className="grid sm:grid-cols-2 gap-4">
           {/* Free */}
-          <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col">
-            <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Free</h4>
-            <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white tabular-nums">
-              $0<span className="text-sm font-normal text-slate-500 dark:text-slate-400"> /month</span>
+          <section className="rounded border border-line p-5 flex flex-col">
+            <h4 className="text-sm font-semibold text-fg">Free</h4>
+            <p className="mt-2 text-2xl font-semibold text-fg num">
+              $0<span className="text-sm font-normal text-fg-subtle"> /month</span>
             </p>
             <div className="mt-4" aria-label={`${used} of ${FREE_DAILY_LIMIT} analyses used today`}>
-              <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+              <div className="flex justify-between text-xs text-fg-subtle mb-2">
                 <span>Used today</span>
-                <span className="tabular-nums font-medium text-slate-700 dark:text-slate-300">
+                <span className="num font-medium text-fg-muted">
                   {used} of {FREE_DAILY_LIMIT}
                 </span>
               </div>
@@ -91,45 +91,45 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
                 {Array.from({ length: FREE_DAILY_LIMIT }).map((_, i) => (
                   <span
                     key={i}
-                    className={`h-1.5 flex-1 rounded-full ${i < used ? 'bg-slate-500 dark:bg-slate-400' : 'bg-slate-200 dark:bg-slate-800'}`}
+                    className={`h-1 flex-1 rounded-full ${i < used ? 'bg-fg-muted' : 'bg-surface-2'}`}
                   />
                 ))}
               </div>
             </div>
-            <ul className="mt-5 space-y-2 text-sm text-slate-600 dark:text-slate-400 flex-1">
+            <ul className="mt-6 space-y-2 text-sm text-fg-muted flex-1">
               {FREE_FEATURES.map((f) => (
                 <li key={f} className="flex gap-2">
-                  <Check className="w-4 h-4 mt-0.5 shrink-0 text-slate-400" />
+                  <Check className="w-4 h-4 mt-0.5 shrink-0 text-fg-subtle" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
             <button
               onClick={onClose}
-              className="mt-6 w-full py-2.5 text-sm font-medium rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+              className="btn btn-secondary mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
               {reason === 'limit' ? 'Come back tomorrow' : 'Keep using Free'}
             </button>
           </section>
 
           {/* Pro */}
-          <section className="rounded-xl border-2 border-brand-500 bg-brand-50/40 dark:bg-brand-500/[0.06] p-5 flex flex-col">
-            <h4 className="text-sm font-semibold text-brand-700 dark:text-brand-300">Pro</h4>
-            <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white tabular-nums">
-              ${PRO_PRICE}<span className="text-sm font-normal text-slate-500 dark:text-slate-400"> /month</span>
+          <section className="rounded border border-accent p-5 flex flex-col">
+            <h4 className="text-sm font-semibold text-fg">Pro</h4>
+            <p className="mt-2 text-2xl font-semibold text-fg num">
+              ${PRO_PRICE}<span className="text-sm font-normal text-fg-subtle"> /month</span>
             </p>
-            <p className="mt-4 text-xs text-slate-500 dark:text-slate-400 h-[26px] flex items-end">Cancel anytime. Billed monthly.</p>
-            <ul className="mt-5 space-y-2 text-sm text-slate-700 dark:text-slate-300 flex-1">
+            <p className="mt-4 text-xs text-fg-subtle h-[26px] flex items-end">Cancel anytime. Billed monthly.</p>
+            <ul className="mt-6 space-y-2 text-sm text-fg-muted flex-1">
               {PRO_FEATURES.map((f) => (
                 <li key={f} className="flex gap-2">
-                  <Check className="w-4 h-4 mt-0.5 shrink-0 text-brand-500" />
+                  <Check className="w-4 h-4 mt-0.5 shrink-0 text-fg-subtle" />
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
             <a
               href={mailto}
-              className="mt-6 w-full py-2.5 text-sm font-semibold rounded-lg bg-brand-600 hover:bg-brand-500 active:translate-y-px text-white flex items-center justify-center gap-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="btn btn-primary mt-6 w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <Mail className="w-4 h-4" />
               Email us to start Pro
@@ -137,7 +137,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
           </section>
         </div>
 
-        <p className="mt-5 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-6 text-xs text-fg-subtle">
           Pro is activated by hand while we finish self-serve checkout. We reply within one business day.
         </p>
       </div>

@@ -90,24 +90,24 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
 }`;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Title & Navigation Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Layers className="w-5 h-5 text-accent-500" />
+          <h2 className="text-xl font-semibold text-fg flex items-center gap-2">
+            <Layers className="w-4 h-4 text-fg-subtle" />
             <span>Tier-1 Domain Authority & Search Domination Engine</span>
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-fg-muted mt-1">
             Build unshakeable topical authority, capture Generative AI search citations (GEO), and earn high-DR backlinks to claim #1 search positions.
           </p>
         </div>
 
-        <div className="flex rounded-xl bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200 dark:border-slate-800 text-xs">
+        <div className="flex rounded bg-surface-2 p-1 gap-1 text-xs shrink-0">
           <button
             onClick={() => setActiveTab('clusters')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'clusters' ? 'bg-brand-600 text-white font-semibold shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'clusters' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -115,29 +115,29 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
           </button>
           <button
             onClick={() => setActiveTab('geo')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'geo' ? 'bg-brand-600 text-white font-semibold shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'geo' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >
-            <Bot className="w-3.5 h-3.5 text-accent-500" />
+            <Bot className="w-3.5 h-3.5" />
             <span>AI Search (GEO)</span>
           </button>
           <button
             onClick={() => setActiveTab('backlinks')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'backlinks' ? 'bg-brand-600 text-white font-semibold shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'backlinks' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >
-            <Link2 className="w-3.5 h-3.5 text-emerald-500" />
+            <Link2 className="w-3.5 h-3.5" />
             <span>T1 Backlinks</span>
           </button>
           <button
             onClick={() => setActiveTab('schema')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeTab === 'schema' ? 'bg-brand-600 text-white font-semibold shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            className={`h-8 px-3 rounded-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeTab === 'schema' ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
             }`}
           >
-            <Code className="w-3.5 h-3.5 text-indigo-500" />
+            <Code className="w-3.5 h-3.5" />
             <span>Schema Entity</span>
           </button>
         </div>
@@ -146,67 +146,67 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
       {/* TAB 1: TOPICAL CLUSTERS */}
       {activeTab === 'clusters' && (
         <div className="space-y-6">
-          <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-3 shadow-sm">
-            <div className="p-2 rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 shrink-0">
-              <Compass className="w-4 h-4" />
-            </div>
+          <div className="inset p-4 text-xs text-fg-muted leading-relaxed flex items-start gap-3">
+            <Compass className="w-4 h-4 text-fg-subtle shrink-0" />
             <div>
-              <strong className="text-slate-900 dark:text-white font-semibold block mb-0.5">The T1 Semantic Entity Moat:</strong>
+              <strong className="text-fg font-semibold block mb-1">The T1 Semantic Entity Moat</strong>
               Google evaluates whether your domain covers the entire topic ecosystem or just isolated keywords. Deploying this master pillar and supporting cluster pages establishes your domain as the definitive category entity.
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {analysis.topicalClusters.map((cluster) => (
-              <div key={cluster.id} className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl flex flex-col justify-between transition-colors duration-200">
+              <div key={cluster.id} className="card p-6 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 border border-brand-200 dark:border-brand-500/20 font-semibold">
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <span className="tag">
                       {cluster.intent}
                     </span>
-                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                    <span className="text-xs text-fg-subtle num">
                       {cluster.searchVolume.toLocaleString()} mo. searches
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1.5">{cluster.pillarTitle}</h3>
-                  <p className="text-xs font-mono text-brand-600 dark:text-brand-300 mb-4">
-                    Primary Target Keyword: <span className="underline">"{cluster.targetKeyword}"</span>
+                  <h3 className="text-base font-semibold text-fg mb-2">{cluster.pillarTitle}</h3>
+                  <p className="text-xs text-fg-muted mb-6">
+                    Primary Target Keyword: <span className="text-fg font-medium">"{cluster.targetKeyword}"</span>
                   </p>
 
-                  <div className="space-y-2.5">
-                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">Supporting Cluster Sub-topics:</span>
-                    {cluster.clusterSubtopics.map((sub, sIdx) => (
-                      <div key={sIdx} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 hover:border-brand-500/30 transition-all flex items-start justify-between gap-3">
-                        <div className="space-y-1">
-                          <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200">{sub.title}</h4>
-                          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 block">
-                            Target: "{sub.targetKeyword}"
-                          </span>
+                  <div>
+                    <span className="label block mb-2">Supporting Cluster Sub-topics</span>
+                    <div className="divide-y divide-line border-t border-line">
+                      {cluster.clusterSubtopics.map((sub, sIdx) => (
+                        <div key={sIdx} className="py-3 flex items-start justify-between gap-4">
+                          <div className="space-y-1">
+                            <h4 className="text-xs font-medium text-fg">{sub.title}</h4>
+                            <span className="text-xs text-fg-subtle block">
+                              Target: "{sub.targetKeyword}"
+                            </span>
+                          </div>
+                          <div className="flex flex-col items-end gap-1 shrink-0">
+                            <span className="tag">
+                              {sub.format}
+                            </span>
+                            <span className="text-2xs text-fg-subtle num">
+                              Diff: {sub.difficulty}/100
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-end gap-1 shrink-0">
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-mono">
-                            {sub.format}
-                          </span>
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                            Diff: {sub.difficulty}/100
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 dark:text-slate-400">Internal Linking: <strong className="text-slate-700 dark:text-slate-200">Bidirectional Silo</strong></span>
+                <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4 text-xs">
+                  <span className="text-fg-muted">Internal Linking: <strong className="font-medium text-fg">Bidirectional Silo</strong></span>
                   <button
                     onClick={() => {
                       const text = `PILLAR: ${cluster.pillarTitle} (Keyword: ${cluster.targetKeyword})\n\nCLUSTER CONTENT:\n${cluster.clusterSubtopics.map(s => `• [${s.format}] ${s.title} (Keyword: ${s.targetKeyword})`).join('\n')}`;
                       handleCopy(text, cluster.id);
                     }}
-                    className="text-brand-600 dark:text-brand-400 hover:underline font-medium flex items-center gap-1 cursor-pointer"
+                    className="btn btn-ghost btn-sm"
                   >
-                    {copiedKey === cluster.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedKey === cluster.id ? <Check className="w-3.5 h-3.5 text-fg-subtle" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedKey === cluster.id ? 'Copied Cluster!' : 'Copy Cluster Brief'}</span>
                   </button>
                 </div>
@@ -219,24 +219,22 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
       {/* TAB 2: GENERATIVE ENGINE OPTIMIZATION (GEO) */}
       {activeTab === 'geo' && (
         <div className="space-y-6">
-          <div className="p-4 rounded-xl bg-accent-50 dark:bg-accent-950/20 border border-accent-200 dark:border-accent-800/30 text-xs text-slate-700 dark:text-slate-300 flex items-start gap-3 shadow-sm">
-            <div className="p-2 rounded-lg bg-accent-500/10 text-accent-600 dark:text-accent-400 border border-accent-500/20 shrink-0">
-              <Sparkles className="w-4 h-4" />
-            </div>
+          <div className="inset p-4 text-xs text-fg-muted leading-relaxed flex items-start gap-3">
+            <Sparkles className="w-4 h-4 text-fg-subtle shrink-0" />
             <div>
-              <strong className="text-slate-900 dark:text-white font-semibold block mb-0.5">The Generative AI Search Frontier:</strong>
+              <strong className="text-fg font-semibold block mb-1">The Generative AI Search Frontier</strong>
               Over 35% of B2B SaaS product discoveries now originate inside AI models (ChatGPT Search, Perplexity AI, Google AI Overviews). Optimizing for AI synthesis ensures your domain is recommended when buyers ask "What is the best {analysis.niche}?"
             </div>
           </div>
 
           {/* Interactive GEO Prompt Simulation Studio */}
-          <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-lg space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Bot className="w-4 h-4 text-accent-500" />
+          <div className="card p-6 space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-sm font-semibold text-fg flex items-center gap-2">
+                <Bot className="w-4 h-4 text-fg-subtle" />
                 <span>Live GEO Query Simulation Studio</span>
               </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">Test AI Citation Readiness</span>
+              <span className="text-xs text-fg-subtle">Test AI Citation Readiness</span>
             </div>
 
             <form onSubmit={handleSimulateGeo} className="flex gap-2">
@@ -245,12 +243,12 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
                 value={testQuery}
                 onChange={(e) => setTestQuery(e.target.value)}
                 placeholder="Enter query buyers ask ChatGPT or Perplexity..."
-                className="flex-1 px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-brand-500 font-mono"
+                className="field flex-1 h-9 px-3 text-sm"
               />
               <button
                 type="submit"
                 disabled={isSimulating || !testQuery.trim()}
-                className="px-4 py-2.5 bg-gradient-to-r from-accent-600 to-indigo-600 hover:from-accent-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-glow active:scale-95 disabled:opacity-50"
+                className="btn btn-primary"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>{isSimulating ? 'Simulating...' : 'Test AI Citation'}</span>
@@ -258,12 +256,15 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
             </form>
 
             {simulatedGeoResult && (
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-brand-200 dark:border-brand-800/60 text-xs space-y-2 animate-in fade-in duration-300">
-                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[11px] font-mono">
+              <div className="inset p-4 text-xs space-y-2">
+                <div className="flex items-center justify-between gap-4 text-fg-subtle text-xs">
                   <span>Simulated Perplexity / ChatGPT Search Response:</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Direct Citation Verified</span>
+                  <span className="text-fg-muted font-medium flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5 text-fg-subtle" />
+                    Direct Citation Verified
+                  </span>
                 </div>
-                <p className="text-slate-700 dark:text-slate-200 leading-relaxed font-sans">
+                <p className="text-sm text-fg leading-relaxed">
                   {simulatedGeoResult}
                 </p>
               </div>
@@ -272,38 +273,38 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {analysis.geoSignals.map((signal, idx) => (
-              <div key={idx} className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-lg space-y-3 transition-colors duration-200">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Bot className="w-4 h-4 text-accent-500" />
+              <div key={idx} className="card p-5 space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm font-semibold text-fg flex items-center gap-2">
+                    <Bot className="w-4 h-4 text-fg-subtle" />
                     {signal.platform}
                   </span>
-                  <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
+                  <span className={`tag ${
                     signal.status === 'Cited'
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                      ? 'text-fg'
                       : signal.status === 'Partial Citation'
-                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                      : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30'
+                      ? 'text-fg-muted'
+                      : 'text-accent-fg'
                   }`}>
                     {signal.status}
                   </span>
                 </div>
 
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between text-slate-500 dark:text-slate-400">
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between text-fg-muted">
                     <span>LLM Entity Confidence Score:</span>
-                    <span className="font-mono font-bold text-brand-600 dark:text-brand-300">{signal.entityScore}/100</span>
+                    <span className="font-semibold text-fg num">{signal.entityScore}/100</span>
                   </div>
-                  <div className="w-full bg-slate-100 dark:bg-slate-950 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-surface-2 h-1.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-brand-500 to-accent-500 h-full rounded-full"
+                      className="bg-fg-muted h-full rounded-full"
                       style={{ width: `${signal.entityScore}%` }}
                     />
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium block mb-1">AI Agency Action:</span>
+                <div className="inset p-3 text-xs text-fg-muted leading-relaxed">
+                  <span className="text-fg font-medium block mb-1">AI Agency Action:</span>
                   {signal.recommendation}
                 </div>
               </div>
@@ -315,40 +316,38 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
       {/* TAB 3: T1 BACKLINKS */}
       {activeTab === 'backlinks' && (
         <div className="space-y-6">
-          <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-3 shadow-sm">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
+          <div className="inset p-4 text-xs text-fg-muted leading-relaxed flex items-start gap-3">
+            <ShieldCheck className="w-4 h-4 text-fg-subtle shrink-0" />
             <div>
-              <strong className="text-slate-900 dark:text-white font-semibold block mb-0.5">Tier 1 Link Equity Playbooks:</strong>
+              <strong className="text-fg font-semibold block mb-1">Tier 1 Link Equity Playbooks</strong>
               Generic guest posts don't move the needle anymore. These 4 institutional plays earn permanent dofollow links from DR 75+ tech giants and news publications, permanently elevating domain trust in Google's PageRank graph.
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {analysis.backlinkPlays.map((play, idx) => (
-              <div key={idx} className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-xl flex flex-col justify-between transition-colors duration-200">
+              <div key={idx} className="card p-5 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-mono font-bold text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-500/10 px-2 py-0.5 rounded border border-brand-200 dark:border-brand-500/20">
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <span className="text-xs font-semibold text-fg num">
                       Est. DR {play.estimatedDR}+
                     </span>
-                    <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="tag">
                       {play.impact} Impact
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">{play.strategy}</h3>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 block mb-3 font-mono">{play.targetDomainType}</span>
+                  <h3 className="text-sm font-semibold text-fg mb-1">{play.strategy}</h3>
+                  <span className="text-xs text-fg-subtle block mb-4">{play.targetDomainType}</span>
 
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                  <p className="inset p-3 text-xs text-fg-muted leading-relaxed">
                     {play.playbookAngle}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                  <span>Execution Difficulty: <strong className="text-slate-800 dark:text-slate-200">{play.difficulty}</strong></span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Priority Play</span>
+                <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4 text-xs text-fg-muted">
+                  <span>Execution Difficulty: <strong className="font-medium text-fg">{play.difficulty}</strong></span>
+                  <span className="text-fg-subtle font-medium">Priority Play</span>
                 </div>
               </div>
             ))}
@@ -359,32 +358,32 @@ export const T1OrganicDomination: React.FC<T1OrganicDominationProps> = ({ analys
       {/* TAB 4: SCHEMA ENTITY GENERATOR */}
       {activeTab === 'schema' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Knowledge Graph JSON-LD Schema</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <h3 className="text-base font-semibold text-fg">Knowledge Graph JSON-LD Schema</h3>
+              <p className="text-xs text-fg-muted mt-1">
                 Embed this structured data markup in the &lt;head&gt; of {analysis.domain} to anchor entity recognition in Google Search.
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={handleDownloadSchema}
-                className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+                className="btn btn-secondary btn-sm"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download .JSON</span>
               </button>
               <button
                 onClick={() => handleCopy(schemaJsonLd, 'schema-code')}
-                className="px-3.5 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-glow cursor-pointer active:scale-95"
+                className="btn btn-primary btn-sm"
               >
-                {copiedKey === 'schema-code' ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedKey === 'schema-code' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedKey === 'schema-code' ? 'Copied JSON-LD!' : 'Copy Schema Code'}</span>
               </button>
             </div>
           </div>
 
-          <div className="bg-slate-900 text-brand-300 dark:bg-slate-950 rounded-xl p-4 border border-slate-200 dark:border-slate-800 overflow-x-auto font-mono text-xs shadow-inner">
+          <div className="inset border border-line p-4 overflow-x-auto font-mono text-xs text-fg-muted">
             <pre>{schemaJsonLd}</pre>
           </div>
         </div>

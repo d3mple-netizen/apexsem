@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckSquare, Square, Clock, AlertCircle, Sparkles, Filter, Download, Copy, Check, Plus, X } from 'lucide-react';
+import { Clock, Download, Copy, Check, Plus, X } from 'lucide-react';
 import { DomainAnalysis, RoadmapItem } from '../types';
 
 interface ActionRoadmapProps {
@@ -105,31 +105,30 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
       {/* Title & Stats */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <CheckSquare className="w-5 h-5 text-brand-600 dark:text-brand-400" />
-            <span>30-60-90 Day T1 Search Domination Roadmap</span>
+          <h2 className="text-xl font-semibold tracking-[-0.02em] text-fg">
+            30-60-90 Day T1 Search Domination Roadmap
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-fg-muted mt-1">
             Prioritized agency execution playbook designed to unlock organic rank velocity and scale SEM revenue.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Progress bar */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-1.5 flex items-center gap-3 shadow-sm">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Playbook:</span>
-            <div className="w-20 bg-slate-100 dark:bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-3 px-3 py-1">
+            <span className="text-xs text-fg-muted">Playbook</span>
+            <div className="w-20 bg-surface-2 h-1 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-brand-500 to-emerald-400 transition-all duration-300"
+                className="h-full bg-accent transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-xs font-mono font-bold text-slate-800 dark:text-white">{progressPercent}%</span>
+            <span className="text-xs num font-semibold text-fg">{progressPercent}%</span>
           </div>
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-glow active:scale-95"
+            className="btn btn-primary btn-sm"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Task</span>
@@ -137,7 +136,7 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
 
           <button
             onClick={handleDownloadRoadmapCSV}
-            className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            className="btn btn-secondary btn-sm"
             title="Download CSV for project management tools"
           >
             <Download className="w-3.5 h-3.5" />
@@ -146,27 +145,27 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
 
           <button
             onClick={handleCopyRoadmap}
-            className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            className="btn btn-secondary btn-sm"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-fg-subtle" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied Tasks!' : 'Export Tasks'}</span>
           </button>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-xs shadow-sm transition-colors duration-200">
+      <div className="card flex flex-wrap items-center justify-between gap-4 p-4 text-xs">
         {/* Phase Filter */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-slate-500 dark:text-slate-400 font-medium">Timeline:</span>
+        <div className="flex items-center gap-1 flex-wrap">
+          <span className="text-fg-subtle mr-2">Timeline</span>
           {['all', '0-30', '30-60', '60-90'].map((phaseKey) => (
             <button
               key={phaseKey}
               onClick={() => setSelectedPhase(phaseKey)}
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-sm transition-colors cursor-pointer ${
                 selectedPhase === phaseKey
-                  ? 'bg-brand-600 text-white font-semibold shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-950/60'
+                  ? 'bg-surface-2 text-fg font-semibold'
+                  : 'text-fg-muted hover:text-fg hover:bg-surface-2'
               }`}
             >
               {phaseKey === 'all' ? 'All Phases' : `Phase ${phaseKey} Days`}
@@ -175,16 +174,16 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
         </div>
 
         {/* Category Filter */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-slate-500 dark:text-slate-400 font-medium">Category:</span>
+        <div className="flex items-center gap-1 flex-wrap">
+          <span className="text-fg-subtle mr-2">Category</span>
           {['all', 'SEM', 'SEO/T1', 'CRO', 'GEO/AI'].map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded-sm transition-colors cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-indigo-600 text-white font-semibold shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-950/60'
+                  ? 'bg-surface-2 text-fg font-semibold'
+                  : 'text-fg-muted hover:text-fg hover:bg-surface-2'
               }`}
             >
               {cat === 'all' ? 'All Channels' : cat}
@@ -194,76 +193,66 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
       </div>
 
       {/* Task List */}
-      <div className="space-y-3">
+      <div className="card divide-y divide-line overflow-hidden">
         {filteredItems.map((item) => (
           <div
             key={item.id}
             onClick={() => toggleItem(item.id)}
-            className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-4 ${
+            className={`p-5 transition-colors cursor-pointer flex items-start gap-4 ${
               item.status === 'completed'
-                ? 'bg-slate-50 dark:bg-slate-950/60 border-slate-200 dark:border-slate-800/60 opacity-60'
+                ? 'opacity-60 hover:bg-surface-2'
                 : item.status === 'in_progress'
-                ? 'bg-brand-50/50 dark:bg-brand-950/20 border-brand-300 dark:border-brand-500/40 shadow-sm dark:shadow-glow'
-                : 'bg-white dark:bg-slate-900/70 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm'
+                ? 'bg-accent-soft'
+                : 'hover:bg-surface-2'
             }`}
           >
             {/* Checkbox Icon */}
             <div className="mt-0.5 shrink-0">
               {item.status === 'completed' ? (
-                <div className="w-5 h-5 rounded-md bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-500">
-                  <Check className="w-3.5 h-3.5" />
+                <div className="w-4 h-4 rounded-sm bg-fg-muted flex items-center justify-center text-surface">
+                  <Check className="w-3 h-3" />
                 </div>
               ) : item.status === 'in_progress' ? (
-                <div className="w-5 h-5 rounded-md bg-brand-500/20 border border-brand-500/40 flex items-center justify-center text-brand-500">
-                  <Clock className="w-3.5 h-3.5 animate-spin" />
+                <div className="w-4 h-4 rounded-sm border border-accent flex items-center justify-center text-accent-fg">
+                  <Clock className="w-3 h-3" />
                 </div>
               ) : (
-                <div className="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 flex items-center justify-center" />
+                <div className="w-4 h-4 rounded-sm border border-line-strong" />
               )}
             </div>
 
             {/* Task Info */}
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400">
+                <span className="tag">
                   {item.phase.split(':')[0]}
                 </span>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                  item.category === 'SEM'
-                    ? 'bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 border border-brand-200 dark:border-brand-500/20'
-                    : item.category === 'SEO/T1'
-                    ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20'
-                    : item.category === 'GEO/AI'
-                    ? 'bg-accent-50 dark:bg-accent-500/10 text-accent-700 dark:text-accent-400 border border-accent-200 dark:border-accent-500/20'
-                    : 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20'
-                }`}>
+                <span className="tag">
                   {item.category}
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                  Impact: <strong className={item.impact === 'Critical' ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-300'}>{item.impact}</strong>
+                <span className="text-xs text-fg-subtle">
+                  Impact <span className={item.impact === 'Critical' ? 'text-fg font-medium' : 'text-fg-muted'}>{item.impact}</span>
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                  Effort: <strong className="text-slate-700 dark:text-slate-300">{item.effort}</strong>
+                <span className="text-xs text-fg-subtle">
+                  Effort <span className="text-fg-muted">{item.effort}</span>
                 </span>
               </div>
 
-              <h4 className={`text-sm font-semibold ${item.status === 'completed' ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}`}>
+              <h4 className={`text-sm font-semibold ${item.status === 'completed' ? 'line-through text-fg-subtle' : 'text-fg'}`}>
                 {item.title}
               </h4>
 
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className="text-xs text-fg-muted leading-relaxed max-w-prose">
                 {item.description}
               </p>
             </div>
 
             {/* Status Pill */}
             <div className="shrink-0 hidden sm:block">
-              <span className={`text-[10px] uppercase font-mono px-2 py-0.5 rounded ${
-                item.status === 'completed'
-                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold'
-                  : item.status === 'in_progress'
-                  ? 'bg-brand-500/10 text-brand-600 dark:text-brand-400 font-semibold animate-pulse'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+              <span className={`text-xs capitalize ${
+                item.status === 'in_progress'
+                  ? 'text-accent-fg font-medium'
+                  : 'text-fg-subtle'
               }`}>
                 {item.status.replace('_', ' ')}
               </span>
@@ -274,22 +263,22 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
 
       {/* Add Custom Milestone Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl relative space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-surface border border-line rounded p-6 max-w-md w-full shadow-overlay relative space-y-5">
             <button
               onClick={() => setIsAddModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg cursor-pointer"
+              className="absolute top-4 right-4 text-fg-subtle hover:text-fg transition-colors p-1 rounded-sm cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">
+            <h3 className="text-base font-semibold tracking-[-0.02em] text-fg">
               Add New Domination Milestone
             </h3>
 
-            <form onSubmit={handleAddTask} className="space-y-3 text-xs">
+            <form onSubmit={handleAddTask} className="space-y-4 text-sm">
               <div>
-                <label className="font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-medium text-fg-muted block mb-2">
                   Task Title
                 </label>
                 <input
@@ -298,12 +287,12 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Set up dynamic remarketing audience..."
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-brand-500 font-sans"
+                  className="field w-full"
                 />
               </div>
 
               <div>
-                <label className="font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-medium text-fg-muted block mb-2">
                   Description
                 </label>
                 <textarea
@@ -311,19 +300,19 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Specific instructions or KPIs..."
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-brand-500 font-sans"
+                  className="field w-full"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                  <label className="text-xs font-medium text-fg-muted block mb-2">
                     Timeline Phase
                   </label>
                   <select
                     value={newPhase}
                     onChange={(e) => setNewPhase(e.target.value as any)}
-                    className="w-full px-2.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+                    className="field w-full"
                   >
                     <option value="Phase 1: 0-30 Days (Quick SEM Wins)">Phase 1: 0-30 Days</option>
                     <option value="Phase 2: 30-60 Days (Authority Acceleration)">Phase 2: 30-60 Days</option>
@@ -332,13 +321,13 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                 </div>
 
                 <div>
-                  <label className="font-medium text-slate-700 dark:text-slate-300 block mb-1">
+                  <label className="text-xs font-medium text-fg-muted block mb-2">
                     Category Channel
                   </label>
                   <select
                     value={newCat}
                     onChange={(e) => setNewCat(e.target.value as any)}
-                    className="w-full px-2.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:outline-none"
+                    className="field w-full"
                   >
                     <option value="SEM">SEM</option>
                     <option value="SEO/T1">SEO / T1</option>
@@ -352,13 +341,13 @@ export const ActionRoadmap: React.FC<ActionRoadmapProps> = ({ analysis }) => {
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-3 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl cursor-pointer"
+                  className="btn btn-ghost"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-semibold shadow-glow cursor-pointer active:scale-95"
+                  className="btn btn-primary"
                 >
                   Add Milestone
                 </button>

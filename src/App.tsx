@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  BarChart3, 
-  Target, 
-  Layers, 
-  Eye, 
-  CheckSquare, 
-  Sparkles, 
-  Zap, 
-  CheckCircle2,
-  Users,
-  AlertTriangle,
-  DollarSign
-} from 'lucide-react';
+import { Check, MessageSquare } from 'lucide-react';
 import { Header } from './components/Header';
 import { DomainSearchBar } from './components/DomainSearchBar';
 import { OverviewScorecard } from './components/OverviewScorecard';
@@ -175,12 +163,22 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
     showToast(`Downloaded ApexSEM-Playbook-${analysis.domain}.md`);
   };
 
+  const tabs: { id: typeof activeTab; label: string; count?: number }[] = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'revenue', label: 'Revenue potential' },
+    { id: 'traffic', label: 'Traffic radar', count: analysis.trafficDistribution.leakedQueries.length },
+    { id: 'sem', label: 'Paid search', count: analysis.keywords.length },
+    { id: 'organic', label: 'Organic & AI search' },
+    { id: 'cro', label: 'Landing page' },
+    { id: 'roadmap', label: '90-day roadmap', count: analysis.roadmap.length }
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-canvas text-fg flex flex-col font-sans">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-6 z-50 bg-white dark:bg-slate-900 border border-brand-500/40 text-slate-900 dark:text-white px-4 py-3 rounded-xl shadow-glow flex items-center gap-2.5 text-xs animate-in slide-in-from-bottom duration-200">
-          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+        <div role="status" className="fixed bottom-6 left-6 z-50 bg-surface border border-line text-fg px-4 py-3 rounded shadow-overlay flex items-center gap-2 text-sm">
+          <Check className="w-4 h-4 text-accent-fg" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -198,7 +196,7 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
       />
 
       {/* Main Content Area */}
-      <main id="main" className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6">
+      <main id="main" className={`flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 ${hasAnalyzed ? 'pt-12' : ''}`}>
         {!hasAnalyzed && <Hero />}
 
         {/* Domain Search & Scanner Bar */}
@@ -213,113 +211,29 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
           compact={!hasAnalyzed}
         />
 
-        {/* Primary SaaS Navigation Tabs */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800/80 mb-6 overflow-x-auto no-scrollbar gap-2 transition-colors duration-200">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`pb-3 px-3 text-xs md:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'overview'
-                ? 'border-brand-500 text-brand-600 dark:text-white'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4 text-brand-500" />
-            <span>Executive Dossier & T1 Index</span>
-          </button>
-
-          {/* NEW TAB: Revenue & Traffic Potential */}
-          <button
-            onClick={() => setActiveTab('revenue')}
-            className={`pb-3 px-3 text-xs md:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'revenue'
-                ? 'border-brand-500 text-brand-600 dark:text-white'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <DollarSign className="w-4 h-4 text-emerald-500" />
-            <span>Revenue & Traffic Potential</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
-              Unit Economics
-            </span>
-          </button>
-
-          {/* Traffic Radar & Auto-Fix */}
-          <button
-            onClick={() => setActiveTab('traffic')}
-            className={`pb-3 px-3 text-xs md:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'traffic'
-                ? 'border-brand-500 text-brand-600 dark:text-white'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <Users className="w-4 h-4 text-rose-500" />
-            <span>Traffic Radar & Auto-Fix</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 flex items-center gap-1">
-              <AlertTriangle className="w-2.5 h-2.5" />
-              <span>5 Leaks</span>
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('sem')}
-            className={`pb-3 px-3 text-xs md:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'sem'
-                ? 'border-brand-500 text-brand-600 dark:text-white'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <Target className="w-4 h-4 text-emerald-500" />
-            <span>SEM & Paid Ads Architect</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
-              {analysis.keywords.length} KWs
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('organic')}
-            className={`pb-3 px-3 text-xs md:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'organic'
-                ? 'border-brand-500 text-brand-600 dark:text-white'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <Layers className="w-4 h-4 text-accent-500" />
-            <span>T1 Organic & AI Search (GEO)</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-accent-50 dark:bg-accent-500/10 text-accent-600 dark:text-accent-400 border border-accent-200 dark:border-accent-500/20">
-              Perplexity & Google
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('cro')}
-            className={`pb-3 px-3 text-xs md:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'cro'
-                ? 'border-brand-500 text-brand-600 dark:text-white'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <Eye className="w-4 h-4 text-amber-500" />
-            <span>Landing Page CRO Studio</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('roadmap')}
-            className={`pb-3 px-3 text-xs md:text-sm font-semibold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'roadmap'
-                ? 'border-brand-500 text-brand-600 dark:text-white'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-            }`}
-          >
-            <CheckSquare className="w-4 h-4 text-indigo-500" />
-            <span>30-60-90 Day Roadmap</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
-              {analysis.roadmap.length} Steps
-            </span>
-          </button>
-        </div>
+        {/* Report navigation */}
+        <nav aria-label="Report sections" className="flex border-b border-line mb-8 overflow-x-auto no-scrollbar gap-6">
+          {tabs.map((t) => {
+            const active = activeTab === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveTab(t.id)}
+                aria-current={active ? 'page' : undefined}
+                className={`relative h-10 -mb-px flex items-center gap-2 text-sm whitespace-nowrap border-b-2 transition-colors cursor-pointer ${
+                  active ? 'border-accent text-fg font-medium' : 'border-transparent text-fg-muted hover:text-fg'
+                }`}
+              >
+                <span>{t.label}</span>
+                {t.count !== undefined && <span className="num text-xs text-fg-subtle">{t.count}</span>}
+              </button>
+            );
+          })}
+        </nav>
 
         {/* Tab Content Display */}
-        <div className="pb-16">
+        <div className="pb-24">
           {activeTab === 'overview' && (
             <OverviewScorecard analysis={analysis} onNavigateTab={(tab) => setActiveTab(tab as any)} />
           )}
@@ -355,16 +269,14 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         </div>
       </main>
 
-      {/* Floating AI Agency Partner Trigger */}
+      {/* Strategist chat trigger */}
       <div className="fixed bottom-6 right-6 z-40">
         <button
+          type="button"
           onClick={() => setIsChatOpen(true)}
-          className="group flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-brand-600 via-indigo-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 text-white font-semibold text-xs rounded-2xl shadow-glow transition-all active:scale-95 cursor-pointer"
+          className="btn bg-surface text-fg border border-line hover:border-line-strong shadow-overlay"
         >
-          <div className="relative">
-            <Sparkles className="w-4 h-4 text-white" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-          </div>
+          <MessageSquare className="w-4 h-4 text-fg-muted" />
           <span>Ask the strategist</span>
         </button>
       </div>
@@ -386,18 +298,14 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         usedToday={isSubscribeModalOpen ? usedToday() : 0}
       />
 
-      {/* Modern B2B SaaS Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-900 bg-white/80 dark:bg-slate-950/80 py-6 px-4 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors duration-200">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Zap className="w-3.5 h-3.5 text-brand-500" />
-            <span>ApexSEM — SEM and SEO strategy from your homepage</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[11px]">
-            <button onClick={() => openPlans('upgrade')} className="hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer">
+      <footer className="border-t border-line py-8 px-4 lg:px-8 text-xs text-fg-subtle">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <span>ApexSEM. SEM and SEO strategy from your homepage.</span>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <button type="button" onClick={() => openPlans('upgrade')} className="hover:text-fg transition-colors cursor-pointer">
               Free or Pro ${PRO_PRICE}/mo
             </button>
-            <a href="mailto:hello@stallbay.com" className="hover:text-slate-800 dark:hover:text-slate-200">hello@stallbay.com</a>
+            <a href="mailto:hello@stallbay.com" className="hover:text-fg transition-colors">hello@stallbay.com</a>
             <span>Traffic, volume and CPC figures are modeled estimates, not Google Ads data.</span>
           </div>
         </div>

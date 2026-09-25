@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { 
   DollarSign, 
   TrendingUp, 
-  Calculator, 
   Sliders, 
   PieChart, 
-  ArrowUpRight, 
   Download, 
-  Sparkles, 
   ShieldCheck,
   Target,
   BarChart3,
@@ -91,36 +88,28 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
       type: 'Paid Search',
       share: 26,
       cvr: 5.4,
-      icon: Target,
-      color: 'text-brand-500',
-      bgColor: 'bg-brand-500/10'
+      icon: Target
     },
     {
       name: 'Competitor Conquest Interception',
       type: 'Paid + Comparison CRO',
       share: 22,
       cvr: 6.1,
-      icon: DollarSign,
-      color: 'text-rose-500',
-      bgColor: 'bg-rose-500/10'
+      icon: DollarSign
     },
     {
       name: 'Tier-1 Organic Topical Pillars',
       type: 'Organic Search (SEO)',
       share: 38,
       cvr: 3.2,
-      icon: Layers,
-      color: 'text-emerald-500',
-      bgColor: 'bg-emerald-500/10'
+      icon: Layers
     },
     {
       name: 'AI Engine Visibility (GEO: Perplexity/ChatGPT)',
       type: 'Generative AI Citations',
       share: 14,
       cvr: 6.8,
-      icon: Bot,
-      color: 'text-accent-500',
-      bgColor: 'bg-accent-500/10'
+      icon: Bot
     }
   ];
 
@@ -172,23 +161,22 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Title & Controls Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <DollarSign className="w-5 h-5 text-emerald-500" />
-            <span>Real Traffic & Revenue Potential Forecaster</span>
+          <h2 className="text-xl font-semibold tracking-[-0.02em] text-fg">
+            Real Traffic & Revenue Potential Forecaster
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Mathematically grounded B2B unit economics model based on {analysis.domain}'s search volume, conversion rates, and deal size.
+          <p className="text-sm text-fg-muted mt-1">
+            Mathematically grounded B2B unit economics model based on <span className="font-mono">{analysis.domain}</span>'s search volume, conversion rates, and deal size.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportModelCSV}
-            className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            className="btn btn-secondary btn-sm"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export Financial Model (CSV)</span>
@@ -197,22 +185,22 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
       </div>
 
       {/* Scenario Selector & Core Controls */}
-      <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl space-y-6 transition-colors duration-200">
+      <div className="card p-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-            <Sliders className="w-4 h-4 text-brand-500" />
-            <span>Select Growth Scenario:</span>
+          <span className="text-sm font-semibold text-fg flex items-center gap-2">
+            <Sliders className="w-4 h-4 text-fg-subtle" />
+            <span>Growth scenario</span>
           </span>
 
-          <div className="flex rounded-xl bg-slate-100 dark:bg-slate-950 p-1 border border-slate-200 dark:border-slate-800 text-xs">
+          <div className="inline-flex rounded bg-surface-2 p-1 border border-line text-xs">
             {(['conservative', 'expected', 'monopoly'] as const).map((scKey) => (
               <button
                 key={scKey}
                 onClick={() => setScenario(scKey)}
-                className={`px-3 py-1.5 rounded-lg capitalize transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-sm capitalize transition-colors cursor-pointer ${
                   scenario === scKey
-                    ? 'bg-brand-600 text-white font-bold shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'bg-surface text-fg font-semibold border border-line'
+                    : 'text-fg-muted hover:text-fg border border-transparent'
                 }`}
               >
                 {scKey}
@@ -221,18 +209,18 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
           </div>
         </div>
 
-        <p className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/80 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-          <strong className="text-slate-900 dark:text-white font-semibold">{currentConfig.name}:</strong>{' '}
-          {currentConfig.desc} (Targeting <strong>{currentConfig.trafficCapturePercent}%</strong> of reachable search volume).
+        <p className="inset p-4 text-sm text-fg-muted leading-relaxed">
+          <strong className="text-fg font-semibold">{currentConfig.name}:</strong>{' '}
+          {currentConfig.desc} (Targeting <strong className="text-fg font-semibold num">{currentConfig.trafficCapturePercent}%</strong> of reachable search volume).
         </p>
 
         {/* Interactive Sliders: ACV, Close Rate, CVR */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-line pt-6">
           {/* Slider 1: ACV */}
-          <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Average Contract Value (ACV):</span>
-              <span className="font-mono font-bold text-slate-900 dark:text-white">${acv.toLocaleString()}/yr</span>
+          <div className="space-y-3">
+            <div className="flex justify-between items-baseline gap-2 text-xs">
+              <span className="text-fg-muted">Average Contract Value (ACV)</span>
+              <span className="num font-semibold text-fg text-sm">${acv.toLocaleString()}/yr</span>
             </div>
             <input
               type="range"
@@ -241,9 +229,9 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
               step="1000"
               value={acv}
               onChange={(e) => setAcv(Number(e.target.value))}
-              className="w-full accent-brand-500 cursor-pointer"
+              className="w-full accent-accent cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+            <div className="flex justify-between text-2xs text-fg-subtle num">
               <span>$2k (Self-Serve)</span>
               <span>$24k (Mid-Market)</span>
               <span>$60k (Enterprise)</span>
@@ -251,10 +239,10 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
           </div>
 
           {/* Slider 2: Demo CVR */}
-          <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Visitor-to-Lead Rate (CVR):</span>
-              <span className="font-mono font-bold text-brand-600 dark:text-brand-400">{demoCvr}%</span>
+          <div className="space-y-3">
+            <div className="flex justify-between items-baseline gap-2 text-xs">
+              <span className="text-fg-muted">Visitor-to-Lead Rate (CVR)</span>
+              <span className="num font-semibold text-fg text-sm">{demoCvr}%</span>
             </div>
             <input
               type="range"
@@ -263,9 +251,9 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
               step="0.1"
               value={demoCvr}
               onChange={(e) => setDemoCvr(Number(e.target.value))}
-              className="w-full accent-brand-500 cursor-pointer"
+              className="w-full accent-accent cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+            <div className="flex justify-between text-2xs text-fg-subtle num">
               <span>1.5% (Low)</span>
               <span>4.2% (Benchmark)</span>
               <span>8.0% (Optimized CRO)</span>
@@ -273,10 +261,10 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
           </div>
 
           {/* Slider 3: Sales Close Rate */}
-          <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">SQL to Closed-Won Rate:</span>
-              <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{closeRate}%</span>
+          <div className="space-y-3">
+            <div className="flex justify-between items-baseline gap-2 text-xs">
+              <span className="text-fg-muted">SQL to Closed-Won Rate</span>
+              <span className="num font-semibold text-fg text-sm">{closeRate}%</span>
             </div>
             <input
               type="range"
@@ -285,9 +273,9 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
               step="1"
               value={closeRate}
               onChange={(e) => setCloseRate(Number(e.target.value))}
-              className="w-full accent-emerald-500 cursor-pointer"
+              className="w-full accent-accent cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+            <div className="flex justify-between text-2xs text-fg-subtle num">
               <span>8% (Conservative)</span>
               <span>18% (Standard)</span>
               <span>35% (High Velocity)</span>
@@ -299,107 +287,91 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
       {/* 4 Grand Revenue & Traffic Impact Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Annualized ARR Pipeline */}
-        <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-xl transition-colors duration-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-              Annualized ARR Generated
-            </span>
-            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
-              <TrendingUp className="w-4 h-4" />
-            </div>
+        <div className="card p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="label">Annualized ARR generated</span>
+            <TrendingUp className="w-4 h-4 text-fg-subtle" />
           </div>
-          <div className="text-3xl font-black font-mono text-slate-900 dark:text-white">
+          <div className="text-2xl font-semibold num text-fg">
             ${(annualPipelineArr / 1000000).toFixed(2)}M
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 font-mono">
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold">+${monthlyNewArr.toLocaleString()}</span> net new ARR / month
+          <p className="text-xs text-fg-muted mt-2">
+            <span className="text-pos font-semibold num">+${monthlyNewArr.toLocaleString()}</span> net new ARR / month
           </p>
         </div>
 
         {/* Card 2: Projected Monthly Visitors */}
-        <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-xl transition-colors duration-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-              Target Monthly Traffic
-            </span>
-            <div className="p-2 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-500/20">
-              <Target className="w-4 h-4" />
-            </div>
+        <div className="card p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="label">Target monthly traffic</span>
+            <Target className="w-4 h-4 text-fg-subtle" />
           </div>
-          <div className="text-3xl font-black font-mono text-brand-600 dark:text-brand-400">
+          <div className="text-2xl font-semibold num text-fg">
             {targetMonthlyVisitors.toLocaleString()}
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-            <span className="font-mono font-bold text-slate-700 dark:text-slate-300">+{netNewVisitors.toLocaleString()}</span> new monthly visits
+          <p className="text-xs text-fg-muted mt-2">
+            <span className="text-pos font-semibold num">+{netNewVisitors.toLocaleString()}</span> new monthly visits
           </p>
         </div>
 
         {/* Card 3: Monthly Closed Deals */}
-        <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-xl transition-colors duration-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-              Closed-Won Deals
-            </span>
-            <div className="p-2 rounded-xl bg-accent-50 dark:bg-accent-500/10 text-accent-600 dark:text-accent-400 border border-accent-200 dark:border-accent-500/20">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
+        <div className="card p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="label">Closed-won deals</span>
+            <ShieldCheck className="w-4 h-4 text-fg-subtle" />
           </div>
-          <div className="text-3xl font-black font-mono text-slate-900 dark:text-white">
+          <div className="text-2xl font-semibold num text-fg">
             {monthlyClosedWonDeals}{' '}
-            <span className="text-xs font-normal text-slate-500 dark:text-slate-400 font-sans">customers/mo</span>
+            <span className="text-xs font-normal text-fg-muted">customers/mo</span>
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
-            From <span className="font-bold text-slate-700 dark:text-slate-300">{monthlySqls}</span> sales qualified demos
+          <p className="text-xs text-fg-muted mt-2">
+            From <span className="font-semibold text-fg num">{monthlySqls}</span> sales qualified demos
           </p>
         </div>
 
         {/* Card 4: LTV:CAC Efficiency */}
-        <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-xl transition-colors duration-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-              LTV : CAC Ratio
-            </span>
-            <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
-              <BarChart3 className="w-4 h-4" />
-            </div>
+        <div className="card p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className="label">LTV : CAC ratio</span>
+            <BarChart3 className="w-4 h-4 text-fg-subtle" />
           </div>
-          <div className="text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+          <div className="text-2xl font-semibold num text-fg">
             {ltvCacRatio}x
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
-            Payback in <strong className="text-slate-800 dark:text-white">{paybackMonths} months</strong> (LTV: ${ltv.toLocaleString()})
+          <p className="text-xs text-fg-muted mt-2">
+            Payback in <strong className="text-fg font-semibold num">{paybackMonths} months</strong> (LTV: <span className="num">${ltv.toLocaleString()}</span>)
           </p>
         </div>
       </div>
 
       {/* Channel-by-Channel Revenue & Traffic Matrix */}
-      <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl transition-colors duration-200">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+      <div className="card p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-brand-500" />
+            <h3 className="text-base font-semibold tracking-[-0.02em] text-fg flex items-center gap-2">
+              <PieChart className="w-4 h-4 text-fg-subtle" />
               <span>Channel-by-Channel Revenue & Traffic Contribution Matrix</span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-fg-muted mt-1">
               Exact volume and pipeline projections derived from each SEM and Search Authority channel.
             </p>
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-mono">
-                <th className="py-3 px-4 font-semibold">Growth Channel</th>
-                <th className="py-3 px-3 font-semibold">Mechanism</th>
-                <th className="py-3 px-3 font-semibold">Traffic Share</th>
-                <th className="py-3 px-3 font-semibold">Monthly Visits</th>
-                <th className="py-3 px-3 font-semibold">Demo Leads</th>
-                <th className="py-3 px-3 font-semibold">Est. Won Deals</th>
-                <th className="py-3 px-4 font-semibold text-right">Annualized ARR</th>
+              <tr className="border-b border-line">
+                <th className="label py-3 pr-4 font-medium">Growth channel</th>
+                <th className="label py-3 px-3 font-medium">Mechanism</th>
+                <th className="label py-3 px-3 font-medium text-right">Traffic share</th>
+                <th className="label py-3 px-3 font-medium text-right">Monthly visits</th>
+                <th className="label py-3 px-3 font-medium text-right">Demo leads</th>
+                <th className="label py-3 px-3 font-medium text-right">Est. won deals</th>
+                <th className="label py-3 pl-3 font-medium text-right">Annualized ARR</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
+            <tbody className="divide-y divide-line">
               {channels.map((chan, idx) => {
                 const chanVisits = Math.round(targetMonthlyVisitors * (chan.share / 100));
                 const chanDemos = Math.round(chanVisits * (chan.cvr / 100));
@@ -408,29 +380,29 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
                 const IconComponent = chan.icon;
 
                 return (
-                  <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                      <div className={`p-1.5 rounded-lg ${chan.bgColor} ${chan.color}`}>
-                        <IconComponent className="w-3.5 h-3.5" />
-                      </div>
-                      <span>{chan.name}</span>
+                  <tr key={idx} className="hover:bg-surface-2 transition-colors">
+                    <td className="py-3 pr-4 font-semibold text-fg">
+                      <span className="flex items-center gap-2">
+                        <IconComponent className="w-3.5 h-3.5 text-fg-subtle shrink-0" />
+                        <span>{chan.name}</span>
+                      </span>
                     </td>
-                    <td className="py-3.5 px-3 text-slate-600 dark:text-slate-400">
+                    <td className="py-3 px-3 text-fg-muted">
                       {chan.type}
                     </td>
-                    <td className="py-3.5 px-3 font-mono font-semibold text-slate-700 dark:text-slate-300">
+                    <td className="py-3 px-3 num text-fg-muted text-right">
                       {chan.share}%
                     </td>
-                    <td className="py-3.5 px-3 font-mono text-slate-800 dark:text-slate-200">
+                    <td className="py-3 px-3 num text-fg text-right">
                       {chanVisits.toLocaleString()}
                     </td>
-                    <td className="py-3.5 px-3 font-mono text-slate-700 dark:text-slate-300">
+                    <td className="py-3 px-3 num text-fg-muted text-right">
                       {chanDemos} ({chan.cvr}% CVR)
                     </td>
-                    <td className="py-3.5 px-3 font-mono font-bold text-brand-600 dark:text-brand-400">
+                    <td className="py-3 px-3 num text-fg text-right">
                       {chanDeals} deals/mo
                     </td>
-                    <td className="py-3.5 px-4 font-mono font-black text-emerald-600 dark:text-emerald-400 text-right">
+                    <td className="py-3 pl-3 num font-semibold text-fg text-right">
                       ${chanArr.toLocaleString()}
                     </td>
                   </tr>
@@ -442,13 +414,12 @@ export const RevenueTrafficForecaster: React.FC<RevenueTrafficForecasterProps> =
       </div>
 
       {/* Strategic Takeaway / Action Callout */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/30 via-slate-900 to-indigo-950/30 border border-emerald-500/30 text-xs text-slate-300 space-y-2">
-        <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-          <Sparkles className="w-4 h-4" />
-          <span>Executive Summary for {analysis.domain}:</span>
-        </div>
-        <p className="leading-relaxed">
-          At an Average Contract Value of <strong>${acv.toLocaleString()}/year</strong> and your current niche search volume of <strong>{totalMarketSearches.toLocaleString()} queries/month</strong>, moving from Tier-3 obscurity to Tier-1 Search Authority unlocks an additional <strong>+{netNewVisitors.toLocaleString()} monthly visits</strong> and <strong>${(annualPipelineArr / 1000000).toFixed(2)}M in annualized revenue</strong> at a <strong>{ltvCacRatio}x LTV:CAC efficiency</strong>.
+      <div className="card p-6 space-y-2">
+        <h3 className="text-sm font-semibold text-fg">
+          Executive summary for <span className="font-mono">{analysis.domain}</span>
+        </h3>
+        <p className="text-sm text-fg-muted leading-relaxed max-w-prose">
+          At an Average Contract Value of <strong className="text-fg font-semibold num">${acv.toLocaleString()}/year</strong> and your current niche search volume of <strong className="text-fg font-semibold num">{totalMarketSearches.toLocaleString()} queries/month</strong>, moving from Tier-3 obscurity to Tier-1 Search Authority unlocks an additional <strong className="text-fg font-semibold num">+{netNewVisitors.toLocaleString()} monthly visits</strong> and <strong className="text-fg font-semibold num">${(annualPipelineArr / 1000000).toFixed(2)}M in annualized revenue</strong> at a <strong className="text-fg font-semibold num">{ltvCacRatio}x LTV:CAC efficiency</strong>.
         </p>
       </div>
     </div>

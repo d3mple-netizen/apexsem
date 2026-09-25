@@ -87,26 +87,26 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
       {/* Module Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Target className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+          <h2 className="text-xl font-semibold text-fg flex items-center gap-2">
+            <Target className="w-4 h-4 text-fg-subtle" />
             <span>Autonomous SEM Campaign Architect</span>
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-fg-muted mt-1">
             Engineered Google Ads campaign structures, high-intent transactional keywords, and character-optimized Responsive Search Ads.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 dark:text-slate-400">Campaign Mode:</span>
-          <div className="flex rounded-xl bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200 dark:border-slate-800">
+          <span className="text-xs text-fg-subtle">Campaign Mode:</span>
+          <div className="inset flex p-1">
             {analysis.campaigns.map((camp, idx) => (
               <button
                 key={camp.id}
                 onClick={() => setSelectedCampaignIdx(idx)}
-                className={`px-3 py-1 text-xs rounded-lg font-medium transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs rounded-sm font-medium transition-colors cursor-pointer ${
                   selectedCampaignIdx === idx
-                    ? 'bg-brand-600 text-white shadow-sm font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'bg-surface text-fg'
+                    : 'text-fg-muted hover:text-fg'
                 }`}
               >
                 {camp.campaignType.split(' ')[0]}
@@ -119,51 +119,51 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
       {/* Real Google Search Ad Preview & Structure */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* SERP Ad Preview (7 cols) */}
-        <div className="lg:col-span-7 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl flex flex-col justify-between transition-colors duration-200">
+        <div className="lg:col-span-7 card p-6 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
+                <div className="w-2 h-2 rounded-full bg-accent" />
+                <span className="text-sm font-semibold text-fg">
                   Live SERP Simulation Preview
                 </span>
               </div>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 border border-brand-200 dark:border-brand-500/20">
+              <span className="tag">
                 {activeCampaign.campaignType}
               </span>
             </div>
 
             {/* Google Search Mockup Card */}
-            <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-xl border border-slate-200 dark:border-slate-800/90 space-y-3 font-sans shadow-inner">
+            <div className="inset p-5 space-y-3">
               {/* URL & Sponsored Label */}
               <div className="flex items-center gap-2 text-xs">
-                <span className="font-bold text-slate-700 dark:text-slate-100 bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">
+                <span className="tag font-semibold text-fg">
                   Sponsored
                 </span>
-                <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-mono text-[11px]">
+                <span className="text-fg-subtle flex items-center gap-1 font-mono text-xs">
                   https://{activeCampaign.displayPath}
                 </span>
               </div>
 
               {/* Ad Headlines */}
-              <h4 className="text-lg font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer flex items-center gap-1.5 flex-wrap">
+              <h4 className="text-base font-semibold text-accent-fg hover:underline cursor-pointer flex items-center gap-1.5 flex-wrap">
                 <span>{activeCampaign.headlines.slice(0, 3).join(' | ')}</span>
                 <ExternalLink className="w-3.5 h-3.5 inline opacity-60" />
               </h4>
 
               {/* Description */}
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-xs text-fg-muted leading-relaxed">
                 {activeCampaign.descriptions.join(' ')}
               </p>
 
               {/* Sitelinks Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200 dark:border-slate-800/80">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3 border-t border-line">
                 {activeCampaign.sitelinks.map((sitelink, sIdx) => (
-                  <div key={sIdx} className="p-2 rounded-lg bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/60 hover:border-brand-500/30 transition-all">
-                    <span className="text-xs font-semibold text-brand-600 dark:text-brand-300 hover:underline cursor-pointer block">
+                  <div key={sIdx} className="p-2 rounded-sm hover:bg-surface transition-colors">
+                    <span className="text-xs font-semibold text-fg hover:underline cursor-pointer block">
                       {sitelink.title}
                     </span>
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                    <span className="text-xs text-fg-subtle line-clamp-1">
                       {sitelink.desc}
                     </span>
                   </div>
@@ -173,8 +173,8 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
               {/* Callouts */}
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {activeCampaign.callouts.map((callout, cIdx) => (
-                  <span key={cIdx} className="text-[10px] text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800">
-                    ✓ {callout}
+                  <span key={cIdx} className="tag bg-surface">
+                    {callout}
                   </span>
                 ))}
               </div>
@@ -182,41 +182,41 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
           </div>
 
           {/* Ad Copy Copy-to-Clipboard Action */}
-          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">Target Audience: <strong className="text-slate-800 dark:text-slate-200">{activeCampaign.targetAudience}</strong></span>
+          <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4 text-xs">
+            <span className="text-fg-muted">Target Audience: <strong className="font-medium text-fg">{activeCampaign.targetAudience}</strong></span>
             <button
               onClick={() => {
                 const text = `HEADLINES:\n${activeCampaign.headlines.join('\n')}\n\nDESCRIPTIONS:\n${activeCampaign.descriptions.join('\n')}\n\nSITELINKS:\n${activeCampaign.sitelinks.map(s => `${s.title} - ${s.desc}`).join('\n')}`;
                 handleCopy(text, 'ad-copy');
               }}
-              className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+              className="btn btn-secondary btn-sm"
             >
-              {copiedKey === 'ad-copy' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedKey === 'ad-copy' ? <Check className="w-3.5 h-3.5 text-fg-subtle" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copiedKey === 'ad-copy' ? 'Copied Ad Copy!' : 'Copy for Google Ads'}</span>
             </button>
           </div>
         </div>
 
         {/* Character Count & Quality Score Guard (5 cols) */}
-        <div className="lg:col-span-5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl flex flex-col justify-between transition-colors duration-200">
+        <div className="lg:col-span-5 card p-6 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-accent-500" />
+            <h3 className="text-sm font-semibold text-fg flex items-center gap-2 mb-4">
+              <Sparkles className="w-4 h-4 text-fg-subtle" />
               <span>Google Ads RSA Character Compliance</span>
             </h3>
 
-            <div className="space-y-3">
+            <div className="space-y-6">
               <div>
-                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <div className="flex justify-between text-xs text-fg-muted mb-2">
                   <span>Headlines (Max 30 Chars)</span>
-                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">100% Compliant</span>
+                  <span className="font-medium text-fg-muted">100% Compliant</span>
                 </div>
-                <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                <div className="inset divide-y divide-line max-h-36 overflow-y-auto">
                   {activeCampaign.headlines.map((hl, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-800 dark:text-slate-200 font-mono truncate mr-2">{hl}</span>
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                        hl.length <= 30 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                    <div key={i} className="flex items-center justify-between text-xs px-3 py-2">
+                      <span className="text-fg truncate mr-2">{hl}</span>
+                      <span className={`num text-xs ${
+                        hl.length <= 30 ? 'text-fg-subtle' : 'text-accent-fg font-medium'
                       }`}>
                         {hl.length}/30
                       </span>
@@ -226,15 +226,15 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
               </div>
 
               <div>
-                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <div className="flex justify-between text-xs text-fg-muted mb-2">
                   <span>Descriptions (Max 90 Chars)</span>
-                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">100% Compliant</span>
+                  <span className="font-medium text-fg-muted">100% Compliant</span>
                 </div>
-                <div className="space-y-1.5">
+                <div className="inset divide-y divide-line">
                   {activeCampaign.descriptions.map((desc, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800">
-                      <span className="text-slate-800 dark:text-slate-200 font-mono truncate mr-2">{desc}</span>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                    <div key={i} className="flex items-center justify-between text-xs px-3 py-2">
+                      <span className="text-fg truncate mr-2">{desc}</span>
+                      <span className="num text-xs text-fg-subtle">
                         {desc.length}/90
                       </span>
                     </div>
@@ -244,24 +244,24 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
             </div>
           </div>
 
-          <div className="mt-4 p-3 rounded-xl bg-brand-50 dark:bg-brand-950/30 border border-brand-200 dark:border-brand-800/40 text-xs">
-            <span className="font-semibold text-brand-700 dark:text-brand-300 block mb-1">Quality Score Optimization Strategy:</span>
-            <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
-              Google Ads dynamically mixes and matches these headlines. By pairing high-intent problem headlines with social proof, Ad Strength is rated <strong>"Excellent" (9.8/10)</strong>.
+          <div className="mt-6 pt-4 border-t border-line text-xs">
+            <span className="font-semibold text-fg block mb-1">Quality Score Optimization Strategy:</span>
+            <p className="text-fg-muted text-xs leading-relaxed">
+              Google Ads dynamically mixes and matches these headlines. By pairing high-intent problem headlines with social proof, Ad Strength is rated <strong className="font-medium text-fg">"Excellent" (9.8/10)</strong>.
             </p>
           </div>
         </div>
       </div>
 
       {/* Target Keywords Matrix */}
-      <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl transition-colors duration-200">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+      <div className="card p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Target className="w-4 h-4 text-emerald-500" />
+            <h3 className="text-base font-semibold text-fg flex items-center gap-2">
+              <Target className="w-4 h-4 text-fg-subtle" />
               <span>High-Intent Target Keyword Matrix</span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-fg-muted mt-1">
               Filtered for bottom-of-funnel decision makers ready to purchase or switch from competitors.
             </p>
           </div>
@@ -273,15 +273,15 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
               placeholder="Filter keywords..."
               value={keywordSearch}
               onChange={(e) => setKeywordSearch(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 font-mono"
+              className="field h-8 w-48 px-3 text-xs"
             />
-            <div className="flex rounded-lg bg-slate-100 dark:bg-slate-950 p-1 border border-slate-200 dark:border-slate-800 text-xs">
+            <div className="inset flex p-1 text-xs">
               {['all', 'transactional', 'conquest'].map((filterKey) => (
                 <button
                   key={filterKey}
                   onClick={() => setIntentFilter(filterKey)}
-                  className={`px-2 py-0.5 rounded capitalize transition-all cursor-pointer ${
-                    intentFilter === filterKey ? 'bg-brand-600 text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  className={`px-2 py-1 rounded-sm font-medium capitalize transition-colors cursor-pointer ${
+                    intentFilter === filterKey ? 'bg-surface text-fg' : 'text-fg-muted hover:text-fg'
                   }`}
                 >
                   {filterKey}
@@ -291,7 +291,7 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
 
             <button
               onClick={handleExportKeywordsCSV}
-              className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
+              className="btn btn-secondary btn-sm"
               title="Download CSV for Google Ads Editor"
             >
               <Download className="w-3.5 h-3.5" />
@@ -301,61 +301,55 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
         </div>
 
         {/* Table View */}
-        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+        <div className="overflow-x-auto rounded border border-line">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-mono">
-                <th className="py-3 px-4 font-semibold">Target Keyword</th>
-                <th className="py-3 px-3 font-semibold">Intent</th>
-                <th className="py-3 px-3 font-semibold">Match</th>
-                <th className="py-3 px-3 font-semibold">Vol/Mo</th>
-                <th className="py-3 px-3 font-semibold">Est. CPC</th>
-                <th className="py-3 px-3 font-semibold">Difficulty</th>
-                <th className="py-3 px-3 font-semibold">Opp. Score</th>
-                <th className="py-3 px-4 font-semibold">Agency Action</th>
+              <tr className="bg-surface-2 border-b border-line">
+                <th className="label py-3 px-4">Target Keyword</th>
+                <th className="label py-3 px-3">Intent</th>
+                <th className="label py-3 px-3">Match</th>
+                <th className="label py-3 px-3">Vol/Mo</th>
+                <th className="label py-3 px-3">Est. CPC</th>
+                <th className="label py-3 px-3">Difficulty</th>
+                <th className="label py-3 px-3">Opp. Score</th>
+                <th className="label py-3 px-4">Agency Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
+            <tbody className="divide-y divide-line">
               {filteredKeywords.map((kw) => (
-                <tr key={kw.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3 px-4 font-mono font-medium text-slate-900 dark:text-white">
+                <tr key={kw.id} className="hover:bg-surface-2 transition-colors">
+                  <td className="py-3 px-4 font-medium text-fg">
                     {kw.keyword}
                   </td>
                   <td className="py-3 px-3">
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                      kw.intent.includes('Transactional')
-                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                        : kw.intent.includes('Conquest')
-                        ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
-                        : 'bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20'
-                    }`}>
+                    <span className="tag">
                       {kw.intent}
                     </span>
                   </td>
-                  <td className="py-3 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                  <td className="py-3 px-3 font-mono text-xs text-fg-muted">
                     {kw.matchType === 'Exact' ? `[exact]` : `"${kw.matchType.toLowerCase()}"`}
                   </td>
-                  <td className="py-3 px-3 font-mono text-slate-600 dark:text-slate-300">
+                  <td className="py-3 px-3 num text-fg-muted">
                     {kw.monthlyVolume.toLocaleString()}
                   </td>
-                  <td className="py-3 px-3 font-mono font-semibold text-brand-600 dark:text-brand-300">
+                  <td className="py-3 px-3 num font-medium text-fg">
                     ${kw.cpc.toFixed(2)}
                   </td>
                   <td className="py-3 px-3">
-                    <span className="font-mono text-slate-600 dark:text-slate-300">{kw.difficulty}/100</span>
+                    <span className="num text-fg-muted">{kw.difficulty}/100</span>
                   </td>
                   <td className="py-3 px-3">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{kw.opportunityScore}</span>
-                      <div className="w-12 bg-slate-200 dark:bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                    <div className="flex items-center gap-2">
+                      <span className="num font-semibold text-fg">{kw.opportunityScore}</span>
+                      <div className="w-12 bg-surface-2 h-1 rounded-full overflow-hidden">
                         <div
-                          className="bg-emerald-500 h-full rounded-full"
+                          className="bg-fg-muted h-full rounded-full"
                           style={{ width: `${kw.opportunityScore}%` }}
                         />
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-slate-600 dark:text-slate-300 text-[11px]">
+                  <td className="py-3 px-4 text-fg-muted text-xs">
                     {kw.recommendedAction}
                   </td>
                 </tr>
@@ -368,20 +362,20 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
       {/* Negative Keyword Shield & Budget Planner */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Negative Keyword Shield (6 cols) */}
-        <div className="lg:col-span-6 bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl flex flex-col justify-between transition-colors duration-200">
+        <div className="lg:col-span-6 card p-6 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between gap-4 mb-3">
               <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-rose-500" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Negative Keyword Budget Shield</h3>
+                <Shield className="w-4 h-4 text-fg-subtle" />
+                <h3 className="text-base font-semibold text-fg">Negative Keyword Budget Shield</h3>
               </div>
-              <span className="text-xs font-mono text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-200 dark:border-rose-500/20 font-semibold">
+              <span className="tag num">
                 {negativeKeywords.length} Terms Shielded
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            <p className="text-xs text-fg-muted mb-4">
               Eliminate budget waste from job seekers, students, and low-intent searches. Prevents an estimated{' '}
-              <strong className="text-emerald-600 dark:text-emerald-400 font-mono">${analysis.metrics.wastedSpendPrevented.toLocaleString()}</strong> in wasted ad spend.
+              <strong className="text-pos num font-semibold">${analysis.metrics.wastedSpendPrevented.toLocaleString()}</strong> in wasted ad spend.
             </p>
 
             {/* Add Custom Negative Keyword Form */}
@@ -391,64 +385,64 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
                 value={newNegativeInput}
                 onChange={(e) => setNewNegativeInput(e.target.value)}
                 placeholder="Add custom negative term (e.g. coupon, syllabus)..."
-                className="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-lg text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-brand-500 font-mono"
+                className="field flex-1 h-8 px-3 text-xs"
               />
               <button
                 type="submit"
                 disabled={!newNegativeInput.trim()}
-                className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer transition-all active:scale-95 shadow-sm"
+                className="btn btn-primary btn-sm"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add</span>
               </button>
             </form>
 
-            <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+            <div className="inset flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-3">
               {negativeKeywords.map((neg, idx) => (
                 <span
                   key={idx}
-                  className="text-[11px] font-mono px-2 py-0.5 rounded bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-900/30 flex items-center gap-1"
+                  className="tag bg-surface font-mono"
                 >
-                  <span className="text-rose-500 font-bold">-</span>
+                  <span className="text-fg-subtle">-</span>
                   {neg}
                 </span>
               ))}
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Ready to paste into Google Ads Editor</span>
+          <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4">
+            <span className="text-xs text-fg-subtle">Ready to paste into Google Ads Editor</span>
             <button
               onClick={() => handleCopy(negativeKeywords.map(k => `-[${k}]`).join('\n'), 'negatives')}
-              className="px-3.5 py-1.5 bg-rose-50 dark:bg-rose-600/20 hover:bg-rose-100 dark:hover:bg-rose-600/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+              className="btn btn-secondary btn-sm"
             >
-              {copiedKey === 'negatives' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedKey === 'negatives' ? <Check className="w-3.5 h-3.5 text-fg-subtle" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copiedKey === 'negatives' ? 'Copied Negative List!' : 'Copy Negative List'}</span>
             </button>
           </div>
         </div>
 
         {/* Budget & ROAS Bidding Calculator (6 cols) */}
-        <div className="lg:col-span-6 bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl flex flex-col justify-between transition-colors duration-200">
+        <div className="lg:col-span-6 card p-6 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between gap-4 mb-3">
               <div className="flex items-center gap-2">
-                <Calculator className="w-5 h-5 text-indigo-500" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Smart Bidding & CAC Calculator</h3>
+                <Calculator className="w-4 h-4 text-fg-subtle" />
+                <h3 className="text-base font-semibold text-fg">Smart Bidding & CAC Calculator</h3>
               </div>
-              <span className="text-xs font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-500/20 font-semibold">
+              <span className="text-xs text-fg-subtle">
                 Predictive Model
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-              Simulate paid search pipeline output based on ${avgCpc.toFixed(2)} average CPC in {analysis.niche}.
+            <p className="text-xs text-fg-muted mb-4">
+              Simulate paid search pipeline output based on <span className="num">${avgCpc.toFixed(2)}</span> average CPC in {analysis.niche}.
             </p>
 
             {/* Slider */}
-            <div className="space-y-2 mb-4 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-              <div className="flex justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-400 font-medium">Monthly Ad Spend:</span>
-                <span className="text-base font-mono font-bold text-brand-600 dark:text-brand-400">${monthlyBudget.toLocaleString()}/mo</span>
+            <div className="inset space-y-2 mb-4 p-4">
+              <div className="flex justify-between items-baseline text-xs">
+                <span className="text-fg-muted font-medium">Monthly Ad Spend:</span>
+                <span className="text-base font-semibold num text-fg">${monthlyBudget.toLocaleString()}/mo</span>
               </div>
               <input
                 type="range"
@@ -457,9 +451,9 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
                 step="500"
                 value={monthlyBudget}
                 onChange={(e) => setMonthlyBudget(Number(e.target.value))}
-                className="w-full accent-brand-500 cursor-pointer"
+                className="w-full accent-accent cursor-pointer"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+              <div className="flex justify-between text-xs text-fg-subtle num">
                 <span>$1,000</span>
                 <span>$25,000</span>
                 <span>$50,000</span>
@@ -467,25 +461,25 @@ export const SEMArchitect: React.FC<SEMArchitectProps> = ({ analysis }) => {
             </div>
 
             {/* Forecast Output Grid */}
-            <div className="grid grid-cols-3 gap-2.5 text-center">
-              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Projected Clicks</span>
-                <span className="text-base font-bold font-mono text-slate-900 dark:text-white">{projectedClicks.toLocaleString()}</span>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="inset p-3">
+                <span className="label block">Projected Clicks</span>
+                <span className="text-xl font-semibold num text-fg">{projectedClicks.toLocaleString()}</span>
               </div>
-              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Qualified Leads</span>
-                <span className="text-base font-bold font-mono text-brand-600 dark:text-brand-300">{projectedLeads}</span>
+              <div className="inset p-3">
+                <span className="label block">Qualified Leads</span>
+                <span className="text-xl font-semibold num text-fg">{projectedLeads}</span>
               </div>
-              <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Projected ROAS</span>
-                <span className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400">{projectedRoas}x</span>
+              <div className="inset p-3">
+                <span className="label block">Projected ROAS</span>
+                <span className="text-xl font-semibold num text-fg">{projectedRoas}x</span>
               </div>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-            <span>Target CPA: <strong className="text-slate-800 dark:text-white font-mono">${targetCpa}</strong></span>
-            <span>Est. Pipeline: <strong className="text-emerald-600 dark:text-emerald-400 font-mono">${projectedArr.toLocaleString()}</strong></span>
+          <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4 text-xs text-fg-muted">
+            <span>Target CPA: <strong className="font-semibold num text-fg">${targetCpa}</strong></span>
+            <span>Est. Pipeline: <strong className="font-semibold num text-fg">${projectedArr.toLocaleString()}</strong></span>
           </div>
         </div>
       </div>

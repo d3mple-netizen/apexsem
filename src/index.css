@@ -1,44 +1,100 @@
+@import './styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
   body {
-    @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans transition-colors duration-200 selection:bg-brand-500 selection:text-white;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    @apply bg-canvas text-fg font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection {
+    background: rgb(var(--accent) / 0.35);
+  }
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+  /* Every figure lines up in columns */
+  table, .num {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Custom scrollbars */
+@layer components {
+  /* Surfaces */
+  .card {
+    @apply bg-surface border border-line rounded;
+  }
+  .inset {
+    @apply bg-surface-2 rounded;
+  }
+
+  /* Micro label: the only uppercase text in the product */
+  .label {
+    @apply text-2xs font-medium uppercase text-fg-subtle;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 h-9 px-4 rounded text-sm font-medium whitespace-nowrap
+      transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-sm {
+    @apply h-8 px-3 text-xs;
+  }
+  .btn-primary {
+    @apply bg-accent text-white hover:bg-accent-hover;
+  }
+  .btn-secondary {
+    @apply bg-surface-2 text-fg border border-line hover:border-line-strong;
+  }
+  .btn-ghost {
+    @apply text-fg-muted hover:text-fg hover:bg-surface-2;
+  }
+
+  /* Quiet tag: neutral, never colored */
+  .tag {
+    @apply inline-flex items-center gap-1 h-5 px-1.5 rounded-sm text-2xs font-medium text-fg-muted bg-surface-2 normal-case tracking-normal;
+  }
+
+  .field {
+    @apply w-full bg-canvas border border-line rounded text-fg placeholder:text-fg-subtle
+      focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/15 transition-colors;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: var(--line-strong);
   border-radius: 9999px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.6);
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.8);
-}
-
-/* Keyboard focus: visible ring on every interactive element */
-:where(a, button, select, [role="button"]):focus-visible {
-  outline: 2px solid #0c87eb;
+:where(a, button, input, select, textarea, [role="button"]):focus-visible {
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
 }
 
-/* Respect reduced-motion: stop pulses, pings, spins and transitions */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

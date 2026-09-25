@@ -1,0 +1,48 @@
+/*
+ * ApexSEM design tokens. One accent, one neutral ramp, one radius.
+ * Colors are consumed through Tailwind (see tailwind.config.js): bg-canvas,
+ * bg-surface, bg-surface-2, border-line, text-fg, text-fg-muted,
+ * text-fg-subtle, bg-accent, text-accent-fg, text-pos, text-neg.
+ */
+:root {
+  /* Neutral ramp: light */
+  --canvas: 250 250 250;
+  --surface: 255 255 255;
+  --surface-2: 244 244 245;
+  --fg: 17 17 19;
+  --fg-muted: rgba(17, 17, 19, 0.62);
+  --fg-subtle: rgba(17, 17, 19, 0.45);
+  --line: rgba(17, 17, 19, 0.08);
+  --line-strong: rgba(17, 17, 19, 0.14);
+
+  /* Accent: the only brand color */
+  --accent: 240 72 62;          /* #F0483E */
+  --accent-hover: 222 58 48;
+  --accent-fg: 196 52 44;       /* accent as text on light surfaces */
+  --accent-soft: rgba(240, 72, 62, 0.08);
+
+  /* Semantic, for metric deltas only */
+  --pos: 47 138 98;
+  --neg: 194 74 66;
+
+  --radius: 10px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.dark {
+  --canvas: 12 12 13;
+  --surface: 20 20 22;
+  --surface-2: 27 27 30;
+  --fg: 237 237 239;
+  --fg-muted: rgba(255, 255, 255, 0.6);
+  --fg-subtle: rgba(255, 255, 255, 0.42);
+  --line: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.11);
+
+  --accent-hover: 243 94 85;
+  --accent-fg: 244 110 102;
+  --accent-soft: rgba(240, 72, 62, 0.1);
+
+  --pos: 104 184 146;
+  --neg: 226 128 120;
+}

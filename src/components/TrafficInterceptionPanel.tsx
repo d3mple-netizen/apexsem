@@ -13,7 +13,8 @@ import {
   ExternalLink,
   DollarSign,
   Layers,
-  Wand2
+  Wand2,
+  Check
 } from 'lucide-react';
 import { DomainAnalysis, TrafficDistribution, TrafficLeakQuery } from '../types';
 
@@ -81,15 +82,15 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Title & Autonomous AI Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Users className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+          <h2 className="text-xl font-semibold text-fg flex items-center gap-2">
+            <Users className="w-4 h-4 text-fg-subtle" />
             <span>Search Traffic Share & Competitor Interception Radar</span>
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-fg-muted mt-1">
             Track how many potential buyers land on your domain vs. competitors, diagnose leaked traffic, and auto-intercept them with AI.
           </p>
         </div>
@@ -97,16 +98,16 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
         {/* Subscription Status or Upgrade CTA */}
         <div>
           {isSubscribed ? (
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Autopilot Pro Active ($49/mo)
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-fg-muted flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                Autopilot Pro Active <span className="num">($49/mo)</span>
               </span>
 
               <button
                 onClick={handleAutoFixAll}
                 disabled={isFixing || isFixedSuccess}
-                className="px-4 py-1.5 bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 text-white rounded-xl text-xs font-bold shadow-glow flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 disabled:opacity-60"
+                className="btn btn-primary btn-sm"
               >
                 <Wand2 className="w-3.5 h-3.5" />
                 <span>{isFixedSuccess ? 'All Leaks Resolved' : isFixing ? 'Fixing...' : '1-Click AI Fix All'}</span>
@@ -115,10 +116,10 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
           ) : (
             <button
               onClick={onOpenSubscribeModal}
-              className="px-4 py-2 bg-gradient-to-r from-accent-600 via-indigo-600 to-brand-600 hover:from-accent-500 hover:to-brand-500 text-white rounded-xl text-xs font-bold shadow-glow flex items-center gap-2 transition-all cursor-pointer active:scale-95 animate-pulse"
+              className="btn btn-primary btn-sm"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>Enable AI Auto-Fixer ($49/mo)</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="num">Enable AI Auto-Fixer ($49/mo)</span>
             </button>
           )}
         </div>
@@ -126,62 +127,58 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
 
       {/* Auto-Fixing Live Terminal Banner */}
       {isFixing && (
-        <div className="p-4 rounded-2xl bg-brand-950 border border-brand-500/40 text-brand-300 font-mono text-xs flex items-center gap-3 shadow-glow animate-in fade-in duration-200">
-          <div className="w-4 h-4 border-2 border-brand-400 border-t-transparent rounded-full animate-spin shrink-0" />
+        <div className="card p-4 font-mono text-xs text-fg-muted flex items-center gap-3">
+          <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin shrink-0" />
           <span>[Apex Autonomous Agent]: {fixStep}</span>
         </div>
       )}
 
       {/* Success Notification Banner */}
       {isFixedSuccess && !isFixing && (
-        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/80 text-emerald-800 dark:text-emerald-300 text-xs flex items-center justify-between shadow-sm animate-in fade-in duration-300">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+        <div className="card p-4 text-xs flex items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <Check className="w-4 h-4 text-fg-subtle shrink-0" />
             <div>
-              <span className="font-bold block">Autonomous AI Interception Successful!</span>
-              <span className="text-[11px] text-slate-600 dark:text-slate-300">
-                All 5 competitor leak queries intercepted. Reclaimed an estimated +{Math.round(trafficDistribution.totalLostVisits * 0.72).toLocaleString()} monthly visitors.
+              <span className="text-sm font-semibold text-fg block">Autonomous AI Interception Successful</span>
+              <span className="text-xs text-fg-muted">
+                All 5 competitor leak queries intercepted. Reclaimed an estimated <span className="num text-pos">+{Math.round(trafficDistribution.totalLostVisits * 0.72).toLocaleString()}</span> monthly visitors.
               </span>
             </div>
           </div>
-          <span className="font-mono font-bold text-xs bg-emerald-500/20 px-2.5 py-1 rounded-lg border border-emerald-500/30">
+          <span className="tag num shrink-0">
             100% Shielded
           </span>
         </div>
       )}
 
       {/* Traffic Distribution Overview Card */}
-      <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl space-y-6 transition-colors duration-200">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="card p-6 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>Monthly High-Intent Search Traffic Split</span>
-              <span className="text-xs font-mono font-normal text-slate-500 dark:text-slate-400">
+            <h3 className="text-base font-semibold text-fg">
+              Monthly High-Intent Search Traffic Split
+            </h3>
+            <p className="text-xs text-fg-muted mt-1">
+              Live ratio of active searchers landing on {analysis.domain} versus your top competitors.{' '}
+              <span className="text-fg-subtle num">
                 Total Market: {trafficDistribution.totalMarketSearches.toLocaleString()} searches/mo
               </span>
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Live ratio of active searchers landing on {analysis.domain} versus your top competitors.
             </p>
           </div>
 
-          <div className="text-right">
-            <span className="text-xs text-slate-500 dark:text-slate-400 block">Your Current Search Share</span>
-            <span className={`text-2xl font-black font-mono ${isFixedSuccess ? 'text-emerald-600 dark:text-emerald-400' : 'text-brand-600 dark:text-brand-400'}`}>
+          <div className="sm:text-right">
+            <span className="label block">Your Current Search Share</span>
+            <span className={`text-2xl font-semibold num ${isFixedSuccess ? 'text-pos' : 'text-fg'}`}>
               {currentClientShare}%
             </span>
           </div>
         </div>
 
         {/* Visual Market Share Progress Bar */}
-        <div className="space-y-2">
-          <div className="w-full bg-slate-100 dark:bg-slate-950 h-5 rounded-xl overflow-hidden flex p-1 border border-slate-200 dark:border-slate-800 gap-1">
+        <div className="space-y-4">
+          <div className="w-full bg-surface-2 h-2 rounded-full overflow-hidden flex gap-px">
             <div
-              className={`h-full rounded-lg transition-all duration-700 ${
-                isFixedSuccess
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
-                  : 'bg-gradient-to-r from-brand-600 to-indigo-500'
-              }`}
+              className="h-full bg-accent transition-all duration-700"
               style={{ width: `${currentClientShare}%` }}
               title={`Your Domain: ${currentClientShare}%`}
             />
@@ -190,8 +187,8 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               return (
                 <div
                   key={idx}
-                  className={`h-full rounded-lg transition-all duration-700 ${
-                    idx === 0 ? 'bg-rose-500/80' : 'bg-amber-500/80'
+                  className={`h-full transition-all duration-700 ${
+                    idx === 0 ? 'bg-fg-muted' : 'bg-fg-subtle'
                   }`}
                   style={{ width: `${compShare}%` }}
                   title={`${comp.name}: ${compShare}%`}
@@ -201,12 +198,12 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap items-center justify-between text-xs gap-3 pt-1">
+          <div className="flex flex-wrap items-center text-xs gap-x-6 gap-y-2">
             <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${isFixedSuccess ? 'bg-emerald-500' : 'bg-brand-500'}`} />
-              <span className="font-semibold text-slate-800 dark:text-slate-200">
+              <span className="w-2 h-2 rounded-full bg-accent" />
+              <span className="text-fg">
                 {analysis.domain} (You):{' '}
-                <strong className="font-mono">{currentClientVisits.toLocaleString()} visitors</strong>
+                <strong className="font-semibold num">{currentClientVisits.toLocaleString()} visitors</strong>
               </span>
             </div>
 
@@ -214,9 +211,9 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
               const compVisits = isFixedSuccess ? Math.round(comp.visits * 0.38) : comp.visits;
               return (
                 <div key={idx} className="flex items-center gap-2">
-                  <span className={`w-3 h-3 rounded-full ${idx === 0 ? 'bg-rose-500' : 'bg-amber-500'}`} />
-                  <span className="text-slate-600 dark:text-slate-400">
-                    {comp.name}: <strong className="font-mono text-slate-800 dark:text-slate-200">{compVisits.toLocaleString()} visitors</strong>
+                  <span className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-fg-muted' : 'bg-fg-subtle'}`} />
+                  <span className="text-fg-muted">
+                    {comp.name}: <strong className="font-semibold num text-fg">{compVisits.toLocaleString()} visitors</strong>
                   </span>
                 </div>
               );
@@ -225,42 +222,42 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
         </div>
 
         {/* 3 Key Traffic Metrics Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Competitor Captured Traffic</span>
-              <TrendingDown className="w-4 h-4 text-rose-500" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="inset p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="label">Competitor Captured Traffic</span>
+              <TrendingDown className="w-4 h-4 text-fg-subtle" />
             </div>
-            <div className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-400">
+            <div className={`text-2xl font-semibold num ${isFixedSuccess ? 'text-fg' : 'text-neg'}`}>
               {isFixedSuccess ? '0' : trafficDistribution.totalLostVisits.toLocaleString()}
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-fg-subtle mt-1">
               {isFixedSuccess ? 'All traffic rerouted to your domain' : 'Monthly searches lost to rivals'}
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Lost Pipeline Value</span>
-              <DollarSign className="w-4 h-4 text-amber-500" />
+          <div className="inset p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="label">Lost Pipeline Value</span>
+              <DollarSign className="w-4 h-4 text-fg-subtle" />
             </div>
-            <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
+            <div className="text-2xl font-semibold num text-fg">
               {isFixedSuccess ? '$0' : `$${trafficDistribution.totalLostRevenue.toLocaleString()}`}
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-fg-subtle mt-1">
               {isFixedSuccess ? 'Pipeline potential fully captured' : 'Based on average $9.5k ACV'}
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Reclaimed Opportunity</span>
-              <TrendingUp className="w-4 h-4 text-emerald-500" />
+          <div className="inset p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="label">Reclaimed Opportunity</span>
+              <TrendingUp className="w-4 h-4 text-fg-subtle" />
             </div>
-            <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+            <div className={isFixedSuccess ? 'text-2xl font-semibold num text-pos' : 'text-base font-semibold text-fg-muted py-1'}>
               {isFixedSuccess ? `+${Math.round(trafficDistribution.totalLostVisits * 0.72).toLocaleString()}` : 'Ready for AI Fix'}
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-fg-subtle mt-1">
               {isFixedSuccess ? 'Active pipeline rerouted' : 'Reclaimable with $49/mo Autopilot'}
             </p>
           </div>
@@ -268,14 +265,14 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
       </div>
 
       {/* Query-by-Query Leaks & How to Fix Them */}
-      <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm dark:shadow-xl transition-colors duration-200">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+      <div className="card p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
+            <h3 className="text-base font-semibold text-fg flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-fg-subtle" />
               <span>Competitor Query Interception Teardown</span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-fg-muted mt-1">
               Exact high-intent queries where competitors steal your prospects, root causes, and how AI resolves them.
             </p>
           </div>
@@ -283,77 +280,73 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
           {!isSubscribed && (
             <button
               onClick={onOpenSubscribeModal}
-              className="px-3.5 py-1.5 bg-brand-50 dark:bg-brand-500/10 hover:bg-brand-100 dark:hover:bg-brand-500/20 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+              className="btn btn-secondary btn-sm"
             >
-              <Zap className="w-3.5 h-3.5 text-accent-500" />
+              <Zap className="w-3.5 h-3.5 text-fg-subtle" />
               <span>Subscribe for $49/mo to Fix All</span>
             </button>
           )}
         </div>
 
         {/* Queries Table */}
-        <div className="space-y-3">
+        <div className="divide-y divide-line border-t border-line">
           {leakedQueries.map((item) => (
             <div
               key={item.id}
-              className={`p-4 rounded-xl border transition-all ${
-                item.status === 'fixed'
-                  ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60'
-                  : 'bg-slate-50 dark:bg-slate-950/80 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
-              }`}
+              className="py-5 last:pb-0"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-2">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono font-bold text-sm text-slate-900 dark:text-white">
+                    <span className="font-semibold text-sm text-fg">
                       "{item.query}"
                     </span>
-                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                    <span className="text-xs text-fg-subtle num">
                       ({item.monthlyVolume.toLocaleString()} searches/mo)
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-2 flex-wrap text-xs text-fg-muted">
                     <span>Hijacked by:</span>
-                    <strong className="text-rose-600 dark:text-rose-400 font-mono">{item.stolenByName}</strong>
-                    <span className="text-slate-300 dark:text-slate-700">•</span>
-                    <span>Lost visits: <strong className="font-mono text-slate-800 dark:text-slate-200">{item.estimatedLostVisits.toLocaleString()}/mo</strong></span>
-                    <span className="text-slate-300 dark:text-slate-700">•</span>
-                    <span>Lost value: <strong className="font-mono text-slate-800 dark:text-slate-200">${item.estimatedLostValue.toLocaleString()}</strong></span>
+                    <strong className="font-medium text-fg">{item.stolenByName}</strong>
+                    <span className="text-fg-subtle">·</span>
+                    <span>Lost visits: <strong className="font-medium num text-fg">{item.estimatedLostVisits.toLocaleString()}/mo</strong></span>
+                    <span className="text-fg-subtle">·</span>
+                    <span>Lost value: <strong className="font-medium num text-neg">${item.estimatedLostValue.toLocaleString()}</strong></span>
                   </div>
                 </div>
 
                 <div className="shrink-0">
                   {item.status === 'fixed' ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30 text-xs font-bold font-mono">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      INTERCEPTED & FIXED
+                    <span className="tag">
+                      <Check className="w-3 h-3 text-fg-subtle" />
+                      Intercepted & fixed
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 text-xs font-bold font-mono">
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      LEAKING TO COMPETITOR
+                    <span className="tag">
+                      <AlertTriangle className="w-3 h-3" />
+                      Leaking to competitor
                     </span>
                   )}
                 </div>
               </div>
 
               {/* Diagnosis and Action Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-xs border-t border-slate-200 dark:border-slate-800/80">
-                <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800">
-                  <span className="text-slate-500 dark:text-slate-400 font-semibold block mb-0.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div className="inset p-3">
+                  <span className="text-fg-subtle font-medium block mb-1">
                     Root Cause (Why They Got The Click):
                   </span>
-                  <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+                  <p className="text-fg-muted text-xs leading-relaxed">
                     {item.leakReason}
                   </p>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold block mb-0.5">
+                <div className="inset p-3">
+                  <span className="text-fg-subtle font-medium block mb-1">
                     How AI Fixes This:
                   </span>
-                  <p className="text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+                  <p className="text-fg-muted text-xs leading-relaxed">
                     {item.fixStrategy}
                   </p>
                 </div>
@@ -364,16 +357,16 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
       </div>
 
       {/* Autonomous $10 Plan Callout Box */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-brand-900/40 via-indigo-900/30 to-accent-900/30 border border-brand-500/30 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="card p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30 text-[11px] font-semibold uppercase tracking-wider">
-            <Zap className="w-3 h-3" /> Apex Autopilot AI
+          <div className="inline-flex items-center gap-1.5 text-xs text-fg-muted">
+            <Zap className="w-3.5 h-3.5 text-fg-subtle" /> Apex Autopilot AI
           </div>
-          <h3 className="text-lg md:text-xl font-bold text-white">
+          <h3 className="text-xl font-semibold text-fg">
             Never lose another customer to competitors on search.
           </h3>
-          <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-            For just <strong>$49/month</strong>, our autonomous AI SEM agent continuously scans competitor search auctions, deploys conquest ad copy, injects entity schema, and intercepts buyers before they convert on rival domains.
+          <p className="text-sm text-fg-muted max-w-xl leading-relaxed">
+            For just <strong className="font-semibold text-fg num">$49/month</strong>, our autonomous AI SEM agent continuously scans competitor search auctions, deploys conquest ad copy, injects entity schema, and intercepts buyers before they convert on rival domains.
           </p>
         </div>
 
@@ -382,14 +375,15 @@ export const TrafficInterceptionPanel: React.FC<TrafficInterceptionPanelProps> =
             <button
               onClick={handleAutoFixAll}
               disabled={isFixing || isFixedSuccess}
-              className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-glow transition-all active:scale-95 cursor-pointer disabled:opacity-60"
+              className="btn btn-primary"
             >
-              {isFixedSuccess ? '✓ Autopilot Shield Engaged' : 'Run 1-Click AI Fix'}
+              {isFixedSuccess && <Check className="w-4 h-4" />}
+              {isFixedSuccess ? 'Autopilot Shield Engaged' : 'Run 1-Click AI Fix'}
             </button>
           ) : (
             <button
               onClick={onOpenSubscribeModal}
-              className="px-6 py-3 bg-gradient-to-r from-brand-600 via-indigo-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 text-white font-bold text-xs rounded-xl shadow-glow transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+              className="btn btn-primary"
             >
               <span>Subscribe for $49/mo & Auto-Fix</span>
               <ArrowRight className="w-4 h-4" />
