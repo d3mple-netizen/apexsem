@@ -20,10 +20,17 @@ interface HeaderProps {
   onSignOut: () => void;
 }
 
+/**
+ * Logomark: an A whose right leg rebounds into an arrow (rankings going up).
+ * White glyph, accent arrow, on a fixed ink tile so it reads in both themes.
+ * Same geometry as public/favicon.svg; strokes are sized to hold at 16px.
+ */
 export const Logo: React.FC<{ className?: string }> = ({ className = 'w-6 h-6' }) => (
   <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
-    <rect width="64" height="64" rx="14" className="fill-accent" />
-    <path d="M32 13 49 51h-8.6l-3.3-7.8H26.9L23.6 51H15zm0 14.6-3 7.6h6z" fill="#fff" />
+    <rect width="64" height="64" rx="15" fill="#141416" />
+    <path d="M11.5 50.5 25 16.5 38.5 50.5M16.8 38.5h16.4" fill="none" stroke="#fff" strokeWidth="7.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M38.5 50.5 47.9 24.3" fill="none" className="stroke-accent" strokeWidth="7.5" strokeLinecap="round" />
+    <path d="M52 13 54.9 30 38.9 24.2z" className="fill-accent stroke-accent" strokeWidth="3" strokeLinejoin="round" />
   </svg>
 );
 

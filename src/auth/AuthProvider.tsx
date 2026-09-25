@@ -17,6 +17,8 @@ interface AuthValue {
   available: boolean;
   signInWithGoogle: () => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
+  /** Current Supabase access token for API calls, refreshed if needed. */
+  getAccessToken: () => Promise<string | null>;
   /** OAuth error returned in the redirect URL, if any. Cleared after reading. */
   redirectError: string | null;
   clearRedirectError: () => void;
@@ -82,6 +84,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   }, []);
 
+  const getAccessToken = useCallback(async () => {
+    const { data } = await supabase.auth.getSession().catch(() => ({ data: { session: null } }));
+    return data.session?.access_token ?? null;
+  }, []);
+
   const value = useMemo<AuthValue>(
     () => ({
       user,
@@ -89,10 +96,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       available: googleSignInAvailable(),
       signInWithGoogle,
       signOut,
+      getAccessToken,
       redirectError,
       clearRedirectError: () => setRedirectError(null)
     }),
-    [user, loading, signInWithGoogle, signOut, redirectError]
+    [user, loading, signInWithGoogle, signOut, getAccessToken, redirectError]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

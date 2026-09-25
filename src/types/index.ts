@@ -125,7 +125,8 @@ export interface TrafficDistribution {
  * - ai: site could not be crawled, Claude inferred from the domain
  * - estimate: nothing could be fetched; modeled from the domain name only
  */
-export type AnalysisSource = 'sample' | 'crawl' | 'crawl+ai' | 'ai' | 'estimate';
+/** 'live': Perplexity Sonar researched the market on the live web (plus the crawl, unless fetchError is set). */
+export type AnalysisSource = 'sample' | 'crawl' | 'crawl+ai' | 'live' | 'ai' | 'estimate';
 
 /** Facts observed on the live homepage. */
 export interface SiteSnapshot {

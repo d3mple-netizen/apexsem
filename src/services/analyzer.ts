@@ -31,18 +31,19 @@ export class AnalyzeError extends Error {
 }
 
 /**
- * Live analysis via /api/analyze (crawl + optional Claude enrichment).
+ * Live analysis via /api/analyze (crawl + Perplexity or Claude enrichment).
+ * Requires a signed-in user; a 401 surfaces as AnalyzeError(status 401).
  * Falls back to local heuristics when the API is unreachable, e.g. plain
  * `vite` dev without `vercel dev`. Input errors (4xx) are surfaced instead.
  */
-export async function analyzeDomain(rawDomain: string): Promise<DomainAnalysis> {
+export async function analyzeDomain(rawDomain: string, accessToken?: string | null): Promise<DomainAnalysis> {
   const domain = cleanDomain(rawDomain);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 55_000);
   try {
     const res = await fetch('/api/analyze', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) },
       body: JSON.stringify({ domain }),
       signal: controller.signal
     });

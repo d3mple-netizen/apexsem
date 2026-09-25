@@ -7,7 +7,7 @@ import { common } from '../i18n/common';
 
 /** Scores and CRO checks are computed from the crawl only for live runs. */
 export function isMeasured(a: DomainAnalysis): boolean {
-  return a.source === 'crawl' || a.source === 'crawl+ai';
+  return a.source === 'crawl' || a.source === 'crawl+ai' || (a.source === 'live' && !a.fetchError);
 }
 
 function roundSig(n: number): number {

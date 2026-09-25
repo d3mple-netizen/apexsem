@@ -30,7 +30,7 @@ export const shell = defineDict(
     hero: {
       title: 'Type a domain. Get a full SEM strategy in 30 seconds.',
       lead: 'Keywords, ad copy, landing-page fixes and a 90-day plan, built from what is actually on your homepage.',
-      proof: 'Free to try: 1 analysis without an account, 3 a day with Google. No card.',
+      proof: 'Free with Google sign-in: 3 analyses a day, no card. The sample report below is open to everyone.',
       honesty: 'Every figure is either measured on your page or labeled as an estimate.',
       features: [
         {
@@ -67,23 +67,23 @@ export const shell = defineDict(
       source: {
         sample: (d: string) => `Sample report for ${d}. Run your own domain to get a live one.`,
         crawlAi: (d: string) => `Live crawl of ${d}, strategy written by Claude.`,
+        live: (d: string, crawled: boolean) =>
+          crawled ? `Live crawl of ${d} plus live web research by Perplexity: niche, competitors and volume ranges.` : `Couldn’t crawl ${d}. Niche, competitors and volume ranges come from live web research by Perplexity.`,
         crawl: (d: string) => `Live crawl of ${d}. Keywords and copy built from the page’s own wording.`,
         ai: (d: string, reason: string) => `Couldn’t crawl ${d}${reason}. Strategy inferred by Claude from the domain.`,
         estimate: (d: string, reason: string) => `Couldn’t crawl ${d}${reason}. Showing a model based on the domain name only.`
       },
       modeledNote: 'Traffic, volume and CPC figures are estimates.',
       left: (n: number, of: number) => `${n} of ${of} free analyses left today`,
-      anonLeft: (n: number) => (n > 0 ? '1 free analysis without an account.' : 'Free analysis used.'),
-      anonCta: 'Sign in with Google for 3 a day',
+      anonLeft: 'Analyses need an account. The sample is free to browse.',
+      anonCta: 'Sign in with Google: 3 free a day',
       failed: 'Analysis failed. Check the domain and try again.'
     },
     plans: {
       close: 'Close',
       limitTitle: 'You’ve used today’s free analyses',
-      anonLimitTitle: 'Sign in to keep going',
       title: 'Plans',
       limitLead: (n: number) => `Free covers ${n} analyses a day and resets at midnight. Pro removes the limit.`,
-      anonLimitLead: (n: number) => `Without an account you get 1 analysis a day. Sign in with Google and get ${n} a day, free.`,
       lead: 'Start free. Upgrade when you run more domains than the daily limit allows.',
       free: 'Free',
       pro: 'Pro',
@@ -110,8 +110,18 @@ export const shell = defineDict(
       mailBody: (d: string) => `Hi, I'd like ApexSEM Pro.\n\nMy domain: ${d}\n`,
       manual: 'Pro is activated by hand while we finish self-serve checkout. We reply within one business day.'
     },
+    gate: {
+      title: 'Sign in with Google to run your free analysis',
+      lead: (d: string | null) =>
+        d ? `We’ll analyze ${d} as soon as you’re back. Nothing to install, no card.` : 'Your report starts as soon as you’re back. Nothing to install, no card.',
+      cta: 'Continue with Google',
+      fine: (n: number) => `Free plan: ${n} analyses per day`,
+      browse: 'Keep browsing the sample report',
+      close: 'Close'
+    },
     toast: {
       live: (d: string) => `Analyzed ${d} from a live crawl`,
+      liveWeb: (d: string) => `Analyzed ${d} with live web research`,
       estimate: (d: string) => `Couldn’t crawl ${d}; showing an estimate`,
       planned: 'Fixes for all leaks added to your plan',
       downloaded: (f: string) => `Downloaded ${f}`,
@@ -163,7 +173,7 @@ export const shell = defineDict(
     hero: {
       title: 'Введи домен - получи полную SEM-стратегию за 30 секунд.',
       lead: 'Ключевые слова, тексты объявлений, правки лендинга и план на 90 дней. Все собрано из того, что реально написано на твоей главной.',
-      proof: 'Попробовать бесплатно: 1 анализ без аккаунта, 3 в день со входом через Google. Без карты.',
+      proof: 'Бесплатно со входом через Google: 3 анализа в день, без карты. Пример отчета ниже открыт всем.',
       honesty: 'Каждая цифра либо измерена на твоей странице, либо честно помечена как оценка.',
       features: [
         {
@@ -200,23 +210,23 @@ export const shell = defineDict(
       source: {
         sample: (d: string) => `Пример отчета для ${d}. Введи свой домен, чтобы получить живой.`,
         crawlAi: (d: string) => `Живой скан ${d}, стратегию написал Claude.`,
+        live: (d: string, crawled: boolean) =>
+          crawled ? `Живой скан ${d} и живой веб-поиск Perplexity: ниша, конкуренты и диапазоны частотности.` : `Не удалось просканировать ${d}. Ниша, конкуренты и частотности - из живого веб-поиска Perplexity.`,
         crawl: (d: string) => `Живой скан ${d}. Ключи и тексты собраны из формулировок самой страницы.`,
         ai: (d: string, reason: string) => `Не удалось просканировать ${d}${reason}. Стратегию Claude вывел по домену.`,
         estimate: (d: string, reason: string) => `Не удалось просканировать ${d}${reason}. Показываем модель только по имени домена.`
       },
       modeledNote: 'Трафик, частотность и CPC - это оценки.',
       left: (n: number, of: number) => `Осталось ${n} из ${of} бесплатных анализов на сегодня`,
-      anonLeft: (n: number) => (n > 0 ? '1 бесплатный анализ без аккаунта.' : 'Бесплатный анализ использован.'),
-      anonCta: 'Войди через Google - будет 3 в день',
+      anonLeft: 'Для анализа нужен аккаунт. Пример отчета открыт всем.',
+      anonCta: 'Войти через Google: 3 бесплатно в день',
       failed: 'Анализ не удался. Проверь домен и попробуй еще раз.'
     },
     plans: {
       close: 'Закрыть',
       limitTitle: 'Бесплатные анализы на сегодня закончились',
-      anonLimitTitle: 'Войди, чтобы продолжить',
       title: 'Тарифы',
       limitLead: (n: number) => `На Free доступно ${n} анализа в день, счетчик обнуляется в полночь. На Pro лимита нет.`,
-      anonLimitLead: (n: number) => `Без аккаунта - 1 анализ в день. Войди через Google и получи ${n} в день бесплатно.`,
       lead: 'Начни бесплатно. Переходи на Pro, когда доменов станет больше дневного лимита.',
       free: 'Free',
       pro: 'Pro',
@@ -243,8 +253,18 @@ export const shell = defineDict(
       mailBody: (d: string) => `Привет! Хочу ApexSEM Pro.\n\nМой домен: ${d}\n`,
       manual: 'Пока мы доделываем самостоятельную оплату, Pro включаем вручную. Отвечаем в течение рабочего дня.'
     },
+    gate: {
+      title: 'Войди через Google, чтобы запустить бесплатный анализ',
+      lead: (d: string | null) =>
+        d ? `Проанализируем ${d} сразу после входа. Ничего устанавливать не нужно, карта не нужна.` : 'Отчет начнет собираться сразу после входа. Ничего устанавливать не нужно, карта не нужна.',
+      cta: 'Войти через Google',
+      fine: (n: number) => `Бесплатный план: ${n} анализа в день`,
+      browse: 'Пока посмотреть пример отчета',
+      close: 'Закрыть'
+    },
     toast: {
       live: (d: string) => `${d} проанализирован по живому скану`,
+      liveWeb: (d: string) => `${d} проанализирован с живым веб-поиском`,
       estimate: (d: string) => `Не удалось просканировать ${d}, показываем оценку`,
       planned: 'Исправления для всех утечек добавлены в план',
       downloaded: (f: string) => `Скачан ${f}`,

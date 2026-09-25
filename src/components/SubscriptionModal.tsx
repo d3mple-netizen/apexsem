@@ -13,7 +13,7 @@ interface SubscriptionModalProps {
   /** "limit" when opened because the free quota ran out. */
   reason: 'limit' | 'upgrade';
   usedToday: number;
-  /** Today's quota for the current identity (1 anonymous, 3 signed in). */
+  /** Today's quota (0 for guests; the bars then show the free plan's quota). */
   limit: number;
   isSignedIn: boolean;
   onSignIn: () => void;
@@ -34,9 +34,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
   if (!isOpen) return null;
 
-  const used = Math.min(usedToday, limit);
+  const bars = limit || FREE_DAILY_LIMIT;
+  const used = Math.min(usedToday, bars);
   const mailto = `${PRO_MAILTO}&body=${encodeURIComponent(t.mailBody(analysis.domain))}`;
-  const anonLimit = reason === 'limit' && !isSignedIn;
 
   return (
     <div
@@ -60,10 +60,10 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
 
         <div className="max-w-md mb-6 sm:mb-8 pr-10">
           <h3 id="plans-title" className="text-xl font-semibold text-fg [text-wrap:balance]">
-            {anonLimit ? t.anonLimitTitle : reason === 'limit' ? t.limitTitle : t.title}
+            {reason === 'limit' ? t.limitTitle : t.title}
           </h3>
           <p className="text-sm text-fg-muted mt-2">
-            {anonLimit ? t.anonLimitLead(FREE_DAILY_LIMIT) : reason === 'limit' ? t.limitLead(FREE_DAILY_LIMIT) : t.lead}
+            {reason === 'limit' ? t.limitLead(FREE_DAILY_LIMIT) : t.lead}
           </p>
         </div>
 
@@ -74,15 +74,15 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
             <p className="mt-2 text-2xl font-semibold text-fg num">
               $0<span className="text-sm font-normal text-fg-subtle"> {t.perMonth}</span>
             </p>
-            <div className="mt-4" aria-label={t.usedAria(used, limit)}>
+            <div className="mt-4" aria-label={t.usedAria(used, bars)}>
               <div className="flex justify-between text-xs text-fg-subtle mb-2">
                 <span>{t.usedToday}</span>
                 <span className="num font-medium text-fg-muted">
-                  {t.usedOf(used, limit)}
+                  {t.usedOf(used, bars)}
                 </span>
               </div>
               <div className="flex gap-1">
-                {Array.from({ length: limit }).map((_, i) => (
+                {Array.from({ length: bars }).map((_, i) => (
                   <span
                     key={i}
                     className={`h-1 flex-1 rounded-full ${i < used ? 'bg-fg-muted' : 'bg-surface-2'}`}

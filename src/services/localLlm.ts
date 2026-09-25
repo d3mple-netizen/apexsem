@@ -2,7 +2,8 @@ import { DomainAnalysis } from '../types';
 import { generateAgencyResponse, ChatMessage } from './aiAgency';
 import { isMeasured } from '../lib/honest';
 
-export type LlmProvider = 'claude' | 'ollama' | 'builtin';
+/** 'perplexity' and 'claude' both go through /api/chat; the server picks the model. */
+export type LlmProvider = 'perplexity' | 'claude' | 'ollama' | 'builtin';
 
 export interface LocalLlmStatus {
   isAvailable: boolean;
@@ -18,14 +19,15 @@ const BUILTIN: LocalLlmStatus = {
   provider: 'builtin'
 };
 
-/** Prefers Claude via /api/chat, then a local Ollama (dev proxy), then built-in rules. */
+/** Prefers the hosted model via /api/chat (Perplexity, else Claude), then a local Ollama (dev proxy), then built-in rules. */
 export async function checkLocalLlm(): Promise<LocalLlmStatus> {
   try {
     const res = await fetch('/api/chat', { method: 'GET' });
     if (res.ok && (res.headers.get('content-type') ?? '').includes('application/json')) {
       const data = await res.json();
       if (data.available) {
-        return { isAvailable: true, models: [data.model], activeModel: data.model, provider: 'claude' };
+        const provider: LlmProvider = data.provider === 'perplexity' ? 'perplexity' : 'claude';
+        return { isAvailable: true, models: [data.model], activeModel: data.model, provider };
       }
     }
   } catch {
@@ -102,7 +104,7 @@ export async function queryLocalLlmStream(
 ): Promise<{ fullText: string; actionSnippet?: ChatMessage['actionSnippet']; provider: LlmProvider; rateLimited?: boolean }> {
   const prompt = history[history.length - 1]?.content ?? '';
 
-  if (provider === 'claude') {
+  if (provider === 'perplexity' || provider === 'claude') {
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -119,7 +121,7 @@ export async function queryLocalLlmStream(
       const fullText = await readTextStream(res, onToken);
       return { ...toResult(fullText), provider };
     } catch (err) {
-      console.warn('Claude chat unavailable, falling back to built-in playbooks:', err);
+      console.warn('Hosted chat unavailable, falling back to built-in playbooks:', err);
     }
   }
 

@@ -232,7 +232,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
             {llmStatus.isAvailable ? (
               <span className="flex items-center gap-1.5 font-mono text-fg truncate">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-                {llmStatus.provider === 'claude' ? `Claude (${llmStatus.activeModel})` : `${t.ollama} (${llmStatus.activeModel})`}
+                {llmStatus.provider === 'perplexity' ? `Perplexity (${llmStatus.activeModel})` : llmStatus.provider === 'claude' ? `Claude (${llmStatus.activeModel})` : `${t.ollama} (${llmStatus.activeModel})`}
               </span>
             ) : (
               <span className="text-fg-muted truncate" title={t.builtinNote}>
@@ -248,7 +248,7 @@ export const AgencyChatDrawer: React.FC<AgencyChatDrawerProps> = ({
               aria-label={t.engineAria}
               className="field w-auto text-xs font-mono h-7 px-2 cursor-pointer"
             >
-              <option value={llmStatus.provider}>{llmStatus.provider === 'claude' ? 'Claude' : 'Ollama'} ({llmStatus.activeModel})</option>
+              <option value={llmStatus.provider}>{llmStatus.provider === 'perplexity' ? 'Perplexity' : llmStatus.provider === 'claude' ? 'Claude' : 'Ollama'} ({llmStatus.activeModel})</option>
               <option value="builtin">{t.builtin}</option>
             </select>
           )}

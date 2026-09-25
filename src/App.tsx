@@ -11,6 +11,7 @@ import { CROStudio } from './components/CROStudio';
 import { ActionRoadmap } from './components/ActionRoadmap';
 import { AgencyChatDrawer } from './components/AgencyChatDrawer';
 import { SubscriptionModal } from './components/SubscriptionModal';
+import { SignInModal } from './components/SignInModal';
 import { Hero } from './components/Hero';
 import { generateDomainAnalysis, analyzeDomain, cleanDomain, AnalyzeError } from './services/analyzer';
 import { canAnalyze, dailyLimit, isPro, recordAnalysis, remainingToday, usedToday, PRO_PRICE } from './services/usage';
@@ -18,7 +19,9 @@ import { DomainAnalysis } from './types';
 import { useDict } from './i18n';
 import { shell } from './i18n/dict/shell';
 import { useAuth } from './auth/AuthProvider';
-import { approxRange } from './lib/honest';
+import { approxRange, isMeasured } from './lib/honest';
+
+const PENDING_KEY = 'apex_pending_domain';
 
 export function App() {
   const t = useDict(shell);
@@ -43,6 +46,28 @@ export function App() {
     setIsSubscribeModalOpen(true);
   }, []);
   const closePlans = useCallback(() => setIsSubscribeModalOpen(false), []);
+
+  // Analyses need an account. A guest's domain is parked in sessionStorage so
+  // it survives the Google OAuth redirect and runs as soon as they're back.
+  const [gateDomain, setGateDomain] = useState<string | null>(null);
+  const [isGateOpen, setIsGateOpen] = useState(false);
+  const openGate = useCallback((domain: string | null) => {
+    setGateDomain(domain);
+    setIsGateOpen(true);
+    try {
+      if (domain) sessionStorage.setItem(PENDING_KEY, domain);
+    } catch {
+      /* storage blocked: the user just re-enters the domain after sign-in */
+    }
+  }, []);
+  const closeGate = useCallback(() => {
+    setIsGateOpen(false);
+    try {
+      sessionStorage.removeItem(PENDING_KEY);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // Theme: index.html resolves it before first paint (saved choice, else OS
   // preference); React adopts that value and owns it from here.
@@ -74,6 +99,21 @@ export function App() {
     if (!auth.loading) setRemaining(remainingToday(uid));
   }, [uid, auth.loading]);
 
+  // Back from Google with a parked domain: run it now.
+  useEffect(() => {
+    if (auth.loading || !auth.user) return;
+    let pending: string | null = null;
+    try {
+      pending = sessionStorage.getItem(PENDING_KEY);
+      sessionStorage.removeItem(PENDING_KEY);
+    } catch {
+      /* ignore */
+    }
+    setIsGateOpen(false);
+    if (pending) void handleAnalyze(pending);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth.loading, auth.user?.id]);
+
   useEffect(() => {
     if (auth.redirectError) {
       showToast(t.toast.authFailed(auth.redirectError));
@@ -103,6 +143,10 @@ export function App() {
 
   const handleAnalyze = async (domain: string) => {
     if (isLoading) return;
+    if (!auth.user) {
+      openGate(cleanDomain(domain));
+      return;
+    }
     if (!canAnalyze(uid)) {
       setRemaining(0);
       openPlans('limit');
@@ -114,16 +158,21 @@ export function App() {
     setCurrentDomain(cleaned);
 
     try {
-      const result = await analyzeDomain(cleaned);
+      const result = await analyzeDomain(cleaned, await auth.getAccessToken());
       setAnalysis(result);
       setActiveTab('overview');
       setHasAnalyzed(true);
       recordAnalysis(uid);
       setRemaining(remainingToday(uid));
       showToast(
-        result.source === 'crawl' || result.source === 'crawl+ai' ? t.toast.live(result.domain) : t.toast.estimate(result.domain)
+        result.source === 'live' ? t.toast.liveWeb(result.domain) : isMeasured(result) ? t.toast.live(result.domain) : t.toast.estimate(result.domain)
       );
     } catch (err) {
+      if (err instanceof AnalyzeError && err.status === 401) {
+        // Session expired or was revoked: ask to sign in again instead of erroring.
+        openGate(cleaned);
+        return;
+      }
       setAnalyzeError(err instanceof AnalyzeError ? err.message : t.search.failed);
     } finally {
       setIsLoading(false);
@@ -148,9 +197,9 @@ Domain: ${analysis.domain}
 URL: ${analysis.url}
 Niche: ${analysis.niche}
 Analyzed At: ${analysis.analyzedAt}
-Authority score: ${analysis.score.overall}/100 (${analysis.score.tier})${analysis.source === 'crawl' || analysis.source === 'crawl+ai' ? '' : ' (estimate)'}
+Authority score: ${analysis.score.overall}/100 (${analysis.score.tier})${isMeasured(analysis) ? '' : ' (estimate)'}
 
-Source: ${analysis.source === 'sample' ? 'sample data' : analysis.source === 'crawl' || analysis.source === 'crawl+ai' ? 'live homepage crawl' : 'estimate from the domain name (crawl failed)'}
+Source: ${analysis.source === 'sample' ? 'sample data' : analysis.source === 'live' ? `live web research (Perplexity)${isMeasured(analysis) ? ' + homepage crawl' : ''}` : isMeasured(analysis) ? 'live homepage crawl' : 'estimate from the domain name (crawl failed)'}
 
 > Figures marked (estimate) are modeled from the domain and niche, not measured. Treat them as an order of magnitude.
 
@@ -336,6 +385,9 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
         onClose={() => setIsChatOpen(false)}
         analysis={analysis}
       />
+
+      {/* Required sign-in before a live analysis */}
+      <SignInModal isOpen={isGateOpen} onClose={closeGate} onSignIn={handleSignIn} domain={gateDomain} />
 
       {/* Free / Pro plans */}
       <SubscriptionModal

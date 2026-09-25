@@ -4,6 +4,8 @@ import type { AnalysisSource } from '../src/types/index.js';
 import { fetchHomepage, FetchSiteError } from './_lib/fetchSite.js';
 import { getClaude, MODEL, parseJsonObject, textOf } from './_lib/claude.js';
 import { json, rateLimited } from './_lib/http.js';
+import { perplexityAvailable, pplxComplete } from './_lib/perplexity.js';
+import { verifyUser } from './_lib/auth.js';
 
 const SYSTEM = `You are a senior paid-search and SEO strategist who has managed eight-figure Google Ads budgets.
 You receive facts scraped from a company's homepage and return a compact JSON brief used to build its SEM strategy.
@@ -117,6 +119,50 @@ function sanitize(raw: unknown): AiEnrichment {
   };
 }
 
+// Perplexity Sonar searches the live web, so it gets the market-facts part of
+// the brief (niche, real competitors, realistic volumes). Ad copy and CRO stay
+// with the crawl-based builder, which keeps the reply small enough for 20 s.
+const LIVE_SYSTEM = `You are a senior paid-search strategist with live web access. Research the given company on the web and return market facts for a Google Ads plan.
+Rules:
+- Use the web to identify what the company actually sells and its real direct competitors (real companies with their real root domains, never placeholders, never the company itself).
+- Keywords are real search queries a buyer would type (lowercase, 2-6 words). monthlyVolume and cpc are realistic US-market estimates: integers for volume, dollars for CPC, consistent with what keyword tools typically report for that niche. When unsure, stay conservative.
+- Output only one JSON object. No prose, no markdown, no code fences, no citation markers.`;
+
+const LIVE_SCHEMA = `{
+  "niche": "short market label, e.g. 'Issue Tracking & Product Development SaaS'",
+  "category": "2-3 word lowercase noun for the product type",
+  "tagline": "one sentence, what they sell and to whom",
+  "targetAudience": "comma-separated buyer roles or customer segments",
+  "avgCpc": 0.0,
+  "keywords": [{"keyword": "", "intent": "Transactional|Commercial|Informational|Competitor Conquest", "monthlyVolume": 0, "cpc": 0.0, "competition": "Low|Medium|High", "difficulty": 0, "recommendedAction": "one short sentence"}],
+  "competitors": [{"name": "", "domain": "", "topPaidKeywords": [""], "vulnerabilities": ["short phrase"]}],
+  "negativeKeywords": ["8 niche-specific negatives"]
+}
+Return 8 keywords (mix of intents, at least 2 Competitor Conquest naming real competitors) and 2-3 competitors.`;
+
+async function enrichLive(domain: string, signals: SiteSignals | null, fetchError?: string): Promise<AiEnrichment | null> {
+  if (!perplexityAvailable()) return null;
+  try {
+    const text = await pplxComplete({
+      maxTokens: 1800,
+      temperature: 0.1,
+      messages: [
+        { role: 'system', content: LIVE_SYSTEM },
+        { role: 'user', content: `${describeSite(domain, signals, fetchError).slice(0, 3500)}\n\nReturn JSON with exactly this shape:\n${LIVE_SCHEMA}` }
+      ]
+    });
+    const ai = sanitize(parseJsonObject(text.replace(/\[\d{1,2}\]/g, '')));
+    // Only count it as live data if the core market facts came back.
+    const self = domain.replace(/^www\./, '');
+    ai.competitors = ai.competitors?.filter((c) => c.domain && !c.domain.endsWith(self));
+    if (!ai.niche || !ai.keywords?.length) throw new Error('Perplexity JSON missing niche/keywords');
+    return ai;
+  } catch (err) {
+    console.error('Perplexity enrichment failed:', err instanceof Error ? err.message : err);
+    return null;
+  }
+}
+
 async function enrich(domain: string, signals: SiteSignals | null, fetchError?: string): Promise<AiEnrichment | null> {
   const claude = getClaude();
   if (!claude) return null;
@@ -144,6 +190,9 @@ async function handle(rawDomain: unknown, request: Request): Promise<Response> {
   if (!isValidPublicHostname(domain)) {
     return json({ error: `"${domain}" doesn't look like a public domain. Try something like acme.com.` }, 400);
   }
+  // Analyses are for signed-in users only (the sample report needs no API call).
+  const auth = await verifyUser(request);
+  if (!auth.ok) return json({ error: 'Sign in with Google to run an analysis.', code: 'auth_required' }, 401);
   if (rateLimited(request, 'analyze', 12, 10 * 60_000)) {
     return json({ error: 'Too many analyses from this network. Wait a few minutes and try again.' }, 429);
   }
@@ -159,8 +208,10 @@ async function handle(rawDomain: unknown, request: Request): Promise<Response> {
     if (/^DNS lookup failed/.test(fetchError)) return json({ error: fetchError }, 422);
   }
 
-  const ai = await enrich(domain, signals, fetchError);
-  const source: AnalysisSource = signals ? (ai ? 'crawl+ai' : 'crawl') : ai ? 'ai' : 'estimate';
+  // Perplexity (live web) first, then Claude, then crawl-only heuristics.
+  const live = await enrichLive(domain, signals, fetchError);
+  const ai = live ?? (await enrich(domain, signals, fetchError));
+  const source: AnalysisSource = live ? 'live' : signals ? (ai ? 'crawl+ai' : 'crawl') : ai ? 'ai' : 'estimate';
   return json(buildAnalysis({ domain, signals, ai, source, fetchError }));
 }
 

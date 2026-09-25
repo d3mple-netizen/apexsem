@@ -3,7 +3,7 @@ import { Loader2, Globe, ArrowRight, AlertCircle } from 'lucide-react';
 import { DomainAnalysis } from '../types';
 import { useDict } from '../i18n';
 import { shell } from '../i18n/dict/shell';
-import { SampleBadge } from '../lib/honest';
+import { SampleBadge, isMeasured } from '../lib/honest';
 import { GoogleMark } from './AuthControls';
 
 interface DomainSearchBarProps {
@@ -14,7 +14,7 @@ interface DomainSearchBarProps {
   error: string | null;
   /** Free analyses left today; Infinity for Pro. */
   remaining: number;
-  /** Today's quota for the current identity (1 anonymous, 3 signed in). */
+  /** Today's quota (3 signed in; guests must sign in first). */
   limit: number;
   isSignedIn: boolean;
   onSignIn: () => void;
@@ -38,6 +38,8 @@ function sourceLine(a: DomainAnalysis, c: SourceCopy): string {
   switch (a.source) {
     case 'sample':
       return c.sample(a.domain);
+    case 'live':
+      return c.live(a.domain, !a.fetchError);
     case 'crawl+ai':
       return c.crawlAi(a.domain);
     case 'crawl':
@@ -87,7 +89,7 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
     onAnalyze(domain);
   };
 
-  const live = analysis.source === 'crawl' || analysis.source === 'crawl+ai';
+  const live = isMeasured(analysis) || analysis.source === 'live';
 
   return (
     <section className="card p-4 sm:p-6 mb-8 sm:mb-12">
@@ -169,9 +171,9 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
                 {sourceLine(analysis, t.source)} {t.modeledNote}
               </span>
             </span>
-            {Number.isFinite(remaining) && !isSignedIn ? (
+            {!isSignedIn ? (
               <span className="shrink-0 flex flex-wrap items-center gap-x-2 gap-y-1 sm:justify-end">
-                <span>{t.anonLeft(remaining)}</span>
+                <span>{t.anonLeft}</span>
                 <button
                   type="button"
                   onClick={onSignIn}

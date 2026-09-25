@@ -1,9 +1,9 @@
 // Free-tier metering. Client-side only until billing exists, so it is a soft
 // gate: it shapes the sign-in and upgrade path, it does not enforce billing.
-// Signed-in users are counted per user id, anonymous visitors per browser.
+// Analyses require Google sign-in; usage is counted per user id. Guests can
+// only browse the bundled sample report.
 
 export const FREE_DAILY_LIMIT = 3;
-export const ANON_DAILY_LIMIT = 1;
 export const PRO_PRICE = 49;
 export const PRO_MAILTO = 'mailto:hello@stallbay.com?subject=ApexSEM%20Pro';
 
@@ -18,7 +18,7 @@ function today(): string {
 const keyFor = (userId: string | null) => `${PREFIX}:${userId ?? 'anon'}:${today()}`;
 
 export function dailyLimit(userId: string | null): number {
-  return userId ? FREE_DAILY_LIMIT : ANON_DAILY_LIMIT;
+  return userId ? FREE_DAILY_LIMIT : 0;
 }
 
 export function isPro(): boolean {
@@ -43,7 +43,7 @@ export function remainingToday(userId: string | null): number {
 }
 
 export function canAnalyze(userId: string | null): boolean {
-  return remainingToday(userId) > 0;
+  return !!userId && remainingToday(userId) > 0;
 }
 
 /** Records one completed analysis and returns the new count for today. */
