@@ -68,9 +68,9 @@ export const organic = defineDict(
     tabs: { clusters: 'Кластеры', geo: 'AI-поиск', backlinks: 'Ссылки', schema: 'Разметка' },
     tabsAria: 'Разделы органики',
 
-    clustersIntroTitle: 'Закрывай тему целиком, а не отдельные ключи',
+    clustersIntroTitle: 'Закрывайте тему целиком, а не отдельные ключи',
     clustersIntro:
-      'Google выше ставит сайты, которые раскрывают тему целиком. Опорная страница плюс вспомогательные, перелинкованные между собой, показывают, что твой домен - главный источник в категории.',
+      'Google выше ставит сайты, которые раскрывают тему целиком. Опорная страница плюс вспомогательные, перелинкованные между собой, показывают, что ваш домен - главный источник в категории.',
     pillarIntent: { 'Informational Pillar': 'Информационная опорная', 'Commercial Pillar': 'Коммерческая опорная' },
     targetKeyword: 'Главный ключ',
     subtopics: 'Вспомогательные страницы',
@@ -83,12 +83,12 @@ export const organic = defineDict(
     briefKeyword: 'Ключ',
     briefCluster: 'ВСПОМОГАТЕЛЬНЫЕ СТРАНИЦЫ',
 
-    geoIntroTitle: 'Попади в ответы AI',
+    geoIntroTitle: 'Попадите в ответы AI',
     geoIntro: (niche: string) =>
       `Покупатели все чаще спрашивают совета у ChatGPT, Perplexity и Google AI Overviews. Страницы с прямыми ответами, понятной структурой и разметкой проще процитировать, когда кто-то спрашивает: "что выбрать в нише ${niche}?"`,
     readinessTitle: 'Готовность к цитированию в AI',
     readinessNote: 'Проверили по главной. ChatGPT и Perplexity напрямую не опрашивали.',
-    readinessUnavailable: 'Запусти анализ своего домена - проверим главную на эти сигналы.',
+    readinessUnavailable: 'Запустите анализ своего домена - проверим главную на эти сигналы.',
     checks: {
       questionH2: 'H2-заголовки в форме вопроса',
       questionH2Detail: (n: number, total: number) => (total ? `${n} из ${total} H2 заканчиваются на "?"` : 'H2-заголовков нет'),
@@ -116,8 +116,8 @@ export const organic = defineDict(
     effort: 'Сложность',
 
     schemaTitle: 'JSON-LD для сущности бренда',
-    schemaIntro: (domain: string) => `Вставь в <head> на ${domain}, чтобы Google считывал бренд как одну сущность.`,
-    schemaFill: 'Перед публикацией замени все значения YOUR_... Добавляй aggregateRating, только если на странице видны реальные отзывы.',
+    schemaIntro: (domain: string) => `Вставьте в <head> на ${domain}, чтобы Google считывал бренд как одну сущность.`,
+    schemaFill: 'Перед публикацией замените все значения YOUR_... Добавляйте aggregateRating, только если на странице видны реальные отзывы.',
     schemaFound: (types: string) => `Уже есть на главной: ${types}`,
     download: 'Скачать .json',
     copySchema: 'Скопировать код'
