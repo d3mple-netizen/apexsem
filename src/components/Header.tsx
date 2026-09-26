@@ -2,7 +2,7 @@ import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useDict } from '../i18n';
 import { shell } from '../i18n/dict/shell';
-import { AuthControls } from './AuthControls';
+import { AuthControls, LangSwitch } from './AuthControls';
 
 interface HeaderProps {
   theme: 'dark' | 'light';
@@ -46,6 +46,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme, onHome, ..
         </button>
 
         <div className="flex items-center gap-1 sm:gap-2">
+          <LangSwitch className="text-xs mr-1" />
           <button
             type="button"
             onClick={onToggleTheme}
