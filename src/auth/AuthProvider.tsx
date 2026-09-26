@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!googleSignInAvailable()) return { error: 'unavailable' };
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin }
+      options: { redirectTo: window.location.origin, queryParams: { prompt: 'select_account' } }
     });
     return error ? { error: error.message } : {};
   }, []);
