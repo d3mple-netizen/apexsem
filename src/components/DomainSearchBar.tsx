@@ -3,8 +3,8 @@ import { Loader2, Globe, ArrowRight, AlertCircle } from 'lucide-react';
 import { DomainAnalysis } from '../types';
 import { useDict } from '../i18n';
 import { shell } from '../i18n/dict/shell';
-import { SampleBadge, isMeasured } from '../lib/honest';
 import { GoogleMark } from './AuthControls';
+import { FREE_DAILY_LIMIT } from '../services/usage';
 
 interface DomainSearchBarProps {
   currentDomain: string;
@@ -89,8 +89,6 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
     onAnalyze(domain);
   };
 
-  const live = isMeasured(analysis) || analysis.source === 'live';
-
   return (
     <section className="card p-4 sm:p-6 mb-8 sm:mb-12">
       {compact ? (
@@ -132,7 +130,11 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
         <button
           type="submit"
           disabled={isLoading || !inputVal.trim()}
-          className="btn btn-primary h-12 sm:h-11 px-5 w-full sm:w-auto text-base sm:text-sm"
+          className={`btn h-12 sm:h-11 px-5 w-full sm:w-auto text-base sm:text-sm ${
+            inputVal.trim() || isLoading
+              ? 'btn-primary'
+              : 'bg-neutral-200/40 dark:bg-neutral-800 text-fg-muted disabled:opacity-100'
+          }`}
         >
           {isLoading ? (
             <>
@@ -148,6 +150,10 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
         </button>
       </form>
 
+      {compact && Number.isFinite(remaining) && (
+        <p className="mt-2 text-[13px] text-fg-muted">{t.freeNote(FREE_DAILY_LIMIT)}</p>
+      )}
+
       {/* Progress, error or report provenance */}
       <div id="domain-status" aria-live="polite" className="mt-4 min-h-[2.5rem]">
         {isLoading ? (
@@ -161,33 +167,27 @@ export const DomainSearchBar: React.FC<DomainSearchBarProps> = ({
             <span>{error}</span>
           </div>
         ) : (
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 text-xs text-fg-subtle">
-            <span className="flex items-start gap-2">
-              <span
-                className={`mt-[6px] w-1.5 h-1.5 rounded-full shrink-0 ${live ? 'bg-accent' : 'bg-fg-subtle'}`}
-              />
-              <span>
-                {analysis.source === 'sample' && <SampleBadge className="mr-2" />}
-                {sourceLine(analysis, t.source)} {t.modeledNote}
-              </span>
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 text-[13px] text-fg-subtle">
+            <span>
+              {sourceLine(analysis, t.source)}
+              {analysis.source !== 'sample' && ` ${t.modeledNote}`}
             </span>
             {!isSignedIn ? (
-              <span className="shrink-0 flex flex-wrap items-center gap-x-2 gap-y-1 sm:justify-end">
-                <span>{t.anonLeft}</span>
-                <button
-                  type="button"
-                  onClick={onSignIn}
-                  className="inline-flex items-center gap-1.5 py-2 -my-2 sm:py-0 sm:my-0 text-fg-muted underline decoration-line-strong underline-offset-4 hover:text-fg transition-colors cursor-pointer"
-                >
-                  <GoogleMark className="w-3.5 h-3.5" />
-                  {t.anonCta}
-                </button>
-              </span>
+              <button
+                type="button"
+                onClick={onSignIn}
+                className="shrink-0 inline-flex items-center gap-1.5 py-2 -my-2 sm:py-0 sm:my-0 text-fg-muted hover:text-fg transition-colors cursor-pointer"
+              >
+                <GoogleMark className="w-3.5 h-3.5" />
+                {t.anonCta}
+              </button>
             ) : Number.isFinite(remaining) && (
               <button
                 type="button"
                 onClick={onOpenPlans}
-                className="shrink-0 py-2 -my-2 sm:py-0 sm:my-0 text-left sm:text-right num underline decoration-line-strong underline-offset-4 hover:text-fg transition-colors cursor-pointer"
+                title={t.leftHint(remaining, limit)}
+                aria-label={t.leftHint(remaining, limit)}
+                className="shrink-0 py-2 -my-2 sm:py-0 sm:my-0 text-left sm:text-right num text-fg-subtle hover:text-fg-muted transition-colors cursor-pointer"
               >
                 {t.left(remaining, limit)}
               </button>

@@ -38,6 +38,57 @@ export const LangSwitch: React.FC<{ className?: string }> = ({ className = '' })
   );
 };
 
+/**
+ * Google serves a flat colored square with a letter when the account has no
+ * photo. Sample the border: identical, saturated pixels mean it's that
+ * placeholder, not a real picture.
+ */
+function isGeneratedLetterAvatar(img: HTMLImageElement): boolean {
+  try {
+    const n = 16;
+    const c = document.createElement('canvas');
+    c.width = c.height = n;
+    const ctx = c.getContext('2d');
+    if (!ctx) return false;
+    ctx.drawImage(img, 0, 0, n, n);
+    const d = ctx.getImageData(0, 0, n, n).data;
+    const pts = [[1, 1], [n - 2, 1], [1, n - 2], [n - 2, n - 2], [n >> 1, 1], [1, n >> 1], [n - 2, n >> 1], [n >> 1, n - 2]];
+    const px = pts.map(([x, y]) => {
+      const i = (y * n + x) * 4;
+      return [d[i], d[i + 1], d[i + 2]];
+    });
+    const [r0, g0, b0] = px[0];
+    const flat = px.every(([r, g, b]) => Math.abs(r - r0) + Math.abs(g - g0) + Math.abs(b - b0) < 24);
+    const saturated = Math.max(r0, g0, b0) - Math.min(r0, g0, b0) > 40;
+    return flat && saturated;
+  } catch {
+    return false; // canvas tainted: keep the image
+  }
+}
+
+const Avatar: React.FC<{ url: string | null; initial: string }> = ({ url, initial }) => {
+  const [photo, setPhoto] = useState(!!url);
+  useEffect(() => setPhoto(!!url), [url]);
+  if (url && photo) {
+    return (
+      <img
+        src={url}
+        alt=""
+        crossOrigin="anonymous"
+        referrerPolicy="no-referrer"
+        onLoad={(e) => isGeneratedLetterAvatar(e.currentTarget) && setPhoto(false)}
+        onError={() => setPhoto(false)}
+        className="w-7 h-7 rounded-full border border-line object-cover"
+      />
+    );
+  }
+  return (
+    <span className="w-7 h-7 rounded-full bg-neutral-200 dark:bg-neutral-700 text-xs font-medium text-fg flex items-center justify-center">
+      {initial}
+    </span>
+  );
+};
+
 interface AuthControlsProps {
   onSignIn: () => void;
   onSignOut: () => void;
@@ -97,11 +148,7 @@ export const AuthControls: React.FC<AuthControlsProps> = ({ onSignIn, onSignOut,
         title={user.email}
         className="w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full cursor-pointer"
       >
-        {user.avatarUrl ? (
-          <img src={user.avatarUrl} alt="" referrerPolicy="no-referrer" className="w-7 h-7 rounded-full border border-line object-cover" />
-        ) : (
-          <span className="w-7 h-7 rounded-full bg-surface-2 border border-line text-xs font-medium text-fg flex items-center justify-center">{initial}</span>
-        )}
+        <Avatar url={user.avatarUrl} initial={initial} />
       </button>
       {open && (
         <div role="menu" className="absolute right-0 mt-2 w-[min(16rem,calc(100vw-2rem))] p-1 bg-surface border border-line rounded shadow-overlay anim-fade">

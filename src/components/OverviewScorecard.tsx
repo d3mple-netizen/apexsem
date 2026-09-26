@@ -1,5 +1,5 @@
 import React from 'react';
-import { DollarSign, TrendingUp, ShieldAlert, Target, Award, ArrowUpRight, Cpu, Layers } from 'lucide-react';
+import { DollarSign, TrendingUp, ShieldAlert, Target, Award, Cpu } from 'lucide-react';
 import { DomainAnalysis, ScoreBreakdown } from '../types';
 import { useDict } from '../i18n';
 import { common } from '../i18n/common';
@@ -30,12 +30,9 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
       <div className="card p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="tag">
-                {analysis.niche}
-              </span>
-              <span className="text-xs text-fg-subtle">{t.audience} {analysis.targetAudience}</span>
-            </div>
+            <p className="text-[13px] text-fg-muted">
+              {analysis.niche} · {t.audience} {analysis.targetAudience}
+            </p>
             <h2 className="text-xl sm:text-2xl font-semibold text-fg break-words">
               {t.reportFor} <span className="font-mono text-fg-muted">{analysis.domain}</span>
             </h2>
@@ -46,18 +43,18 @@ export const OverviewScorecard: React.FC<OverviewScorecardProps> = ({ analysis, 
 
           <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3">
             <button
+              type="button"
               onClick={() => onNavigateTab('sem')}
-              className="btn btn-primary h-11 sm:h-9"
+              className="btn h-11 sm:h-9 border border-line text-fg-muted hover:text-fg hover:border-line-strong"
             >
-              <span>{t.launchSem}</span>
-              <ArrowUpRight className="w-4 h-4" />
+              {t.launchSem}
             </button>
             <button
+              type="button"
               onClick={() => onNavigateTab('organic')}
-              className="btn btn-secondary h-11 sm:h-9"
+              className="btn h-11 sm:h-9 border border-line text-fg-muted hover:text-fg hover:border-line-strong"
             >
-              <span>{t.viewT1Plan}</span>
-              <Layers className="w-4 h-4 text-fg-subtle" />
+              {t.viewT1Plan}
             </button>
           </div>
         </div>

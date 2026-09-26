@@ -28,10 +28,8 @@ export const shell = defineDict(
       signOut: 'Sign out'
     },
     hero: {
-      title: 'Type a domain. Get a full SEM strategy in 30 seconds.',
-      lead: 'Keywords, ad copy, landing-page fixes and a 90-day plan, built from what is actually on your homepage.',
-      proof: 'Free with Google sign-in: 3 analyses a day, no card. The sample report below is open to everyone.',
-      honesty: 'Every figure is either measured on your page or labeled as an estimate.',
+      title: 'Type a domain, get an SEM strategy',
+      lead: 'Keywords, ad copy, landing-page fixes and a 90-day plan',
       features: [
         {
           term: 'Reads your real site',
@@ -65,7 +63,7 @@ export const shell = defineDict(
       ],
       tags: { Productivity: 'Productivity', DevTools: 'DevTools', FinTech: 'FinTech', Analytics: 'Analytics', 'Corporate Spend': 'Corporate spend' } as Record<string, string>,
       source: {
-        sample: (d: string) => `Sample report for ${d}. Run your own domain to get a live one.`,
+        sample: (d: string) => `Sample report for ${d} - check your own domain`,
         crawlAi: (d: string) => `Live crawl of ${d}, strategy written by Claude.`,
         live: (d: string, crawled: boolean) =>
           crawled ? `Live crawl of ${d} plus live web research by Perplexity: niche, competitors and volume ranges.` : `Couldn’t crawl ${d}. Niche, competitors and volume ranges come from live web research by Perplexity.`,
@@ -74,9 +72,10 @@ export const shell = defineDict(
         estimate: (d: string, reason: string) => `Couldn’t crawl ${d}${reason}. Showing a model based on the domain name only.`
       },
       modeledNote: 'Traffic, volume and CPC figures are estimates.',
-      left: (n: number, of: number) => `${n} of ${of} free analyses left today`,
-      anonLeft: 'Analyses need an account. The sample is free to browse.',
-      anonCta: 'Sign in with Google: 3 free a day',
+      left: (n: number, of: number) => `${n} of ${of}`,
+      leftHint: (n: number, of: number) => `${n} of ${of} free analyses left today`,
+      freeNote: (n: number) => `Free: ${n} analyses a day`,
+      anonCta: 'Sign in with Google',
       failed: 'Analysis failed. Check the domain and try again.'
     },
     plans: {
@@ -171,10 +170,8 @@ export const shell = defineDict(
       signOut: 'Выйти'
     },
     hero: {
-      title: 'Введите домен - получите полную SEM-стратегию за 30 секунд.',
-      lead: 'Ключи, объявления, правки лендинга и план на 90 дней. Все собрано из того, что реально есть на вашей главной.',
-      proof: 'Бесплатно через Google-аккаунт: 3 анализа в день, карта не нужна. Демо-отчет ниже доступен без входа.',
-      honesty: 'Любая цифра либо снята с вашей страницы, либо честно помечена как оценка.',
+      title: 'Введите домен - получите SEM-стратегию',
+      lead: 'Ключи, объявления, правки лендинга и план на 90 дней',
       features: [
         {
           term: 'Читает ваш реальный сайт',
@@ -208,7 +205,7 @@ export const shell = defineDict(
       ],
       tags: { Productivity: 'Продуктивность', DevTools: 'DevTools', FinTech: 'Финтех', Analytics: 'Аналитика', 'Corporate Spend': 'Расходы компании' },
       source: {
-        sample: (d: string) => `Демо-отчет для ${d}. Проверьте свой домен - получите живой отчет.`,
+        sample: (d: string) => `Демо-отчет для ${d} - проверьте свой домен`,
         crawlAi: (d: string) => `Свежий скан ${d}, стратегию написал Claude.`,
         live: (d: string, crawled: boolean) =>
           crawled ? `Свежий скан ${d} и живой поиск Perplexity: ниша, конкуренты и вилки частотности.` : `Не получилось просканировать ${d}. Ниша, конкуренты и вилки частотности - из живого поиска Perplexity.`,
@@ -217,9 +214,10 @@ export const shell = defineDict(
         estimate: (d: string, reason: string) => `Не получилось просканировать ${d}${reason}. Это модель только по имени домена.`
       },
       modeledNote: 'Трафик, частотность и CPC - это оценки.',
-      left: (n: number, of: number) => `На сегодня осталось ${n} из ${of} бесплатных анализов`,
-      anonLeft: 'Чтобы проверять домены, нужен аккаунт. Демо-отчет доступен без входа.',
-      anonCta: 'Войти через Google: 3 в день бесплатно',
+      left: (n: number, of: number) => `${n} из ${of}`,
+      leftHint: (n: number, of: number) => `На сегодня осталось ${n} из ${of} бесплатных анализов`,
+      freeNote: (n: number) => `Бесплатно: ${n} анализа в день`,
+      anonCta: 'Войти через Google',
       failed: 'Анализ не прошел. Проверьте адрес и попробуйте еще раз.'
     },
     plans: {

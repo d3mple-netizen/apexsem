@@ -13,10 +13,7 @@ export const Hero: React.FC = () => {
         >
           {t.title}
         </h1>
-        <p className="mt-4 md:mt-6 text-base text-fg-muted max-w-[34rem] [text-wrap:pretty]">{t.lead}</p>
-        <p className="mt-4 text-sm text-fg-subtle max-w-[34rem] [text-wrap:pretty]">
-          {t.proof} {t.honesty}
-        </p>
+        <p className="mt-4 md:mt-5 text-base text-fg-muted max-w-[34rem] [text-wrap:pretty]">{t.lead}</p>
       </div>
 
       <dl className="divide-y divide-line border-y border-line">

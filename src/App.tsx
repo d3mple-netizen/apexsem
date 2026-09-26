@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Check, Download, MessageSquare } from 'lucide-react';
+import { Check, Download, MessageCircle } from 'lucide-react';
 import { Header } from './components/Header';
 import { LangSwitch } from './components/AuthControls';
 import { DomainSearchBar } from './components/DomainSearchBar';
@@ -249,14 +249,14 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
     showToast(t.toast.downloaded(`ApexSEM-Playbook-${analysis.domain}.md`));
   };
 
-  const tabs: { id: typeof activeTab; label: string; count?: number }[] = [
+  const tabs: { id: typeof activeTab; label: string }[] = [
     { id: 'overview', label: t.tabs.overview },
     { id: 'revenue', label: t.tabs.revenue },
-    { id: 'traffic', label: t.tabs.traffic, count: analysis.trafficDistribution.leakedQueries.length },
-    { id: 'sem', label: t.tabs.sem, count: analysis.keywords.length },
+    { id: 'traffic', label: t.tabs.traffic },
+    { id: 'sem', label: t.tabs.sem },
     { id: 'organic', label: t.tabs.organic },
     { id: 'cro', label: t.tabs.cro },
-    { id: 'roadmap', label: t.tabs.roadmap, count: analysis.roadmap.length }
+    { id: 'roadmap', label: t.tabs.roadmap }
   ];
 
   return (
@@ -322,7 +322,6 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
                 }`}
               >
                 <span>{t.label}</span>
-                {t.count !== undefined && <span className="num text-xs text-fg-subtle">{t.count}</span>}
               </button>
             );
           })}
@@ -376,16 +375,21 @@ ${analysis.roadmap.map(r => `[${r.status.toUpperCase()}] ${r.phase}: ${r.title} 
       </main>
 
       {/* Strategist chat trigger */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 pb-[env(safe-area-inset-bottom)]">
+      <div className="group fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 pb-[env(safe-area-inset-bottom)]">
         <button
           type="button"
           onClick={() => setIsChatOpen(true)}
           aria-label={t.header.askStrategist}
-          className="btn h-12 w-12 px-0 sm:h-9 sm:w-auto sm:px-4 bg-surface text-fg border border-line hover:border-line-strong shadow-overlay"
+          className="w-11 h-11 rounded-full flex items-center justify-center bg-accent text-white hover:bg-accent-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
         >
-          <MessageSquare className="w-4 h-4 text-fg-muted" />
-          <span className="hidden sm:inline">{t.header.askStrategist}</span>
+          <MessageCircle className="w-5 h-5" />
         </button>
+        <span
+          role="tooltip"
+          className="pointer-events-none absolute right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 rounded-sm bg-fg text-canvas text-xs whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:hidden"
+        >
+          {t.header.askStrategist}
+        </span>
       </div>
 
       {/* AI Agency Chat Drawer */}
